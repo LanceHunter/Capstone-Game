@@ -1,0 +1,27 @@
+{
+  "name": "capstone-game",
+  "version": "1.0.0",
+  "description": "A game for our capstone.",
+  "main": "index.js",
+  "dependencies": {
+    "bcrypt": "^1.0.3",
+    "express": "^4.16.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LanceHunter/Capstone-Game.git"
+  },
+  "keywords": [
+    "game"
+  ],
+  "author": "R. Lance Hunter, Jason Palzkill, Gavin Loughridge, Steven Fiero, Jason Amador",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/LanceHunter/Capstone-Game/issues"
+  },
+  "homepage": "https://github.com/LanceHunter/Capstone-Game#readme"
+}
