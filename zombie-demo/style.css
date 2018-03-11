@@ -1,0 +1,66 @@
+*, html {
+  border: 0;
+  margin: 0px;
+  font-size: 120%;
+  font-family: firefight;
+}
+
+.video-container {
+ position: fixed;
+ width: 100%;
+ height: 100%;
+ overflow: hidden;
+ max-width: 100%;
+}
+
+.pixle {
+  background-color: black;
+  width: calc(100%/8 - 2px);
+  padding-bottom: calc(100%/8 - 2px);
+  border: 1px solid blue;
+  float: left;
+}
+
+.painted {
+  background-color: grey;
+}
+
+.enemy {
+  background: url("/assets/shambling-zombie.svg");
+  background-size: 100%;
+}
+
+.remains {
+  background: url("/assets/carrion.svg");
+  background-size: 100%;
+}
+
+svg {
+  fill: blue;
+}
+
+canvas {
+  position: absolute;
+  /* float: left; */
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+}
+
+html {
+  background-color: blue;
+}
+
+video {
+  visibility: hidden;
+  position: absolute;
+  /* float: left; */
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+}
+
+canvas {
+  opacity: 0.8;
+  z-index:999;
+}
