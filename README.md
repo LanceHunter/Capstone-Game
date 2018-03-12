@@ -1,8 +1,8 @@
 [![Waffle.io - Columns and their card count](https://badge.waffle.io/LanceHunter/Capstone-Game.svg?columns=all)](https://waffle.io/LanceHunter/Capstone-Game)
 
-## Capstone Project
+## Global Thermonuclear War
 
-The capstone project for Galvanize Web Development Immersive.
+The simulation of a global arms race. The capstone project for Galvanize Web Development Immersive.
 
 
 ## Roles
