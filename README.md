@@ -1,4 +1,5 @@
-<!-- [![Waffle.io - Columns and their card count](https://badge.waffle.io/ssfiero/Capstone-Game.png?columns=all)](https://waffle.io/ssfiero/Capstone-Game?utm_source=badge) -->
+
+[![Waffle.io - Columns and their card count](https://badge.waffle.io/LanceHunter/Capstone-Game.svg?columns=all)](https://waffle.io/LanceHunter/Capstone-Game)
 
 ## Capstone Project
 
