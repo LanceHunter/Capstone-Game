@@ -5,7 +5,9 @@
   "main": "index.js",
   "dependencies": {
     "bcrypt": "^1.0.3",
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "knex": "^0.14.4",
+    "npm": "^5.7.1"
   },
   "devDependencies": {
     "d3": "^4.13.0",
