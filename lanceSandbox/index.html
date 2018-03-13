@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Global Thermonuclear War</title>
+  </head>
+
+  <body>
+    <main id="gtwGame">
+      <ul>
+        <li v-for="continent in continents">
+          <ul>
+            <li>
+              {{ continent.name }}
+            </li>
+            <li>
+              Belongs to: {{ continent.assignment || 'None' }}
+            </li>
+            <li>
+              Declared weapons:
+            </li>
+          </ul>
+          <br />
+        </li>
+      </ul>
+      <ul>
+        <li v-for="ocean in oceans">
+          {{ ocean.name }}<br />
+          Declared weapons:
+        </li>
+      </ul>
+
+    </main>
+  </body>
+
+  <!-- Vue and site JS -->
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="rawGame.js"></script>
+
+
+</html>
