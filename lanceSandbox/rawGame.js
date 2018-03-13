@@ -126,6 +126,7 @@
       continents : continents,
       oceans : oceans,
       year : year,
+      winConditions : winConditions,
       players : players,
       turn : turn,
       allAssigned : false
@@ -187,8 +188,25 @@
       },
 
       endTurn : function() {
+        let noWeapons = true;
+        this.continents.forEach((continent) => {
+          if (continent.weapons.icbms.total !== 0 || continent.weapons.bombers.total !== 0) {
+            noWeapons = false;
+          }
+        });
+        this.oceans.forEach((ocean) => {
+          if (ocean.subs.player1.total !== 0) {
+            noWeapons = false;
+          }
+        });
+        winConditions.yearsWithNoWeapons += 0.5;
+        if (!noWeapons) {
+          winConditions.yearsWithNoWeapons = 0;
+          this.turn.player = 0;
+        } else {
+          this.turn.player = 2;
+        }
         this.me.rnd += this.currentBudget;
-        this.turn.player = 2;
         this.turnStart = false;
       },
 
@@ -290,7 +308,14 @@
             noWeapons = false;
           }
         });
-        this.turn.player = 1;
+        winConditions.yearsWithNoWeapons += 0.5;
+        if (!noWeapons) {
+          winConditions.yearsWithNoWeapons = 0;
+          this.turn.player = 0;
+        } else {
+          this.turn.player = 1;
+        }
+        this.me.rnd += this.currentBudget;
         this.year.year++;
         this.turnStart = false;
       },

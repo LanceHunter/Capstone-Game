@@ -8,6 +8,7 @@
 
   <body>
     <div id="gtwGame">
+      <h1 v-if="winConditions.yearsWithNoWeapons >= 3">No weapons on earth! Both Players Win! Game Over!</h1>
       <h1 v-if="allAssigned">It is "Peacetime" in the year: {{ year.year }}</h1>
       <h2 v-if="allAssigned">Player 1's declared forces: {{ players[0].declaredForces }} --- Player 2's declared forces: {{ players[1].declaredForces }}</h2>
       <ul>
@@ -55,6 +56,7 @@
           </span>
         </li>
       </ul>
+      <h1 v-if="winConditions.yearsWithNoWeapons >= 3">No weapons on earth! Both Players Win! Game Over!</h1>
     </div>
 
     <div id="player1Box">
