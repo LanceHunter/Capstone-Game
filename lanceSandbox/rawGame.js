@@ -102,7 +102,8 @@
       continents : [],
       oceans : [],
       rnd : 0,
-      thisYearBudget : 0
+      thisYearBudget : 0,
+      declaredForces : 0
     },
     {
       name : 'Player 2',
@@ -110,14 +111,13 @@
       continents : [],
       oceans : [],
       rnd : 0,
-      thisYearBudget: 0
+      thisYearBudget: 0,
+      declaredForces : 0
     }
   ];
 
   const winConditions = {
-    totalWeapons : 0,
-    declaredWeapons : 0,
-
+    yearsWithNoWeapons : 0
   }
 
   var game = new Vue({
@@ -165,11 +165,13 @@
       continents : players[0].continents,
       oceans : players[0].oceans,
       year : year,
+      winConditions : winConditions,
       me : players[0],
       turn : turn,
       turnStart : false,
       currentBudget : 0
     },
+
     methods : {
 
       startTurn : function() {
@@ -207,6 +209,7 @@
       },
 
       declare : function(continent, type) {
+        this.me.declaredForces++;
         if (type === 'bomber') {
           continent.weapons.bombers.declared++;
         }
@@ -216,6 +219,7 @@
       },
 
       declareSub : function(ocean) {
+        this.me.declaredForces++;
         ocean.subs.player1.declared++;
       },
 
@@ -223,6 +227,7 @@
         if (type === 'bomber') {
           if (continent.weapons.bombers.declared > 0) {
             continent.weapons.bombers.declared--;
+            this.me.declaredForces--;
           }
           continent.weapons.bombers.total--;
         }
@@ -237,10 +242,14 @@
       disarmSub : function(ocean) {
         if (ocean.subs.player1.declared > 0) {
           ocean.subs.player1.declared--;
+          this.me.declaredForces--;
         }
         ocean.subs.player1.total--;
-      }
+      },
 
+      warStart : function() {
+        console.log('War were declared.')
+      }
 
     }
   });
@@ -252,11 +261,13 @@
 			continents : players[1].continents,
       oceans : players[1].oceans,
       year : year,
+      winConditions : winConditions,
       me : players[1],
       turn : turn,
       turnStart : false,
       currentBudget : 0
     },
+
     methods : {
 
       startTurn : function() {
@@ -268,6 +279,17 @@
       },
 
       endTurn : function() {
+        let noWeapons = true;
+        this.continents.forEach((continent) => {
+          if (continent.weapons.icbms.total !== 0 || continent.weapons.bombers.total !== 0) {
+            noWeapons = false;
+          }
+        });
+        this.oceans.forEach((ocean) => {
+          if (ocean.subs.player2.total !== 0) {
+            noWeapons = false;
+          }
+        });
         this.turn.player = 1;
         this.year.year++;
         this.turnStart = false;
@@ -292,6 +314,7 @@
       declare : function(continent, type) {
         if (type === 'bomber') {
           continent.weapons.bombers.declared++;
+          this.me.declaredForces++;
         }
         if (type === 'icbm') {
           continent.weapons.icbms.declared++;
@@ -299,13 +322,14 @@
       },
 
       declareSub : function(ocean) {
+        this.me.declaredForces++;
         ocean.subs.player2.declared++;
       },
 
       disarm : function(continent, type) {
         if (type === 'bomber') {
           if (continent.weapons.bombers.declared > 0) {
-            continent.weapons.bombers.declared--;
+            continent.weapons.bombers.declared--;        this.me.declaredForces--;
           }
           continent.weapons.bombers.total--;
         }
@@ -320,8 +344,13 @@
       disarmSub : function(ocean) {
         if (ocean.subs.player2.declared > 0) {
           ocean.subs.player2.declared--;
+          this.me.declaredForces--;
         }
         ocean.subs.player2.total--;
+      },
+
+      warStart : function() {
+        console.log('War were declared.')
       }
 
     }

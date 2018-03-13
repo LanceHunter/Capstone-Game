@@ -9,6 +9,7 @@
   <body>
     <div id="gtwGame">
       <h1 v-if="allAssigned">It is "Peacetime" in the year: {{ year.year }}</h1>
+      <h2 v-if="allAssigned">Player 1's declared forces: {{ players[0].declaredForces }} --- Player 2's declared forces: {{ players[1].declaredForces }}</h2>
       <ul>
         <li v-for="continent in continents">
           <ul>
@@ -32,7 +33,6 @@
               <span v-if="continent.weapons.icbms.declared === 0 && continent.weapons.bombers.declared === 0">
                 None
               </span>
-
             </li>
           </ul>
           <button v-if="!continent.assignment" v-on:click="assign(continent, 1)">Player 1 Claim</button>
@@ -59,12 +59,12 @@
 
     <div id="player1Box">
       <div v-if="turn.player === myNumber">
-        Player 1 turn. <button v-on:click="startTurn">Start turn</button> <button v-on:click="endTurn">End turn</button>
+        Player 1 turn. <button v-on:click="startTurn">Start turn</button> <button v-on:click="endTurn">End turn</button> <button style="color:red;" v-on:click="warStart">DECLARE WAR</button>
         <div v-show="turnStart">
           <br />
           Current budget : {{ currentBudget }}<br />
           (any budget remaining at end of your turn will go towards R&D)<br />
-          Current R&D damage : +{{ Math.floor(me.rnd / 500)*5 }}
+          Current R&D damage bonus: +{{ Math.floor(me.rnd / 500)*5 }}
           <ul>
             <li v-for="continent in continents">
               {{ continent.name }}<br />
@@ -109,12 +109,12 @@
 
     <div id="player2Box">
       <div v-if="turn.player === myNumber">
-        Player 2 turn. <button v-on:click="startTurn">Start turn</button> <button v-on:click="endTurn">End turn</button>
+        Player 2 turn. <button v-on:click="startTurn">Start turn</button> <button v-on:click="endTurn">End turn</button> <button style="color:red;" v-on:click="warStart">DECLARE WAR</button>
         <div v-show="turnStart">
           <br />
           Current budget : {{ currentBudget }}<br />
           (any budget remaining at end of your turn will go towards R&D)<br />
-          Current R&D damage : +{{ Math.floor(me.rnd / 500)*5 }}
+          Current R&D damage bonus : +{{ Math.floor(me.rnd / 500)*5 }}
           <ul>
             <li v-for="continent in continents">
               {{ continent.name }}<br />
