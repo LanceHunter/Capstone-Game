@@ -8,6 +8,7 @@
 
   <body>
     <div id="gtwGame">
+      <h1 v-if="allAssigned">It is "Peacetime" in the year: {{ year.year }}</h1>
       <ul>
         <li v-for="continent in continents">
           <ul>
@@ -18,7 +19,20 @@
               Belongs to: {{ continent.assignment || 'None' }}
             </li>
             <li>
+              Current HP: {{ continent.hp }}
+            </li>
+            <li>
               Declared weapons:
+              <span v-if="continent.weapons.bombers.declared > 0">
+                Bombers-{{continent.weapons.bombers.declared}},
+              </span>
+              <span v-if="continent.weapons.icbms.declared > 0">
+                ICBMs-{{continent.weapons.icbms.declared}}
+              </span>
+              <span v-if="continent.weapons.icbms.declared === 0 && continent.weapons.bombers.declared === 0">
+                None
+              </span>
+
             </li>
           </ul>
           <button v-if="!continent.assignment" v-on:click="assign(continent, 1)">Player 1 Claim</button>
@@ -30,20 +44,128 @@
         <li v-for="ocean in oceans">
           {{ ocean.name }}<br />
           Declared weapons:
+          <span v-if="ocean.subs.player1.declared === 0 && ocean.subs.player2.declared === 0">
+            None
+          </span>
+          <span v-if="ocean.subs.player1.declared > 0">
+            Player 1: {{ ocean.subs.player1.declared}}<br />
+          </span>
+          <span v-if="ocean.subs.player2.declared > 0">
+            Player 2: {{ ocean.subs.player2.declared}}
+          </span>
         </li>
       </ul>
     </div>
+
     <div id="player1Box">
-      <div v-show="turn === myNumber">
-        Player 1 turn.
+      <div v-if="turn.player === myNumber">
+        Player 1 turn. <button v-on:click="startTurn">Start turn</button> <button v-on:click="endTurn">End turn</button>
+        <div v-show="turnStart">
+          <br />
+          Current budget : {{ currentBudget }}<br />
+          (any budget remaining at end of your turn will go towards R&D)<br />
+          Current R&D damage : +{{ Math.floor(me.rnd / 500)*5 }}
+          <ul>
+            <li v-for="continent in continents">
+              {{ continent.name }}<br />
+              Total Bombers: {{ continent.weapons.bombers.total }} - Maintinence cost: ${{ continent.weapons.bombers.total * 20 }}<br />
+              Total ICBMs: {{ continent.weapons.icbms.total }} - Maintinence cost: ${{ continent.weapons.icbms.total * 10 }}<br />
+              <button v-if="currentBudget > 50" v-on:click="place(continent,'bomber')">
+                Place Bomber
+              </button>
+              <button v-if="currentBudget > 100" v-on:click="place(continent,'icbm')">
+                Place ICBM
+              </button>
+              <button v-if="continent.weapons.bombers.total !== continent.weapons.bombers.declared" v-on:click="declare(continent,'bomber')">
+                Declare Bomber
+              </button>
+              <button v-if="continent.weapons.icbms.total !== continent.weapons.icbms.declared" v-on:click="declare(continent,'icbm')">
+                Declare ICBM
+              </button>
+              <button v-if="continent.weapons.bombers.total > 0" v-on:click="disarm(continent,'bomber')">
+                Disarm Bomber
+              </button>
+              <button v-if="continent.weapons.icbms.total > 0" v-on:click="disarm(continent,'icbm')">
+                Disarm ICBM
+              </button>
+            </li>
+            <li v-for="ocean in oceans">
+              {{ ocean.name }}<br />
+              Total subs: {{ ocean.subs.player1.total }} - Maintinence cost: ${{ ocean.subs.player1.total * 20 }}<br />
+              <button v-if="currentBudget > 200" v-on:click="placeSub(ocean)">
+                Place Submarine
+              </button>
+              <button v-if="ocean.subs.player1.total !== ocean.subs.player1.declared" v-on:click="declareSub(ocean)">
+                Declare Submarine
+              </button>
+              <button v-if="ocean.subs.player1.total > 0" v-on:click="disarmSub(continent)">
+                Disarm Submarine
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
+
     <div id="player2Box">
-      <div v-show="turn === myNumber">
+      <div v-if="turn.player === myNumber">
+        Player 2 turn. <button v-on:click="startTurn">Start turn</button> <button v-on:click="endTurn">End turn</button>
+        <div v-show="turnStart">
+          <br />
+          Current budget : {{ currentBudget }}<br />
+          (any budget remaining at end of your turn will go towards R&D)<br />
+          Current R&D damage : +{{ Math.floor(me.rnd / 500)*5 }}
+          <ul>
+            <li v-for="continent in continents">
+              {{ continent.name }}<br />
+              Total Bombers: {{ continent.weapons.bombers.total }} - Maintinence cost: ${{ continent.weapons.bombers.total * 20 }}<br />
+              Total ICBMs: {{ continent.weapons.icbms.total }} - Maintinence cost: ${{ continent.weapons.icbms.total * 10 }}<br />
+              <button v-if="currentBudget > 50" v-on:click="place(continent,'bomber')">
+                Place Bomber
+              </button>
+              <button v-if="currentBudget > 100" v-on:click="place(continent,'icbm')">
+                Place ICBM
+              </button>
+              <button v-if="continent.weapons.bombers.total !== continent.weapons.bombers.declared" v-on:click="declare(continent,'bomber')">
+                Declare Bomber
+              </button>
+              <button v-if="continent.weapons.icbms.total !== continent.weapons.icbms.declared" v-on:click="declare(continent,'icbm')">
+                Declare ICBM
+              </button>
+              <button v-if="continent.weapons.bombers.total > 0" v-on:click="disarm(continent,'bomber')">
+                Disarm Bomber
+              </button>
+              <button v-if="continent.weapons.icbms.total > 0" v-on:click="disarm(continent,'icbm')">
+                Disarm ICBM
+              </button>
+            </li>
+            <li v-for="ocean in oceans">
+              {{ ocean.name }}<br />
+              Total subs: {{ ocean.subs.player1.total }} - Maintinence cost: ${{ ocean.subs.player1.total * 20 }}<br />
+              <button v-if="currentBudget > 200" v-on:click="placeSub(ocean)">
+                Place Submarine
+              </button>
+              <button v-if="ocean.subs.player2.total !== ocean.subs.player2.declared" v-on:click="declareSub(ocean)">
+                Declare Submarine
+              </button>
+              <button v-if="ocean.subs.player2.total > 0" v-on:click="disarmSub(ocean)">
+                Disarm Submarine
+              </button>
+            </li>
+          </ul>
+        </div>
 
       </div>
     </div>
 
+  <footer>
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    This is a footer, y'all.
+  </footer>
   </body>
 
   <!-- Vue and site JS -->
