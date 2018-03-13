@@ -9,8 +9,8 @@
   <body>
     <div id="gtwGame">
       <h1 v-if="winConditions.yearsWithNoWeapons >= 3">No weapons on earth! Both Players Win! Game Over!</h1>
-      <h1 v-if="players[0].declaredForces > players[1].declaredForces*2">Player 1 has overwhelming force! (2x the declared forces of Player 2) Player 1 Wins!</h1>
-      <h1 v-if="players[0].declaredForces*2 < players[1].declaredForces">Player 2 has overwhelming force! (2x the declared forces of Player 1) Player 2 Wins!</h1>
+      <h1 v-if="players[0].declaredForces > players[1].declaredForces*2 && players[1].declaredForces > 5">Player 1 has overwhelming force! (2x the declared forces of Player 2) Player 1 Wins!</h1>
+      <h1 v-if="players[0].declaredForces*2 < players[1].declaredForces && players[0].declaredForces > 5">Player 2 has overwhelming force! (2x the declared forces of Player 1) Player 2 Wins!</h1>
       <h1 v-if="allAssigned">It is "Peacetime" in the year: {{ year.year }}</h1>
       <h2 v-if="allAssigned">Player 1's declared forces: {{ players[0].declaredForces }} --- Player 2's declared forces: {{ players[1].declaredForces }}</h2>
       <ul>
@@ -59,8 +59,8 @@
         </li>
       </ul>
       <h1 v-if="winConditions.yearsWithNoWeapons >= 3">No weapons on earth! Both Players Win! Game Over!</h1>
-      <h1 v-if="players[0].declaredForces > players[1].declaredForces*2">Player 1 has overwhelming force! (2x the declared forces of Player 2) Player 1 Wins!</h1>
-      <h1 v-if="players[0].declaredForces*2 < players[1].declaredForces">Player 2 has overwhelming force! (2x the declared forces of Player 1) Player 2 Wins!</h1>
+      <h1 v-if="players[0].declaredForces > players[1].declaredForces*2 && players[1].declaredForces > 5">Player 1 has overwhelming force! (2x the declared forces of Player 2) Player 1 Wins!</h1>
+      <h1 v-if="players[0].declaredForces*2 < players[1].declaredForces && players[0].declaredForces > 5">Player 2 has overwhelming force! (2x the declared forces of Player 1) Player 2 Wins!</h1>
     </div>
 
     <div id="player1Box">

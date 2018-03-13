@@ -168,6 +168,7 @@
       year : year,
       winConditions : winConditions,
       me : players[0],
+      enemy : players[1],
       turn : turn,
       turnStart : false,
       currentBudget : 0
@@ -202,9 +203,10 @@
         winConditions.yearsWithNoWeapons += 0.5;
         if (!noWeapons) {
           winConditions.yearsWithNoWeapons = 0;
+        }
+        this.turn.player = 2;
+        if (this.me.declaredForces > this.enemy.declaredForces*2 && this.enemy.declaredForces > 5) {
           this.turn.player = 0;
-        } else {
-          this.turn.player = 2;
         }
         this.me.rnd += this.currentBudget;
         this.turnStart = false;
@@ -281,6 +283,7 @@
       year : year,
       winConditions : winConditions,
       me : players[1],
+      enemy : players[0],
       turn : turn,
       turnStart : false,
       currentBudget : 0
@@ -311,9 +314,13 @@
         winConditions.yearsWithNoWeapons += 0.5;
         if (!noWeapons) {
           winConditions.yearsWithNoWeapons = 0;
+        }
+        this.turn.player = 1;
+        if (winConditions.yearsWithNoWeapons >= 3) {
           this.turn.player = 0;
-        } else {
-          this.turn.player = 1;
+        }
+        if (this.me.declaredForces > this.enemy.declaredForces*2 && this.enemy.declaredForces > 5) {
+          this.turn.player = 0;
         }
         this.me.rnd += this.currentBudget;
         this.year.year++;
