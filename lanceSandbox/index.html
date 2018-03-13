@@ -7,7 +7,7 @@
   </head>
 
   <body>
-    <main id="gtwGame">
+    <div id="gtwGame">
       <ul>
         <li v-for="continent in continents">
           <ul>
@@ -21,6 +21,8 @@
               Declared weapons:
             </li>
           </ul>
+          <button v-if="!continent.assignment" v-on:click="assign(continent, 1)">Player 1 Claim</button>
+          <button v-if="!continent.assignment" v-on:click="assign(continent, 2)">Player 2 Claim</button>
           <br />
         </li>
       </ul>
@@ -30,8 +32,18 @@
           Declared weapons:
         </li>
       </ul>
+    </div>
+    <div id="player1Box">
+      <div v-show="turn === myNumber">
+        Player 1 turn.
+      </div>
+    </div>
+    <div id="player2Box">
+      <div v-show="turn === myNumber">
 
-    </main>
+      </div>
+    </div>
+
   </body>
 
   <!-- Vue and site JS -->

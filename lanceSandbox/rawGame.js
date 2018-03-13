@@ -58,6 +58,7 @@
     }
   ];
 
+  // Oceans info.
   const oceans = [
     { name : `atlantic`,
       weapons: {
@@ -73,21 +74,84 @@
       weapons: {
         'subs' : []
       }
-    },
-
+    }
   ];
+
+  // The year
+  let year = 1950;
+
+  // Whose turn?
+  let turn = 2;
+
+  // Player info
+  const players = [
+    {
+      name : 'Player 1',
+      number : 1,
+      continents : [],
+      rnd : 0
+    },
+    {
+      name : 'Player 2',
+      number : 2,
+      continents : [],
+      rnd : 0
+    }
+  ];
+
 
   var game = new Vue({
     el : '#gtwGame',
     data : {
       continents : continents,
       oceans : oceans,
-      year : 1950,
-      players : 2
+      year : year,
+      players : players,
+      turn : turn
     },
+    methods : {
+      assign : function(continent, number) {
+        this.players.forEach((player) => {
+          if (player.number === number) { player.continents.push(continent); }
+        });
+        continent.assignment = number;
+        console.log('Players continents - ', this.players);
+      }
+    }
 
   });
 
+  var player1Box = new Vue({
+    el : '#player1Box',
+    data : {
+      myNumber : 1,
+      continents : continents,
+      oceans : oceans,
+      year : year,
+      players : players,
+      turn : turn
+    },
+    methods : {
+
+    }
+  });
+
+  var player2Box = new Vue({
+    el : '#player2Box',
+    data : {
+      myNumber : 2,
+      continents : continents,
+      oceans : oceans,
+      year : year,
+      players : players,
+      turn : turn
+    },
+    methods : {
+      spendBudget : function() {
+
+      }
+    }
+  });
 
 
 
