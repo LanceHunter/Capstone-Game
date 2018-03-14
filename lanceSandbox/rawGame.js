@@ -92,7 +92,10 @@
   let year = { year : 1950 };
 
   // Whose turn?
-  const turn = { player : 0 };
+  const turn = {
+    player : 0,
+    war : false
+  };
 
   // Player info
   const players = [
@@ -268,7 +271,8 @@
       },
 
       warStart : function() {
-        console.log('War were declared.')
+        console.log('War were declared.');
+        turn.war = true;
       }
 
     }
@@ -344,9 +348,9 @@
       },
 
       declare : function(continent, type) {
+        this.me.declaredForces++;
         if (type === 'bomber') {
           continent.weapons.bombers.declared++;
-          this.me.declaredForces++;
         }
         if (type === 'icbm') {
           continent.weapons.icbms.declared++;
@@ -382,10 +386,39 @@
       },
 
       warStart : function() {
-        console.log('War were declared.')
+        console.log('War were declared.');
+        turn.war = true;
       }
 
     }
+  });
+
+  var warGame = new Vue({
+
+    el : '#warGame',
+		data : {
+      player1 : players[0],
+      player2 : players[1],
+      continents : continents,
+      oceans : oceans,
+      turn : turn,
+      launchFrom : '',
+      launchTo : ''
+    },
+    methods : {
+      launch : function(playerID, start, end) {
+        console.log('Damage done.');
+      },
+      endTurn : function(playerID) {
+        if (playerID === this.player1.number) {
+          turn.player = 2;
+        }
+        if (playerID === this.player2.number) {
+          turn.player = 1;
+        }
+      }
+    }
+
   });
 
 

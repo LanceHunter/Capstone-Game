@@ -11,8 +11,9 @@
       <h1 v-if="winConditions.yearsWithNoWeapons >= 3">No weapons on earth! Both Players Win! Game Over!</h1>
       <h1 v-if="players[0].declaredForces > players[1].declaredForces*2 && players[1].declaredForces > 5">Player 1 has overwhelming force! (2x the declared forces of Player 2) Player 1 Wins!</h1>
       <h1 v-if="players[0].declaredForces*2 < players[1].declaredForces && players[0].declaredForces > 5">Player 2 has overwhelming force! (2x the declared forces of Player 1) Player 2 Wins!</h1>
-      <h1 v-if="allAssigned">It is "Peacetime" in the year: {{ year.year }}</h1>
-      <h2 v-if="allAssigned">Player 1's declared forces: {{ players[0].declaredForces }} --- Player 2's declared forces: {{ players[1].declaredForces }}</h2>
+      <h1 v-if="allAssigned && !turn.war">It is "Peacetime" in the year: {{ year.year }}</h1>
+      <h1 v-if="turn.war" style="color:red;">WAR! WAR! WAR! WAR!</h1>
+      <h2 v-if="allAssigned">Player 1's declared forces: {{ players[0].declaredForces || 'None' }} --- Player 2's declared forces: {{ players[1].declaredForces || 'None' }}</h2>
       <ul>
         <li v-for="continent in continents">
           <ul>
@@ -63,8 +64,58 @@
       <h1 v-if="players[0].declaredForces*2 < players[1].declaredForces && players[0].declaredForces > 5">Player 2 has overwhelming force! (2x the declared forces of Player 1) Player 2 Wins!</h1>
     </div>
 
+    <div id="warGame">
+      <div v-if="turn.war">
+        <div v-if="turn.player === 1"> <!-- Player 1 war game box -->
+          <button v-on:click="endTurn(1)">End turn</button>
+          <h4>You can fire {{ 1 + (Math.floor(player1.rnd / 500)*5) }} times this turn.</h4>
+          <select v-model="launchFrom">
+            <option disabled value="">Launch From</option>
+            <option v-for="continent in player1.continents" v.bind:value="continent.name">
+              {{ continent.name }}, ICBMs - {{ continent.weapons.icbms.total }}, Bombers - {{ continent.weapons.bombers.total }}
+            </option>
+            <option v-for="ocean in player1.oceans" v.bind:value="ocean.name">
+              {{ ocean.name }}, Subs - {{ ocean.subs.player1.total }}
+            </option>
+          </select>
+          <select v-model="launchTo">
+            <option disabled value="">Launch To</option>
+            <option v-for="continent in player2.continents" v.bind:value="continent.name">
+              {{ continent.name }}, Remaining HP - {{ continent.hp }}
+            </option>
+          </select>
+
+        </div> <!-- End of Player 1 war game box -->
+
+        <div v-if="turn.player === 2"> <!-- Player 2 war game box -->
+          <button v-on:click="endTurn(2)">End turn</button>
+          <h4>You can fire {{ 1 + (Math.floor(player1.rnd / 500)*5) }} times this turn.</h4>
+          <select v-model="launchFrom">
+            <option disabled value="">Launch From</option>
+            <option v-for="continent in player2.continents" v.bind:value="continent.name">
+              {{ continent.name }}, ICBMs - {{ continent.weapons.icbms.total }}, Bombers - {{ continent.weapons.bombers.total }}
+            </option>
+            <option v-for="ocean in player2.oceans" v.bind:value="ocean.name">
+              {{ ocean.name }}, Subs - {{ ocean.subs.player2.total }}
+            </option>
+          </select>
+
+
+          <select v-model="launchTo">
+            <option disabled value="">Launch To</option>
+            <option v-for="continent in player1.continents" v.bind:value="continent.name">
+              {{ continent.name }}, Remaining HP - {{ continent.hp }}
+            </option>
+          </select>
+
+
+
+        </div> <!-- End of Player 2 war game box -->
+      </div> <!-- End of the main war container -->
+    </div>
+
     <div id="player1Box">
-      <div v-if="turn.player === myNumber">
+      <div v-if="turn.player === myNumber && !turn.war">
         Player 1 turn. <button v-on:click="startTurn">Start turn</button> <button v-on:click="endTurn">End turn</button> <button style="color:red;" v-on:click="warStart">DECLARE WAR</button>
         <div v-show="turnStart">
           <br />
@@ -114,7 +165,7 @@
     </div>
 
     <div id="player2Box">
-      <div v-if="turn.player === myNumber">
+      <div v-if="turn.player === myNumber && !turn.war">
         Player 2 turn. <button v-on:click="startTurn">Start turn</button> <button v-on:click="endTurn">End turn</button> <button style="color:red;" v-on:click="warStart">DECLARE WAR</button>
         <div v-show="turnStart">
           <br />
