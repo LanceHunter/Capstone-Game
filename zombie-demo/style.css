@@ -48,13 +48,12 @@ canvas {
 }
 
 html {
-  background-color: blue;
+  background-color: black;
 }
 
 video {
   visibility: hidden;
   position: absolute;
-  /* float: left; */
   width: 100%;
   height: 100vh;
   object-fit: cover;

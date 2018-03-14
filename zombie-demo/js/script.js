@@ -5,19 +5,19 @@ window.onload = function() {
   /*
   add pixles
   */
-  let board = document.getElementById('board');
-
-  for (let i = 0; i < 32; i++) {
-    const row = Math.floor(i / 8);
-    const col = i % 8;
-    const pixle = document.createElement('div');
-    pixle.className = 'pixle';
-    pixle.id = `r${row}c${col}`;
-    board.appendChild(pixle);
-  }
-
-  let zombie = new Zombie();
-  runGame();
+  // let board = document.getElementById('board');
+  //
+  // for (let i = 0; i < 32; i++) {
+  //   const row = Math.floor(i / 8);
+  //   const col = i % 8;
+  //   const pixle = document.createElement('div');
+  //   pixle.className = 'pixle';
+  //   pixle.id = `r${row}c${col}`;
+  //   board.appendChild(pixle);
+  // }
+  //
+  // let zombie = new Zombie();
+  // runGame();
 
   /*
   Set up some colors
@@ -55,9 +55,9 @@ window.onload = function() {
         if (typeof zombie != 'undefined') {
           checkHit();
         } else {
-          drawBlue(x, y);
+          // drawBlue(x, y);
         }
-        console.log('lazer at:', lazer.x, lazer.y);
+        // console.log('lazer at:', lazer.x, lazer.y);
       });
     } else {
       lazer.on = false;
