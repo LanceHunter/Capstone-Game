@@ -94,7 +94,8 @@
   // Whose turn?
   const turn = {
     player : 0,
-    war : false
+    war : false,
+    shotsFired : 0
   };
 
   // Player info
@@ -212,6 +213,7 @@
           this.turn.player = 0;
         }
         this.me.rnd += this.currentBudget;
+        this.currentBudget = 0;
         this.turnStart = false;
       },
 
@@ -327,6 +329,7 @@
           this.turn.player = 0;
         }
         this.me.rnd += this.currentBudget;
+        this.currentBudget = 0;
         this.year.year++;
         this.turnStart = false;
       },
@@ -403,12 +406,93 @@
       oceans : oceans,
       turn : turn,
       launchFrom : '',
-      launchTo : ''
+      launchTo : '',
+      numberFired : 0
     },
     methods : {
-      launch : function(playerID, start, end) {
-        console.log('Damage done.');
+      launch : function(playerID) {
+        turn.shotsFired++;
+        if (playerID === 1) {
+          let launchSpot;
+          let target;
+          this.player1.continents.forEach((continent) => {
+            console.log('The continent.', continent.name)
+            if (this.launchFrom.includes(continent.name)) {
+              console.log('Continent found!');
+              launchSpot = continent;
+            }
+          });
+          this.player1.oceans.forEach((ocean) => {
+            if (this.launchFrom.includes(ocean.name)) {
+              console.log('Ocean found!');
+              launchSpot = ocean;
+            }
+          });
+          console.log('LaunchSpot - ', launchSpot);
+          this.player2.continents.forEach((continent) => {
+            if (this.launchTo.includes(continent.name)) {
+              console.log('Target found!');
+              target = continent;
+            }
+          });
+
+          if (launchSpot.hp > 0) {
+            if (launchSpot.weapons.bombers.total > 0) {
+              launchSpot.weapons.bombers.total--;
+              target.hp -= (25 + Math.floor(this.player1.rnd/500)*5);
+            } else if (launchSpot.weapons.icbms.total > 0) {
+              launchSpot.weapons.icbms.total--;
+              target.hp -= (25 + Math.floor(this.player1.rnd/500)*5);
+            }
+          } else if (launchSpot.subs.player1.total > 0) {
+            launchSpot.subs.player1.total--;
+            target.hp -= (25 + Math.floor(this.player1.rnd/500)*5);
+          }
+
+        }
+
+        if (playerID === 2) {
+          let launchSpot;
+          let target;
+          this.player2.continents.forEach((continent) => {
+            console.log('The continent.', continent.name)
+            if (this.launchFrom.includes(continent.name)) {
+              console.log('Continent found!');
+              launchSpot = continent;
+            }
+          });
+          this.player2.oceans.forEach((ocean) => {
+            if (this.launchFrom.includes(ocean.name)) {
+              console.log('Ocean found!');
+              launchSpot = ocean;
+            }
+          });
+          console.log('LaunchSpot - ', launchSpot);
+          this.player1.continents.forEach((continent) => {
+            if (this.launchTo.includes(continent.name)) {
+              console.log('Target found!');
+              target = continent;
+            }
+          });
+
+          if (launchSpot.hp > 0) {
+            if (launchSpot.weapons.bombers.total > 0) {
+              launchSpot.weapons.bombers.total--;
+              target.hp -= (25 + Math.floor(this.player2.rnd/500)*5);
+            } else if (launchSpot.weapons.icbms.total > 0) {
+              launchSpot.weapons.icbms.total--;
+              target.hp -= (25 + Math.floor(this.player2.rnd/500)*5);
+            }
+          } else if (launchSpot.subs.player2.total > 0) {
+            launchSpot.subs.player2.total--;
+            target.hp -= (25 + Math.floor(this.player1.rnd/500)*5);
+          }
+
+        }
+
       },
+
+
       endTurn : function(playerID) {
         if (playerID === this.player1.number) {
           turn.player = 2;
@@ -416,7 +500,9 @@
         if (playerID === this.player2.number) {
           turn.player = 1;
         }
+        this.shotsFired = 0;
       }
+
     }
 
   });

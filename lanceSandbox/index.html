@@ -68,34 +68,37 @@
       <div v-if="turn.war">
         <div v-if="turn.player === 1"> <!-- Player 1 war game box -->
           <button v-on:click="endTurn(1)">End turn</button>
-          <h4>You can fire {{ 1 + (Math.floor(player1.rnd / 500)*5) }} times this turn.</h4>
+          <h4>You can fire {{ 1 + (Math.floor(player1.rnd / 500)) - turn.shotsFired }} times this turn.</h4>
           <select v-model="launchFrom">
             <option disabled value="">Launch From</option>
-            <option v-for="continent in player1.continents" v.bind:value="continent.name">
+            <option v-for="continent in player1.continents">
               {{ continent.name }}, ICBMs - {{ continent.weapons.icbms.total }}, Bombers - {{ continent.weapons.bombers.total }}
             </option>
-            <option v-for="ocean in player1.oceans" v.bind:value="ocean.name">
+            <option v-for="ocean in player1.oceans">
               {{ ocean.name }}, Subs - {{ ocean.subs.player1.total }}
             </option>
           </select>
           <select v-model="launchTo">
             <option disabled value="">Launch To</option>
-            <option v-for="continent in player2.continents" v.bind:value="continent.name">
+            <option v-for="continent in player2.continents" v.bind:value="{name : continent.name}">
               {{ continent.name }}, Remaining HP - {{ continent.hp }}
             </option>
           </select>
+
+          <button v-if="(1 + (Math.floor(player1.rnd / 500)) - turn.shotsFired) > 0" v-on:click="launch(1)">LAUNCH!</button>
+
 
         </div> <!-- End of Player 1 war game box -->
 
         <div v-if="turn.player === 2"> <!-- Player 2 war game box -->
           <button v-on:click="endTurn(2)">End turn</button>
-          <h4>You can fire {{ 1 + (Math.floor(player1.rnd / 500)*5) }} times this turn.</h4>
+          <h4>You can fire {{ 1 + (Math.floor(player2.rnd / 500)) - turn.shotsFired }} times this turn.</h4>
           <select v-model="launchFrom">
             <option disabled value="">Launch From</option>
-            <option v-for="continent in player2.continents" v.bind:value="continent.name">
+            <option v-for="continent in player2.continents">
               {{ continent.name }}, ICBMs - {{ continent.weapons.icbms.total }}, Bombers - {{ continent.weapons.bombers.total }}
             </option>
-            <option v-for="ocean in player2.oceans" v.bind:value="ocean.name">
+            <option v-for="ocean in player2.oceans">
               {{ ocean.name }}, Subs - {{ ocean.subs.player2.total }}
             </option>
           </select>
@@ -103,11 +106,12 @@
 
           <select v-model="launchTo">
             <option disabled value="">Launch To</option>
-            <option v-for="continent in player1.continents" v.bind:value="continent.name">
+            <option v-for="continent in player1.continents">
               {{ continent.name }}, Remaining HP - {{ continent.hp }}
             </option>
           </select>
 
+          <button v-if="(1 + (Math.floor(player2.rnd / 500)) - turn.shotsFired) > 0" v-on:click="launch(2)">LAUNCH!</button>
 
 
         </div> <!-- End of Player 2 war game box -->
@@ -116,7 +120,7 @@
 
     <div id="player1Box">
       <div v-if="turn.player === myNumber && !turn.war">
-        Player 1 turn. <button v-on:click="startTurn">Start turn</button> <button v-on:click="endTurn">End turn</button> <button style="color:red;" v-on:click="warStart">DECLARE WAR</button>
+        Player 1 turn. <button v-on:click="startTurn">Start turn</button> <button v-on:click="endTurn">End turn</button> <span v-if="year.year>1953"><button style="color:red;" v-on:click="warStart">DECLARE WAR</button></span>
         <div v-show="turnStart">
           <br />
           Current budget : {{ currentBudget }}<br />
@@ -166,7 +170,7 @@
 
     <div id="player2Box">
       <div v-if="turn.player === myNumber && !turn.war">
-        Player 2 turn. <button v-on:click="startTurn">Start turn</button> <button v-on:click="endTurn">End turn</button> <button style="color:red;" v-on:click="warStart">DECLARE WAR</button>
+        Player 2 turn. <button v-on:click="startTurn">Start turn</button> <button v-on:click="endTurn">End turn</button> <span v-if="year.year>1953"><button style="color:red;" v-on:click="warStart">DECLARE WAR</button></span>
         <div v-show="turnStart">
           <br />
           Current budget : {{ currentBudget }}<br />
@@ -198,7 +202,7 @@
             </li>
             <li v-for="ocean in oceans">
               {{ ocean.name }}<br />
-              Total subs: {{ ocean.subs.player1.total }} - Maintinence cost: ${{ ocean.subs.player1.total * 20 }}<br />
+              Total subs: {{ ocean.subs.player1.total }} - Maintinence cost: ${{ ocean.subs.player2.total * 20 }}<br />
               <button v-if="currentBudget > 200" v-on:click="placeSub(ocean)">
                 Place Submarine
               </button>
