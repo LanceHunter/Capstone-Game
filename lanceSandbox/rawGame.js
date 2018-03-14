@@ -443,13 +443,22 @@
             if (launchSpot.weapons.bombers.total > 0) {
               launchSpot.weapons.bombers.total--;
               target.hp -= (25 + Math.floor(this.player1.rnd/500)*5);
+              if (target.hp <= 0 ) {
+                target.name = 'DESTROYED!!!';
+              }
             } else if (launchSpot.weapons.icbms.total > 0) {
               launchSpot.weapons.icbms.total--;
               target.hp -= (25 + Math.floor(this.player1.rnd/500)*5);
+              if (target.hp <= 0 ) {
+                target.name = 'DESTROYED!!!';
+              }
             }
           } else if (launchSpot.subs.player1.total > 0) {
             launchSpot.subs.player1.total--;
             target.hp -= (25 + Math.floor(this.player1.rnd/500)*5);
+            if (target.hp <= 0 ) {
+              target.name = 'DESTROYED!!!';
+            }
           }
 
         } // end of "if playerID === 1" section
@@ -482,13 +491,22 @@
             if (launchSpot.weapons.bombers.total > 0) {
               launchSpot.weapons.bombers.total--;
               target.hp -= (25 + Math.floor(this.player2.rnd/500)*5);
+              if (target.hp <= 0 ) {
+                target.name = 'DESTROYED!!!';
+              }
             } else if (launchSpot.weapons.icbms.total > 0) {
               launchSpot.weapons.icbms.total--;
               target.hp -= (25 + Math.floor(this.player2.rnd/500)*5);
+              if (target.hp <= 0 ) {
+                target.name = 'DESTROYED!!!';
+              }
             }
           } else if (launchSpot.subs.player2.total > 0) {
             launchSpot.subs.player2.total--;
             target.hp -= (25 + Math.floor(this.player1.rnd/500)*5);
+            if (target.hp <= 0 ) {
+              target.name = 'DESTROYED!!!';
+            }
           }
 
         }
