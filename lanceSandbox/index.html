@@ -120,7 +120,7 @@
 
     <div id="player1Box">
       <div v-if="turn.player === myNumber && !turn.war">
-        Player 1 turn. <button v-on:click="startTurn">Start turn</button> <button v-on:click="endTurn">End turn</button> <span v-if="year.year>1953"><button style="color:red;" v-on:click="warStart">DECLARE WAR</button></span>
+        Player 1 turn. <button v-if="!turnStart" v-on:click="startTurn">Start turn</button> <button v-on:click="endTurn">End turn</button> <span v-if="year.year>1953"><button style="color:red;" v-on:click="warStart">DECLARE WAR</button></span>
         <div v-show="turnStart">
           <br />
           Current budget : {{ currentBudget }}<br />
@@ -170,7 +170,7 @@
 
     <div id="player2Box">
       <div v-if="turn.player === myNumber && !turn.war">
-        Player 2 turn. <button v-on:click="startTurn">Start turn</button> <button v-on:click="endTurn">End turn</button> <span v-if="year.year>1953"><button style="color:red;" v-on:click="warStart">DECLARE WAR</button></span>
+        Player 2 turn. <button v-if="!turnStart" v-on:click="startTurn">Start turn</button> <button v-on:click="endTurn">End turn</button> <span v-if="year.year>1953"><button style="color:red;" v-on:click="warStart">DECLARE WAR</button></span>
         <div v-show="turnStart">
           <br />
           Current budget : {{ currentBudget }}<br />

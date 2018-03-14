@@ -88,24 +88,24 @@
   ];
 
 
-  // The year
+  // The year object. The only relevant information here is year.year the year number.
   let year = { year : 1950 };
 
-  // Whose turn?
+  // The turn object. This will show whose turn it is, if war has begin or not, and how many shots have been fired in the turn.
   const turn = {
     player : 0,
     war : false,
     shotsFired : 0
   };
 
-  // Player info
+  // Players of the game. Two players for now.
   const players = [
     {
       name : 'Player 1',
       number : 1,
-      continents : [],
-      oceans : [],
-      rnd : 0,
+      continents : [], // This will be filled with references continent objects.
+      oceans : [], // This will be filled with references ocean objects.
+      rnd : 0, // The R&D money spent by player.
       thisYearBudget : 0,
       declaredForces : 0
     },
@@ -120,12 +120,14 @@
     }
   ];
 
+  // For non-violent methods of winning. (Currently only years with no weapons on the planet.)
   const winConditions = {
     yearsWithNoWeapons : 0
   }
 
+  // The Vue for the main game board.
   var game = new Vue({
-    el : '#gtwGame',
+    el : '#gtwGame', // The ID of the area where game element occurs.
     data : {
       continents : continents,
       oceans : oceans,
@@ -133,35 +135,35 @@
       winConditions : winConditions,
       players : players,
       turn : turn,
-      allAssigned : false
+      allAssigned : false // Boolean to determine if all continents have been claimed, so game can move from the "setup" phase to the "peacetime" phase.
     },
     methods : {
+      // The assign function is used when players pick continents at the "setup" phase of the game.
       assign : function(continent, number) {
-        this.players.forEach((player) => {
-          if (player.number === number) {
-            player.continents.push(continent);
-            continent.oceanAccess.forEach((ocean) => {
-              if (!player.oceans.includes(ocean)) {
+        this.players.forEach((player) => { // We go through the players...
+          if (player.number === number) { // Find the player whose number matches.
+            player.continents.push(continent); // Add the continent to that player's continent array.
+            continent.oceanAccess.forEach((ocean) => { // Then add any oceans that continent can access.
+              if (!player.oceans.includes(ocean)) { // But make sure it hasn't been added before.
                 player.oceans.push(ocean);
               }
-            });
+            }); // End of the ocean forEach statement.
           }
-        });
-        continent.assignment = number;
-        let finished = true;
-        continents.forEach((cont) => {
-          if (!cont.assignment) {
-            finished = false;
+        }); //End of player forEach statement.
+        continent.assignment = number; // Note on the continent where it was assigned.
+        let finished = true; // Mark finished as true in case this is the last continent.
+        continents.forEach((cont) => { // Go through all the continents...
+          if (!cont.assignment) { // ...and if any not assigned...
+            finished = false; // ... recognize that we aren't finished.
           }
-        });
-        if (finished) {
-          this.allAssigned = true;
-          this.turn.player++;
-        }
-      }
-    }
-
-  });
+        }); // End of the continents forEach statement.
+        if (finished) { // If we are finished...
+          this.allAssigned = true; // Note that all are assigned.
+          this.turn.player++; // Change the turn from 0 to 1.
+        }// end of "if we are finished" if statement.
+      } // end of "assign" method.
+    } // end of all methods for "game" Vue.
+  }); // end of "game" Vue.
 
   var player1Box = new Vue({
     el : '#player1Box',
