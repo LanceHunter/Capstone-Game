@@ -6,19 +6,36 @@
       subs: {
         'player1' : {declared:0, total:0},
         'player2' : {declared:0, total:0}
-      }
+      },
+      canAttack : [
+        'North America',
+        'South America',
+        'Europe',
+        'Africa'
+      ]
     },
     { name : `Pacific`,
       subs: {
         'player1' : {declared:0, total:0},
         'player2' : {declared:0, total:0}
-      }
+      },
+      canAttack : [
+        'North America',
+        'South America',
+        'Asia',
+        'Australia'
+      ]
     },
     { name : `Indian`,
       subs: {
         'player1' : {declared:0, total:0},
         'player2' : {declared:0, total:0}
-      }
+      },
+      canAttack : [
+        'Asia',
+        'Africa',
+        'Africa'
+      ]
     }
   ];
 
@@ -33,7 +50,14 @@
         'bombers' : {declared:0, total:0},
         'icbms' : {declared:0, total:0}
       },
-      oceanAccess : [oceans[0], oceans[1]]
+      oceanAccess : [oceans[0], oceans[1]],
+      distances : {
+        'South America' : 0,
+        'Europe' : 2,
+        'Asia' : 3,
+        'Africa' : 3,
+        'Australia' : 4
+      }
     },
     { name : `South America`,
       assignment : null,
@@ -43,7 +67,14 @@
         'bombers' : {declared:0, total:0},
         'icbms' : {declared:0, total:0}
       },
-      oceanAccess : [oceans[0], oceans[1]]
+      oceanAccess : [oceans[0], oceans[1]],
+      distances : {
+        'North America' : 0,
+        'Europe' : 3,
+        'Asia' : 3,
+        'Africa' : 2,
+        'Australia' : 4
+      }
     },
     { name : `Asia`,
       assignment : null,
@@ -53,7 +84,14 @@
         'bombers' : {declared:0, total:0},
         'icbms' : {declared:0, total:0}
       },
-      oceanAccess : [oceans[2], oceans[1]]
+      oceanAccess : [oceans[2], oceans[1]],
+      distances : {
+        'North America' : 3,
+        'South America' : 3,
+        'Europe' : 0,
+        'Africa' : 1,
+        'Australia' : 1
+      }
     },
     { name : `Europe`,
       assignment : null,
@@ -63,7 +101,14 @@
         'bombers' : {declared:0, total:0},
         'icbms' : {declared:0, total:0}
       },
-      oceanAccess : [oceans[0]]
+      oceanAccess : [oceans[0]],
+      distances : {
+        'North America' : 2,
+        'South America' : 3,
+        'Asia' : 0,
+        'Africa' : 1,
+        'Australia' : 5
+      }
     },
     { name : `Africa`,
       assignment : null,
@@ -73,7 +118,14 @@
         'bombers' : {declared:0, total:0},
         'icbms' : {declared:0, total:0}
       },
-      oceanAccess : [oceans[0], oceans[2]]
+      oceanAccess : [oceans[0], oceans[2]],
+      distances : {
+        'North America' : 3,
+        'South America' : 2,
+        'Europe' : 1,
+        'Asia' : 1,
+        'Australia' : 3
+      }
     },
     { name : `Australia`,
       assignment : null,
@@ -84,6 +136,13 @@
         'icbms' : {declared:0, total:0}
       },
       oceanAccess : [oceans[2], oceans[1]],
+      distances : {
+        'North America' : 4,
+        'South America' : 4,
+        'Europe' : 5,
+        'Asia' : 1,
+        'Africa' : 1,
+      }
     }
   ];
 
@@ -218,7 +277,7 @@
           }
         }); // end of enemy oceans forEach
         if (spyMessageArr.length > 0) { // If there are any spy messages...
-          this.spyMessage = spyMessageArr.join('/n'); // Add them to the spy message.
+          this.spyMessage = spyMessageArr.join('\n'); // Add them to the spy message.
         }
         this.turnStart = true; // Start the actual turn.
       }, // end of startTurn method.
@@ -375,7 +434,7 @@
         }); // end of enemy oceans forEach
 
         if (spyMessageArr.length > 0) { // If there are any spy messages...
-          this.spyMessage = spyMessageArr.join('/n'); // Add them to the spy message.
+          this.spyMessage = spyMessageArr.join('\n'); // Add them to the spy message.
         }
         this.turnStart = true;
       }, // end of startTurn method
