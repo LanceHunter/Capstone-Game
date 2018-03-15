@@ -3,7 +3,7 @@
 ## Global Thermonuclear War
 
 The simulation of a global arms race. The capstone project for Galvanize Web Development Immersive.
-
+ 
 
 ## Roles
 
