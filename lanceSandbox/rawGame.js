@@ -177,7 +177,8 @@
       enemy : players[1], // Easier reference to the opponent as enemy.
       turn : turn, // The turn object.
       turnStart : false, // This is used so that the other player can end their turn and hand the computer to you so you can start your turn without them seeing your secret information.
-      currentBudget : 0 // The player's budget.
+      currentBudget : 0, // The player's budget.
+      spyMessage : '' // For any cases of stealth rolls having failed.
     },
 
     methods : { // The methods.
@@ -185,7 +186,7 @@
       startTurn : function() {
         this.continents.forEach((continent) => { // Checking each of the player's continents.
           this.currentBudget += continent.budget; // First we add to the player's budget whatever amount of money that continent provides.
-          this.currentBudget -= (continent.weapons.icbms.total * 10) + (continent.weapons.bombers.total * 20); // Then we subtract the maintinence cost of any bombers and ICBMs the continent has.
+          this.currentBudget -= (continent.weapons.icbms.total * 20) + (continent.weapons.bombers.total * 10); // Then we subtract the maintinence cost of any bombers and ICBMs the continent has.
         }); // end of the continents forEach.
         this.oceans.forEach((ocean) => { // Then we check all the oceans the player can access...
           this.currentBudget -= (ocean.subs.player1.total * 20); // ..and subtract the maintinence cost of any subs the player has deployed.
@@ -303,7 +304,7 @@
       startTurn : function() {
         this.continents.forEach((continent) => {
           this.currentBudget += continent.budget;
-          this.currentBudget -= (continent.weapons.icbms.total * 10) + (continent.weapons.bombers.total * 20);
+          this.currentBudget -= (continent.weapons.icbms.total * 20) + (continent.weapons.bombers.total * 10);
         });
         this.oceans.forEach((ocean) => {
           this.currentBudget -= (ocean.subs.player2.total * 20);
@@ -442,20 +443,20 @@
           if (launchSpot.hp > 0) {
             if (launchSpot.weapons.bombers.total > 0) {
               launchSpot.weapons.bombers.total--;
-              target.hp -= (25 + Math.floor(this.player1.rnd/500)*5);
+              target.hp -= (50 + Math.floor(this.player1.rnd/500)*5);
               if (target.hp <= 0 ) {
                 target.name = 'DESTROYED!!!';
               }
             } else if (launchSpot.weapons.icbms.total > 0) {
               launchSpot.weapons.icbms.total--;
-              target.hp -= (25 + Math.floor(this.player1.rnd/500)*5);
+              target.hp -= (50 + Math.floor(this.player1.rnd/500)*5);
               if (target.hp <= 0 ) {
                 target.name = 'DESTROYED!!!';
               }
             }
           } else if (launchSpot.subs.player1.total > 0) {
             launchSpot.subs.player1.total--;
-            target.hp -= (25 + Math.floor(this.player1.rnd/500)*5);
+            target.hp -= (50 + Math.floor(this.player1.rnd/500)*5);
             if (target.hp <= 0 ) {
               target.name = 'DESTROYED!!!';
             }
@@ -490,20 +491,20 @@
           if (launchSpot.hp > 0) {
             if (launchSpot.weapons.bombers.total > 0) {
               launchSpot.weapons.bombers.total--;
-              target.hp -= (25 + Math.floor(this.player2.rnd/500)*5);
+              target.hp -= (50 + Math.floor(this.player2.rnd/500)*5);
               if (target.hp <= 0 ) {
                 target.name = 'DESTROYED!!!';
               }
             } else if (launchSpot.weapons.icbms.total > 0) {
               launchSpot.weapons.icbms.total--;
-              target.hp -= (25 + Math.floor(this.player2.rnd/500)*5);
+              target.hp -= (50 + Math.floor(this.player2.rnd/500)*5);
               if (target.hp <= 0 ) {
                 target.name = 'DESTROYED!!!';
               }
             }
           } else if (launchSpot.subs.player2.total > 0) {
             launchSpot.subs.player2.total--;
-            target.hp -= (25 + Math.floor(this.player1.rnd/500)*5);
+            target.hp -= (50 + Math.floor(this.player1.rnd/500)*5);
             if (target.hp <= 0 ) {
               target.name = 'DESTROYED!!!';
             }

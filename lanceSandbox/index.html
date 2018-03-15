@@ -9,8 +9,8 @@
   <body>
     <div id="gtwGame">
       <h1 v-if="winConditions.yearsWithNoWeapons >= 3">No weapons on earth! Both Players Win! Game Over!</h1>
-      <h1 v-if="players[0].declaredForces > players[1].declaredForces*2 && players[1].declaredForces > 5">Player 1 has overwhelming force! (2x the declared forces of Player 2) Player 1 Wins!</h1>
-      <h1 v-if="players[0].declaredForces*2 < players[1].declaredForces && players[0].declaredForces > 5">Player 2 has overwhelming force! (2x the declared forces of Player 1) Player 2 Wins!</h1>
+      <h1 v-if="players[0].declaredForces > players[1].declaredForces*2 && players[1].declaredForces > 5 && turn.player === 0">Player 1 has overwhelming force! (2x the declared forces of Player 2) Player 1 Wins!</h1>
+      <h1 v-if="players[0].declaredForces*2 < players[1].declaredForces && players[0].declaredForces > 5 && turn.player === 0">Player 2 has overwhelming force! (2x the declared forces of Player 1) Player 2 Wins!</h1>
       <h1 v-if="allAssigned && !turn.war">It is "Peacetime" in the year: {{ year.year }}</h1>
       <h1 v-if="turn.war" style="color:red;">WAR! WAR! WAR! WAR!</h1>
       <h2 v-if="allAssigned">Player 1's declared forces: {{ players[0].declaredForces || 'None' }} --- Player 2's declared forces: {{ players[1].declaredForces || 'None' }}</h2>
@@ -60,8 +60,8 @@
         </li>
       </ul>
       <h1 v-if="winConditions.yearsWithNoWeapons >= 3">No weapons on earth! Both Players Win! Game Over!</h1>
-      <h1 v-if="players[0].declaredForces > players[1].declaredForces*2 && players[1].declaredForces > 5">Player 1 has overwhelming force! (2x the declared forces of Player 2) Player 1 Wins!</h1>
-      <h1 v-if="players[0].declaredForces*2 < players[1].declaredForces && players[0].declaredForces > 5">Player 2 has overwhelming force! (2x the declared forces of Player 1) Player 2 Wins!</h1>
+      <h1 v-if="players[0].declaredForces > players[1].declaredForces*2 && players[1].declaredForces > 5 && turn.player === 0">Player 1 has overwhelming force! (2x the declared forces of Player 2) Player 1 Wins!</h1>
+      <h1 v-if="players[0].declaredForces*2 < players[1].declaredForces && players[0].declaredForces > 5 && turn.player === 0">Player 2 has overwhelming force! (2x the declared forces of Player 1) Player 2 Wins!</h1>
     </div>
 
     <div id="warGame">
@@ -129,8 +129,8 @@
           <ul>
             <li v-for="continent in continents">
               {{ continent.name }}<br />
-              Total Bombers: {{ continent.weapons.bombers.total }} - Maintinence cost: ${{ continent.weapons.bombers.total * 20 }}<br />
-              Total ICBMs: {{ continent.weapons.icbms.total }} - Maintinence cost: ${{ continent.weapons.icbms.total * 10 }}<br />
+              Total Bombers: {{ continent.weapons.bombers.total }} - Maintinence cost: ${{ continent.weapons.bombers.total * 10 }}<br />
+              Total ICBMs: {{ continent.weapons.icbms.total }} - Maintinence cost: ${{ continent.weapons.icbms.total * 20 }}<br />
               <button v-if="currentBudget > 50" v-on:click="place(continent,'bomber')">
                 Place Bomber
               </button>
@@ -179,8 +179,8 @@
           <ul>
             <li v-for="continent in continents">
               {{ continent.name }}<br />
-              Total Bombers: {{ continent.weapons.bombers.total }} - Maintinence cost: ${{ continent.weapons.bombers.total * 20 }}<br />
-              Total ICBMs: {{ continent.weapons.icbms.total }} - Maintinence cost: ${{ continent.weapons.icbms.total * 10 }}<br />
+              Total Bombers: {{ continent.weapons.bombers.total }} - Maintinence cost: ${{ continent.weapons.bombers.total * 10 }}<br />
+              Total ICBMs: {{ continent.weapons.icbms.total }} - Maintinence cost: ${{ continent.weapons.icbms.total * 20 }}<br />
               <button v-if="currentBudget > 50" v-on:click="place(continent,'bomber')">
                 Place Bomber
               </button>
@@ -202,7 +202,7 @@
             </li>
             <li v-for="ocean in oceans">
               {{ ocean.name }}<br />
-              Total subs: {{ ocean.subs.player1.total }} - Maintinence cost: ${{ ocean.subs.player2.total * 20 }}<br />
+              Total subs: {{ ocean.subs.player2.total }} - Maintinence cost: ${{ ocean.subs.player2.total * 20 }}<br />
               <button v-if="currentBudget > 200" v-on:click="placeSub(ocean)">
                 Place Submarine
               </button>
