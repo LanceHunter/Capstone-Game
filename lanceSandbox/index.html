@@ -170,7 +170,7 @@
               <button v-if="currentBudget >= 50" v-on:click="spendDamage">Spend $50 on Damage R&D</button>
             </li>
             <li>
-              Current R&D speed bonus: +{{ Math.floor(me.speedRND / 500)*5 }}
+              Current R&D speed bonus: +{{ Math.floor(me.speedRND / 500) }}
               <button v-if="currentBudget >= 50" v-on:click="spendSpeed">Spend $50 on Speed R&D</button>
             </li>
           </ul>
@@ -230,7 +230,7 @@
               <button v-if="currentBudget >= 50" v-on:click="spendDamage">Spend $50 on Damage R&D</button>
             </li>
             <li>
-              Current R&D speed bonus: +{{ Math.floor(me.speedRND / 500)*5 }}
+              Current R&D speed bonus: +{{ Math.floor(me.speedRND / 500) }}
               <button v-if="currentBudget >= 50" v-on:click="spendSpeed">Spend $50 on Speed R&D</button>
             </li>
           </ul>
