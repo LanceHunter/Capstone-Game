@@ -3,71 +3,155 @@ phaser setup
 written for phaser-ce 2.10.1
 */
 
-let height = 500;
-let width = height * (16 / 9);
+/*
+game specific stuff
+*/
+class SubLaunch {
+  constructor(player, ocean, destination) {
+    this.player = player;
+    this.ocean = ocean;
+    if (ocean.subs[player.name].total > 0) {
+      // this is a fake enroute counter
+      this.enrouteCount = 0;
+      this.explodingCount = 0;
+      this.count = 0;
+      this.delay = 3;
+      this.state = 'countdown';
+    } else {
+      this.state = 'impossible';
+    }
+  }
+
+  update() {
+    this[this.state]();
+  }
+
+  countdown() {
+    console.log('countdown');
+    // figure out which of the launch points to use
+    // start the countdown clock and animation
+    // when the countdown is over, this.state = 'enroute'
+    if (this.count > this.delay * 60) {
+      this.state = 'enroute';
+    } else {
+      this.count++;
+      // continue countdown animation
+    }
+  }
+
+  enroute() {
+    // fakeit
+    console.log('enroute');
+    this.enrouteCount++;
+    if (this.enrouteCount > 3 * 60) {
+      this.state = 'exploding';
+    }
+    // start the launch animation
+    // when it gets to the destination, this.state = 'exploding'
+  }
+
+  exploding() {
+    console.log('exploding');
+    this.explodingCount++;
+    if (this.explodingCount > 1 * 60) {
+      this.state = 'exploded';
+    }
+    // when the missile gets to the destination
+    // get rid of the
+    // ocean.subs[player.name].total--;
+    // if (ocean.subs[player.name].declared > 0) {
+    //   ocean.subs[player.name].declared--;
+    // }
+    // when done exploding, this.state = 'exploded'
+  }
+
+
+}
+
+let launches = [];
+let newLaunch = new SubLaunch(nukeGame.players[0], nukeGame.oceans[0]);
+console.log(newLaunch);
+newLaunch = new SubLaunch(nukeGame.players[1], nukeGame.oceans[0]);
+console.log(newLaunch);
+launches.push(newLaunch);
+
+class BomberLaunch {
+  constructor(continent) {
+
+  }
+}
+
+class ICBMLaunch {
+  constructor(continent) {
+
+  }
+}
+
+/*
+phaser setup
+*/
+const width = 800;
+const height = width * (9 / 16);
 const game = new Phaser.Game(width, height, Phaser.AUTO, '', {preload: preload, create: create, update: update});
 
-let gameObjects = {};
+/*
+some extensions for phaser
+*/
+Phaser.Sprite.prototype.centerAnchor = function() {
+  this.anchor.x = 0.5;
+  this.anchor.y = 0.5;
+};
 
+/*
+phaser methods
+*/
 function preload() {
-  console.log('preload');
+  /*
+  LOAD IMAGES
+  */
   game.load.image('peaceMap', '/assets/peaceMap.png');
-  game.load.image('warMap', '/assets/warMap.png');
-  game.load.image('fireball', '/assets/ball.png');
-  game.load.image('spot', '/assets/spot.png');
+  game.load.image('missile', '/assets/missile01.png');
+  game.load.image('submarine', '/assets/sub01.png');
+  game.load.image('bomber', '/assets/bomber01.png');
+  game.load.image('circle', '/assets/circle.png');
+  game.load.image('ring', '/assets/ring.png');
 }
+
+const gameObjects = {};
 
 function create() {
   /*
-  create and scale the map sprites
+  create and scale the map sprite
   */
-  gameObjects.peaceMap = game.add.sprite(0, 0, 'peaceMap');
-  gameObjects.warMap = game.add.sprite(0, 0, 'warMap');
-  const xScale = game.canvas.width / gameObjects.peaceMap.width;
-  const yScale = game.canvas.height / gameObjects.peaceMap.height;
-  gameObjects.warMap.scale.setTo(xScale, yScale);
-  gameObjects.peaceMap.scale.setTo(xScale, yScale);
-
-  /*
-  create the fireball
-  */
-  gameObjects.fireball = game.add.sprite(0,0, 'fireball');
-  gameObjects.fireball.anchor.x = 0.5;
-  gameObjects.fireball.anchor.y = 0.5;
-  gameObjects.fireball.scale.x = 0.2;
-  gameObjects.fireball.scale.y = 0.2;
-  gameObjects.fireball.alpha = 0;
-
-  /*
-  other little points
-  */
-  gameObjects.startPoint = game.add.sprite(0, 0, 'spot');
-  gameObjects.startPoint.anchor.x = 0.5;
-  gameObjects.startPoint.anchor.y = 0.5;
-  gameObjects.startPoint.scale.x = 0.2;
-  gameObjects.startPoint.scale.y = 0.2;
-  gameObjects.startPoint.alpha = 0;
-
+  let peaceMap = game.add.sprite(0, 0, 'peaceMap');
+  const xScale = game.canvas.width / peaceMap.width;
+  const yScale = game.canvas.height / peaceMap.height;
+  peaceMap.scale.setTo(xScale, yScale);
+  gameObjects.peaceMap = peaceMap;
 
   /*
   input listeners
   */
   game.input.onDown.add((e) => {
-    gameObjects.startPoint.alpha = 1;
-    gameObjects.fireball.alpha = 0.4;
-    gameObjects.startPoint.position.x = e.position.x;
-    gameObjects.startPoint.position.y = e.position.y;
+    let startPoint = game.add.sprite(e.position.x, e.position.y, 'ring')
+    startPoint.centerAnchor();
+    startPoint.position.x = e.position.x;
+    startPoint.position.y = e.position.y;
   });
+
   game.input.onUp.add((e) => {
-    gameObjects.fireball.alpha = 1;
-    gameObjects.fireball.position.x = e.position.x;
-    gameObjects.fireball.position.y = e.position.y;
   });
 }
 
 function update() {
-  if (game.input.mousePointer.isDown) {
-    gameObjects.fireball.position.x = game.input.mousePointer.position.x;
-    gameObjects.fireball.position.y = game.input.mousePointer.position.y;
-  }
+  launches.forEach(e => {
+    if (e.state === 'impossible') {
+      console.log('impossible');
+    } else
+    if (e.state === 'exploded') {
+      console.log('exploded');
+    } else {
+      e.update();
+    }
+  });
 }
