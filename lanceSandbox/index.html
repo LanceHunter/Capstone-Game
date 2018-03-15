@@ -126,6 +126,9 @@
           Current budget : {{ currentBudget }}<br />
           (any budget remaining at end of your turn will go towards R&D)<br />
           Current R&D damage bonus: +{{ Math.floor(me.rnd / 500)*5 }}
+          <p v-if="spyMessage">
+            A message from your spies: {{ spyMessage }}
+          </p>
           <ul>
             <li v-for="continent in continents">
               {{ continent.name }}<br />
@@ -176,6 +179,9 @@
           Current budget : {{ currentBudget }}<br />
           (any budget remaining at end of your turn will go towards R&D)<br />
           Current R&D damage bonus : +{{ Math.floor(me.rnd / 500)*5 }}
+          <p v-if="spyMessage">
+            A message from your spies: {{ spyMessage }}
+          </p>
           <ul>
             <li v-for="continent in continents">
               {{ continent.name }}<br />

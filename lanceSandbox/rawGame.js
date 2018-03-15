@@ -184,6 +184,8 @@
     methods : { // The methods.
 
       startTurn : function() {
+        let spyMessageArr = [];
+        this.spyMessage = '';
         this.continents.forEach((continent) => { // Checking each of the player's continents.
           this.currentBudget += continent.budget; // First we add to the player's budget whatever amount of money that continent provides.
           this.currentBudget -= (continent.weapons.icbms.total * 20) + (continent.weapons.bombers.total * 10); // Then we subtract the maintinence cost of any bombers and ICBMs the continent has.
@@ -191,6 +193,31 @@
         this.oceans.forEach((ocean) => { // Then we check all the oceans the player can access...
           this.currentBudget -= (ocean.subs.player1.total * 20); // ..and subtract the maintinence cost of any subs the player has deployed.
         });
+        this.enemy.continents.forEach((continent) => {
+          if (continent.weapons.bombers.total !== continent.weapons.bombers.declared) {
+            let checkNum = Math.random();
+            if (checkNum > 0.8) {
+              spyMessageArr.push(`Player ${continent.assignment} has ${continent.weapons.bombers.total} bombers in ${continent.name}.`);
+            }
+          } // end of bomber total/declared if statement
+          if (continent.weapons.icbms.total !== continent.weapons.icbms.declared) {
+            let checkNum = Math.random();
+            if (checkNum > 0.7) {
+              spyMessageArr.push(`Player ${continent.assignment} has ${continent.weapons.icbms.total} ICBMs in ${continent.name}.`);
+            }
+          }// end of icbm total/declared if statement
+        }); // end of enemy continends forEach statement.
+        this.enemy.oceans.forEach((ocean) => {
+          if (ocean.subs.player2.total !== ocean.subs.player2.declared) {
+            let checkNum = Math.random();
+            if (checkNum > 0.9) {
+              spyMessageArr.push(`Player 2 has ${ocean.subs.player2.total} submarines in ${ocean.name}.`);
+            }
+          }
+        }); // end of enemy oceans forEach
+        if (spyMessageArr.length > 0) { // If there are any spy messages...
+          this.spyMessage = spyMessageArr.join('/n'); // Add them to the spy message.
+        }
         this.turnStart = true; // Start the actual turn.
       }, // end of startTurn method.
 
@@ -296,12 +323,15 @@
       enemy : players[0],
       turn : turn,
       turnStart : false,
-      currentBudget : 0
+      currentBudget : 0,
+      spyMessage : ''
     },
 
     methods : {
 
       startTurn : function() {
+        let spyMessageArr = [];
+        this.spyMessage = '';
         this.continents.forEach((continent) => {
           this.currentBudget += continent.budget;
           this.currentBudget -= (continent.weapons.icbms.total * 20) + (continent.weapons.bombers.total * 10);
@@ -309,6 +339,33 @@
         this.oceans.forEach((ocean) => {
           this.currentBudget -= (ocean.subs.player2.total * 20);
         });
+        this.enemy.continents.forEach((continent) => {
+          if (continent.weapons.bombers.total !== continent.weapons.bombers.declared) {
+            let checkNum = Math.random();
+            if (checkNum > 0.8) {
+              spyMessageArr.push(`Player ${continent.assignment} has ${continent.weapons.bombers.total} bombers in ${continent.name}.`);
+            }
+          } // end of bomber total/declared if statement
+          if (continent.weapons.icbms.total !== continent.weapons.icbms.declared) {
+            let checkNum = Math.random();
+            if (checkNum > 0.7) {
+              spyMessageArr.push(`Player ${continent.assignment} has ${continent.weapons.icbms.total} bombers in ${continent.name}.`);
+            }
+          }// end of icbm total/declared if statement
+        }); // end of enemy continends forEach statement.
+
+        this.enemy.oceans.forEach((ocean) => {
+          if (ocean.subs.player2.total !== ocean.subs.player2.declared) {
+            let checkNum = Math.random();
+            if (checkNum > 0.9) {
+              spyMessageArr.push(`Player 2 has ${ocean.subs.player2.total} submarines in ${ocean.name}.`);
+            }
+          }
+        }); // end of enemy oceans forEach
+
+        if (spyMessageArr.length > 0) { // If there are any spy messages...
+          this.spyMessage = spyMessageArr.join('/n'); // Add them to the spy message.
+        }
         this.turnStart = true;
       }, // end of startTurn method
 
