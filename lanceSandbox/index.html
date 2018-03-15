@@ -68,7 +68,7 @@
       <div v-if="turn.war">
         <div v-if="turn.player === 1"> <!-- Player 1 war game box -->
           <button v-on:click="endTurn(1)">End turn</button>
-          <h4>You can fire {{ 1 + (Math.floor(player1.rnd / 500)) - turn.shotsFired }} times this turn.</h4>
+          <h4>You can fire {{ 1 + (Math.floor(player1.speedRND / 500)) - turn.shotsFired }} times this turn.</h4>
           <select v-model="launchFrom">
             <option disabled value="">Launch From</option>
             <option v-for="continent in player1.continents">
@@ -85,14 +85,14 @@
             </option>
           </select>
 
-          <button v-if="(1 + (Math.floor(player1.rnd / 500)) - turn.shotsFired) > 0" v-on:click="launch(1)">LAUNCH!</button>
+          <button v-if="(1 + (Math.floor(player1.speedRND / 500)) - turn.shotsFired) > 0" v-on:click="launch(1)">LAUNCH!</button>
 
 
         </div> <!-- End of Player 1 war game box -->
 
         <div v-if="turn.player === 2"> <!-- Player 2 war game box -->
           <button v-on:click="endTurn(2)">End turn</button>
-          <h4>You can fire {{ 1 + (Math.floor(player2.rnd / 500)) - turn.shotsFired }} times this turn.</h4>
+          <h4>You can fire {{ 1 + (Math.floor(player2.speedRND / 500)) - turn.shotsFired }} times this turn.</h4>
           <select v-model="launchFrom">
             <option disabled value="">Launch From</option>
             <option v-for="continent in player2.continents">
@@ -111,7 +111,7 @@
             </option>
           </select>
 
-          <button v-if="(1 + (Math.floor(player2.rnd / 500)) - turn.shotsFired) > 0" v-on:click="launch(2)">LAUNCH!</button>
+          <button v-if="(1 + (Math.floor(player2.speedRND / 500)) - turn.shotsFired) > 0" v-on:click="launch(2)">LAUNCH!</button>
 
 
         </div> <!-- End of Player 2 war game box -->
@@ -122,10 +122,9 @@
       <div v-if="turn.player === myNumber && !turn.war">
         Player 1 turn. <button v-if="!turnStart" v-on:click="startTurn">Start turn</button> <button v-on:click="endTurn">End turn</button> <span v-if="year.year>1953"><button style="color:red;" v-on:click="warStart">DECLARE WAR</button></span>
         <div v-show="turnStart">
-          <br />
-          Current budget : {{ currentBudget }}<br />
-          (any budget remaining at end of your turn will go towards R&D)<br />
-          Current R&D damage bonus: +{{ Math.floor(me.rnd / 500)*5 }}
+          <p>
+            Current budget : {{ currentBudget }}
+          </p>
           <p v-if="spyMessage">
             A message from your spies: {{ spyMessage }}
           </p>
@@ -166,6 +165,14 @@
                 Disarm Submarine
               </button>
             </li>
+            <li>
+              Current R&D damage bonus: +{{ Math.floor(me.damageRND / 500)*5 }}
+              <button v-if="currentBudget >= 50" v-on:click="spendDamage">Spend $50 on Damage R&D</button>
+            </li>
+            <li>
+              Current R&D speed bonus: +{{ Math.floor(me.speedRND / 500)*5 }}
+              <button v-if="currentBudget >= 50" v-on:click="spendSpeed">Spend $50 on Speed R&D</button>
+            </li>
           </ul>
         </div>
       </div>
@@ -175,10 +182,9 @@
       <div v-if="turn.player === myNumber && !turn.war">
         Player 2 turn. <button v-if="!turnStart" v-on:click="startTurn">Start turn</button> <button v-on:click="endTurn">End turn</button> <span v-if="year.year>1953"><button style="color:red;" v-on:click="warStart">DECLARE WAR</button></span>
         <div v-show="turnStart">
-          <br />
-          Current budget : {{ currentBudget }}<br />
-          (any budget remaining at end of your turn will go towards R&D)<br />
-          Current R&D damage bonus : +{{ Math.floor(me.rnd / 500)*5 }}
+          <p>
+            Current budget : {{ currentBudget }}
+          </p>
           <p v-if="spyMessage">
             A message from your spies: {{ spyMessage }}
           </p>
@@ -218,6 +224,14 @@
               <button v-if="ocean.subs.player2.total > 0" v-on:click="disarmSub(ocean)">
                 Disarm Submarine
               </button>
+            </li>
+            <li>
+              Current R&D damage bonus: +{{ Math.floor(me.damageRND / 500)*5 }}
+              <button v-if="currentBudget >= 50" v-on:click="spendDamage">Spend $50 on Damage R&D</button>
+            </li>
+            <li>
+              Current R&D speed bonus: +{{ Math.floor(me.speedRND / 500)*5 }}
+              <button v-if="currentBudget >= 50" v-on:click="spendSpeed">Spend $50 on Speed R&D</button>
             </li>
           </ul>
         </div>

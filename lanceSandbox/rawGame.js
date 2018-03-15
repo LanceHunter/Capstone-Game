@@ -83,7 +83,7 @@
         'bombers' : {declared:0, total:0},
         'icbms' : {declared:0, total:0}
       },
-      oceanAccess : [oceans[2], oceans[1]]
+      oceanAccess : [oceans[2], oceans[1]],
     }
   ];
 
@@ -105,7 +105,8 @@
       number : 1,
       continents : [], // This will be filled with references continent objects.
       oceans : [], // This will be filled with references ocean objects.
-      rnd : 0, // The R&D money spent by player.
+      damageRND : 0, // The damage R&D money spent by player.
+      speedRND : 0, // The speed R&D money spent by player.
       thisYearBudget : 0,
       declaredForces : 0
     },
@@ -114,7 +115,8 @@
       number : 2,
       continents : [],
       oceans : [],
-      rnd : 0,
+      damageRND : 0, // The damage R&D money spent by player.
+      speedRND : 0, // The speed R&D money spent by player.
       thisYearBudget: 0,
       declaredForces : 0
     }
@@ -241,7 +243,6 @@
         if (this.me.declaredForces > this.enemy.declaredForces*2 && this.enemy.declaredForces > 5) { // But if my declared forces are twice that of player 2...
           this.turn.player = 0; // Then it's no one's turn because I won.
         }
-        this.me.rnd += this.currentBudget; // Add any remaining budget to the RND total.
         this.currentBudget = 0; // Set the budget back to 0.
         this.turnStart = false; // Set the turnStart to false so my info is hidden before I start my next turn.
       }, // end of the endTurn method.
@@ -303,6 +304,16 @@
         }
         ocean.subs.player1.total--; // ...remove a total sub from that player's listing on that ocean.
       }, // end of disarmSub method.
+
+      spendDamage : function() {
+        this.currentBudget -= 50;
+        this.me.damageRND += 50;
+      },
+
+      spendSpeed : function() {
+        this.currentBudget -= 50;
+        this.me.speedRND += 50;
+      },
 
       warStart : function() {
         turn.war = true; // Changes the game from "Peacetime" to "war" mode.
@@ -392,7 +403,6 @@
         if (this.me.declaredForces > this.enemy.declaredForces*2 && this.enemy.declaredForces > 5) {
           this.turn.player = 0;
         }
-        this.me.rnd += this.currentBudget;
         this.currentBudget = 0;
         this.year.year++; // End of 2nd player's turn, so a new year begins.
         this.turnStart = false;
@@ -452,6 +462,16 @@
         ocean.subs.player2.total--;
       }, // end of disarmSub method
 
+      spendDamage : function() {
+        this.currentBudget -= 50;
+        this.me.damageRND += 50;
+      },
+
+      spendSpeed : function() {
+        this.currentBudget -= 50;
+        this.me.speedRND += 50;
+      },
+
       warStart : function() {
         turn.war = true;
       } // end of warStart method
@@ -500,20 +520,20 @@
           if (launchSpot.hp > 0) {
             if (launchSpot.weapons.bombers.total > 0) {
               launchSpot.weapons.bombers.total--;
-              target.hp -= (50 + Math.floor(this.player1.rnd/500)*5);
+              target.hp -= (50 + Math.floor(this.player1.damageRND/500)*5);
               if (target.hp <= 0 ) {
                 target.name = 'DESTROYED!!!';
               }
             } else if (launchSpot.weapons.icbms.total > 0) {
               launchSpot.weapons.icbms.total--;
-              target.hp -= (50 + Math.floor(this.player1.rnd/500)*5);
+              target.hp -= (50 + Math.floor(this.player1.damageRND/500)*5);
               if (target.hp <= 0 ) {
                 target.name = 'DESTROYED!!!';
               }
             }
-          } else if (launchSpot.subs.player1.total > 0) {
+          } else if (launchSpot.subs.player1.total) {
             launchSpot.subs.player1.total--;
-            target.hp -= (50 + Math.floor(this.player1.rnd/500)*5);
+            target.hp -= (50 + Math.floor(this.player1.damageRND/500)*5);
             if (target.hp <= 0 ) {
               target.name = 'DESTROYED!!!';
             }
@@ -548,20 +568,20 @@
           if (launchSpot.hp > 0) {
             if (launchSpot.weapons.bombers.total > 0) {
               launchSpot.weapons.bombers.total--;
-              target.hp -= (50 + Math.floor(this.player2.rnd/500)*5);
+              target.hp -= (50 + Math.floor(this.player2.damageRND/500)*5);
               if (target.hp <= 0 ) {
                 target.name = 'DESTROYED!!!';
               }
             } else if (launchSpot.weapons.icbms.total > 0) {
               launchSpot.weapons.icbms.total--;
-              target.hp -= (50 + Math.floor(this.player2.rnd/500)*5);
+              target.hp -= (50 + Math.floor(this.player2.damageRND/500)*5);
               if (target.hp <= 0 ) {
                 target.name = 'DESTROYED!!!';
               }
             }
-          } else if (launchSpot.subs.player2.total > 0) {
+          } else if (launchSpot.subs.player2.total) {
             launchSpot.subs.player2.total--;
-            target.hp -= (50 + Math.floor(this.player1.rnd/500)*5);
+            target.hp -= (50 + Math.floor(this.player1.damageRND/500)*5);
             if (target.hp <= 0 ) {
               target.name = 'DESTROYED!!!';
             }
