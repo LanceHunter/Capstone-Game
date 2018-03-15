@@ -148,7 +148,7 @@
 
 
   // The year object. The only relevant information here is year.year the year number.
-  let year = { year : 1950 };
+  const year = { year : 1950 };
 
   // The turn object. This will show whose turn it is, if war has begin or not, and how many shots have been fired in the turn.
   const turn = {
@@ -547,14 +547,16 @@
       oceans : oceans,
       turn : turn,
       launchFrom : '',
-      launchTo : ''
+      launchTo : '',
+      errorMessage : ''
     },
     methods : {
       launch : function(playerID) {
-        turn.shotsFired++;
+        this.errorMessage = '';
         if (playerID === 1) {
           let launchSpot;
           let target;
+          let shotDistance;
           this.player1.continents.forEach((continent) => {
             console.log('The continent.', continent.name)
             if (this.launchFrom.includes(continent.name)) {
@@ -576,26 +578,46 @@
             }
           });
 
+          if (launchSpot.distances) {
+            shotDistance = launchSpot.distances[target.name];
+          }
+
+          console.log('Target name - ', target.name.trim());
+          console.log('Shot distance - ', shotDistance);
+
+
+
           if (launchSpot.hp > 0) {
-            if (launchSpot.weapons.bombers.total > 0) {
+            if (launchSpot.weapons.bombers.total > 0 && shotDistance <= 1) {
               launchSpot.weapons.bombers.total--;
               target.hp -= (50 + Math.floor(this.player1.damageRND/500)*5);
+              turn.shotsFired++;
               if (target.hp <= 0 ) {
                 target.name = 'DESTROYED!!!';
               }
             } else if (launchSpot.weapons.icbms.total > 0) {
               launchSpot.weapons.icbms.total--;
               target.hp -= (50 + Math.floor(this.player1.damageRND/500)*5);
+              turn.shotsFired++;
               if (target.hp <= 0 ) {
                 target.name = 'DESTROYED!!!';
               }
+            } else {
+              this.errorMessage = `No weapons from ${launchSpot.name} can reach ${target.name}!`;
             }
           } else if (launchSpot.subs.player1.total) {
-            launchSpot.subs.player1.total--;
-            target.hp -= (50 + Math.floor(this.player1.damageRND/500)*5);
-            if (target.hp <= 0 ) {
-              target.name = 'DESTROYED!!!';
-            }
+            if (launchSpot.canAttack.includes(target.name)) {
+              launchSpot.subs.player1.total--;
+              target.hp -= (50 + Math.floor(this.player1.damageRND/500)*5);
+              turn.shotsFired++;
+              if (target.hp <= 0 ) {
+                target.name = 'DESTROYED!!!';
+              }
+            } else {
+              this.errorMessage = `Submarines in the ${launchSpot.name} cannot launch on ${target.name}!`;
+            } // end of the else statement checking if sub can attack the target.
+          } else {
+            this.errorMessage = 'Not a valid shot!';
           }
 
         } // end of "if playerID === 1" section
@@ -603,6 +625,7 @@
         if (playerID === 2) {
           let launchSpot;
           let target;
+          let shotDistance;
           this.player2.continents.forEach((continent) => {
             console.log('The continent.', continent.name)
             if (this.launchFrom.includes(continent.name)) {
@@ -624,30 +647,45 @@
             }
           });
 
+          if (launchSpot.distances) {
+            shotDistance = launchSpot.distances[target.name];
+          }
+
           if (launchSpot.hp > 0) {
-            if (launchSpot.weapons.bombers.total > 0) {
+            if (launchSpot.weapons.bombers.total > 0 && shotDistance <= 1) {
               launchSpot.weapons.bombers.total--;
               target.hp -= (50 + Math.floor(this.player2.damageRND/500)*5);
+              turn.shotsFired++;
               if (target.hp <= 0 ) {
                 target.name = 'DESTROYED!!!';
               }
             } else if (launchSpot.weapons.icbms.total > 0) {
               launchSpot.weapons.icbms.total--;
               target.hp -= (50 + Math.floor(this.player2.damageRND/500)*5);
+              turn.shotsFired++;
               if (target.hp <= 0 ) {
                 target.name = 'DESTROYED!!!';
               }
+            } else {
+              this.errorMessage = `No weapons from ${launchSpot.name} can reach ${target.name}!`;
             }
           } else if (launchSpot.subs.player2.total) {
-            launchSpot.subs.player2.total--;
-            target.hp -= (50 + Math.floor(this.player1.damageRND/500)*5);
-            if (target.hp <= 0 ) {
-              target.name = 'DESTROYED!!!';
-            }
+            if (launchSpot.canAttack.includes(target.name)) {
+              launchSpot.subs.player2.total--;
+              target.hp -= (50 + Math.floor(this.player2.damageRND/500)*5);
+              turn.shotsFired++;
+              if (target.hp <= 0 ) {
+                target.name = 'DESTROYED!!!';
+              }
+            } else {
+              this.errorMessage = `Submarines in the ${launchSpot.name} cannot launch on ${target.name}!`;
+            } // end of the else statement checking if sub can attack the target.
+          } else {
+            this.errorMessage = 'Not a valid shot!';
           }
 
-        }
 
+        } // end of if statement checking if it's player 2.
       },
 
 

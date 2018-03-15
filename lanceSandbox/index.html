@@ -68,6 +68,7 @@
       <div v-if="turn.war">
         <div v-if="turn.player === 1"> <!-- Player 1 war game box -->
           <button v-on:click="endTurn(1)">End turn</button>
+          <h2 style="color:red;">{{ errorMessage }}</h2>
           <h4>You can fire {{ 1 + (Math.floor(player1.speedRND / 500)) - turn.shotsFired }} times this turn.</h4>
           <select v-model="launchFrom">
             <option disabled value="">Launch From</option>
@@ -92,6 +93,7 @@
 
         <div v-if="turn.player === 2"> <!-- Player 2 war game box -->
           <button v-on:click="endTurn(2)">End turn</button>
+          <h2 style="color:red;">{{ errorMessage }}</h2>
           <h4>You can fire {{ 1 + (Math.floor(player2.speedRND / 500)) - turn.shotsFired }} times this turn.</h4>
           <select v-model="launchFrom">
             <option disabled value="">Launch From</option>
