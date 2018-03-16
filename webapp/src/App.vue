@@ -1,19 +1,23 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <router-view/>
+    <theheader></theheader>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
+import theheader from '@/components/Header';
+
 export default {
   name: 'App',
+  components: {
+    theheader,
+  },
 };
 </script>
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

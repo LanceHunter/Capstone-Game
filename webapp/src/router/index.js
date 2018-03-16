@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import HelloWorld from '@/components/HelloWorld';
 import Home from '@/views/Home';
 import Leaderboard from '@/views/Leaderboard';
 import Login from '@/views/Login';
@@ -12,8 +11,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld,
+      name: 'Home',
+      component: Home,
     },
     {
       path: '/login',
@@ -24,11 +23,10 @@ export default new Router({
       path: '/leaderboard',
       name: 'leaderboard',
       component: Leaderboard,
+      meta: {
+        requiresAuth: true,
+      },
     },
-    {
-      path: '/home',
-      name: 'Home',
-      component: Home,
-    },
+
   ],
 });

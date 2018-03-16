@@ -98,6 +98,11 @@ export default {
 <style lang="scss" scoped>
 @import "../assets/main.sass";
 
+* {
+  background-color: $background;
+  font-family: $family-mono;
+}
+
 h1, h2 {
   font-weight: normal;
   background-color: $background;
