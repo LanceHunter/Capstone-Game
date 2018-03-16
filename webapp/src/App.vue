@@ -1,25 +1,25 @@
 <template>
   <div id="app">
-    <thenavbar></thenavbar>
+    <the-navbar></the-navbar>
     <router-view/>
   </div>
 </template>
 
 
 <script>
-import TheNavbar from '@/components/TheNavbar'
+import TheNavbar from '@/components/TheNavbar';
 
 export default {
   name: 'App',
   components: {
     TheNavbar,
-  }
+  },
 };
 </script>
 
 
 <!-- Added "scoped" attribute to limit CSS to this view only -->
-<style>
+<style lang="scss" scoped>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
