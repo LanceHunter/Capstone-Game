@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <the-navbar></the-navbar>
-    <router-view/>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -21,7 +21,6 @@ export default {
 <!-- Added "scoped" attribute to limit CSS to this view only -->
 <style lang="scss" scoped>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
