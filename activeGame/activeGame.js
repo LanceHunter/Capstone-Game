@@ -8,21 +8,27 @@ const path = require('path');
 const morgan = require('morgan');
 const app = express();
 const port = process.env.PORT || 8888;
-const admin = require("firebase-admin");
+
+const preGame = require('./routes/preGame.js');
+const peaceTime = require('./routes/peaceTime.js');
+//const war = require('./routes/war.js');
+
+// Disabling the x-powered-by: Express header, for security.
+app.disable('x-powered-by');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(morgan('short'));
+
+app.use('/pregame', preGame);
+app.use('/peacetime', peaceTime);
+// app.use('/war', war);
 
 
-// const config = {
-//   apiKey: process.env.APIKEY,
-//   authDomain: process.env.AUTHDOMAIN,
-//   databaseURL: process.env.DATABASEURL,
-//   projectId: process.env.PROJECTID,
-//   storageBucket: process.env.STORAGEBUCKET,
-//   messagingSenderId: process.env.MESSAGINGSENDERID
-// };
-
-const serviceAccount = require('./globalthermonuclearwargame-firebase-adminsdk-mcs5b-ec18bb03a7.json');
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: process.env.DATABASEURL
+// Turning on listening on the specified port.
+app.listen(port, () => {
+  console.log('Listening on port', port);
 });
+
+
+module.exports = app;
