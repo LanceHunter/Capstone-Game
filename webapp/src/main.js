@@ -7,7 +7,6 @@ import store from './store';
 
 Vue.config.productionTip = false;
 
-
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
   const isLoggedIn = store.getters.isLoggedIn;
