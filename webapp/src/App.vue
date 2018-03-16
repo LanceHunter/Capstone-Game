@@ -1,16 +1,24 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
+    <thenavbar></thenavbar>
     <router-view/>
   </div>
 </template>
 
+
 <script>
+import TheNavbar from '@/components/TheNavbar'
+
 export default {
   name: 'App',
+  components: {
+    TheNavbar,
+  }
 };
 </script>
 
+
+<!-- Added "scoped" attribute to limit CSS to this view only -->
 <style>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

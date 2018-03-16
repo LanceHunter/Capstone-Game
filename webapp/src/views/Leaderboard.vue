@@ -1,10 +1,26 @@
 <template>
+  <!-- <thenavbar></thenavbar> -->
   <div>
-    <img src="../assets/logo.png">
     <h1>Leaderboard</h1>
     <router-view/>
   </div>
+
+  <!-- <table>
+    <tr>
+      <th>Rank</th>
+      <th>User</th>
+      <th>High Score</th>
+      <th>Average Score</th>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </table> -->
 </template>
+
 
 <script>
 export default {
@@ -12,7 +28,19 @@ export default {
 };
 </script>
 
-<style>
+
+<!-- Added "scoped" attribute to limit CSS to this view only -->
+<style lang="scss" scoped>
+@import "../assets/main.sass";
+
+h1 {
+  font-size: 48px;
+  font-family: $family-mono;
+  background-color: $background;
+  color: $danger;
+  margin-top: 100px;
+}
+
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

@@ -94,7 +94,7 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+<!-- Added "scoped" attribute to limit CSS to this view only -->
 <style lang="scss" scoped>
 @import "../assets/main.sass";
 

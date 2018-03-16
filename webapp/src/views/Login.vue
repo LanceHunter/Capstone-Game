@@ -1,6 +1,5 @@
 <template>
   <div>
-    <img src="../assets/logo.png">
     <h1>Login</h1>
     <router-view/>
   </div>
@@ -12,7 +11,10 @@ export default {
 };
 </script>
 
-<style>
+<!-- Added "scoped" attribute to limit CSS to this view only -->
+<style lang="scss" scoped>
+@import "../assets/main.sass";
+
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
