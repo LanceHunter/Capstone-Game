@@ -1,7 +1,7 @@
 /*
 a test game object
 */
-const nukeGame = {
+const game = {
   oceans : [
     {
       name : `Atlantic`,
@@ -112,7 +112,7 @@ const nukeGame = {
       name : 'player1',
       number : 1,
       continents : [0],
-      oceans : [1, 2],
+      oceans : [0, 2],
       rnd : 0,
       thisYearBudget : 0,
       declaredForces : 0
