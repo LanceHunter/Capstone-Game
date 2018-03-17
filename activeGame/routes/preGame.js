@@ -235,11 +235,31 @@ router.post('/setup', (req, res) => {
 router.post('/joingame', (req, res) => {
   console.log(req.body);
   let playerID = req.body.playerID;
-  let gameID = req.body.gameID;
+  let playersRef = ref.child(`${req.body.gameID}/players`);
 
-  res.send('Finishing this.');
-  res.end();
-
+  playersRef.once('value', (snap) => {
+    if (snap.numChildren() < 6) {
+      let playerObj = {};
+      playerObj[playerID] = {
+        continents : true,
+        oceans : true,
+        rnd : {
+          speed : 0,
+          damage : 0
+        },
+        currentBudget : 0,
+        yearComplete : false,
+        spyMessage : '',
+      };
+      console.log('Does this give a value?', snap.val().too);
+      playersRef.update(playerObj); // End of the playersRef update.
+      res.send('Finishing this.');
+      res.end();
+    } else {
+      res.send('Game is already full!');
+      res.end();
+    }
+  });
 });
 
 
