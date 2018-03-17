@@ -22,6 +22,9 @@ export default {
 <style lang="scss" scoped>
 #app {
   text-align: center;
-  color: #2c3e50;
+  // color: #2c3e50;
+  background-color: #303030;
+  height: 100%;
+  margin: -8px;
 }
 </style>

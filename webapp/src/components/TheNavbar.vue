@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar" role="navigation" aria-label="main navigation">
+  <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <div class="navbar-burger" data-target="navMenu">
         <span></span>
@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function jsnav() { // eslint-disab
   }
 });
 
+
 export default {
   name: 'TheNavbar',
 };
@@ -62,20 +63,15 @@ export default {
 @import "../assets/main.sass";
 
 .navbar {
-  font-size: 24px;
+  font-size: 20px;
   font-family: $family-mono;
   background-color: $background;
   color: $danger;
-  margin-bottom: 100px;
+  margin-bottom: 20px;
 }
 
 a {
   margin-right: 50px;
 }
 
-h1, h2 {
-  font-weight: normal;
-  background-color: $background;
-  color: $danger;
-}
 </style>

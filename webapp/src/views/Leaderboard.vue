@@ -1,8 +1,7 @@
 <template>
-  <!-- <thenavbar></thenavbar> -->
   <div>
     <h1>Leaderboard</h1>
-    <router-view/>
+    <router-view></router-view>
   </div>
 
   <!-- <table>
@@ -34,14 +33,14 @@ export default {
 @import "../assets/main.sass";
 
 h1 {
-  font-size: 48px;
+  font-size: 30px;
   font-family: $family-mono;
-  background-color: $background;
+  // background-color: $background;
   color: $danger;
-  margin-top: 100px;
 }
+
 #app {
   text-align: center;
-  color: #2c3e50;
+  // color: #2c3e50;
 }
 </style>
