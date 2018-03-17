@@ -228,7 +228,7 @@ router.post('/setup', (req, res) => {
       }
     }
   }); // End of gameInstanceRef.set
-  res.send(`Game ready for players to enter! game${gameID}`);
+  res.json({ gameID : `game${gameID}`});
   res.end();
 }); // end of the POST route for /pregame/setup
 
