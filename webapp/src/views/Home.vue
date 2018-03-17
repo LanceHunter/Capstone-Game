@@ -5,7 +5,7 @@
 
     <h2>Game Instructions</h2>
 
-    <div>
+    <div class="instructions">
       <h3>
         The goal...
       </h3>
@@ -18,20 +18,19 @@
       </h4>
     </div>
 
-    <div>
+    <div class="instructions">
       <h3>
         How to play...
       </h3>
-      <div>
-        <h3>
-          Game Start
-        </h3>
-        <h4>
-          2-6 players will join the game. Once all players have joined, they will be assigned a random order in which to select their continents from the game board. They will select their continents one-at-a-time until all have been selected. (If there are 2 players, they get 3 continents each. If there are 3 players, they get 2 continents each. If there are 4, 5, or 6 players they will all only get one continent.)
-        </h4>
-      </div>
+      <h3>
+        Game Start
+      </h3>
+      <h4>
+        2-6 players will join the game. Once all players have joined, they will be assigned a random order in which to select their continents from the game board. They will select their continents one-at-a-time until all have been selected. (If there are 2 players, they get 3 continents each. If there are 3 players, they get 2 continents each. If there are 4, 5, or 6 players they will all only get one continent.)
+      </h4>
+    </div>
 
-      <div>
+      <div class="instructions">
         <h3>
           "Peacetime"
         </h3>
@@ -46,25 +45,24 @@
         </h4>
       </div>
 
-      <div>
+      <div class="instructions">
         <h3>
         War!
-      </h3>
-      <h4>
-        If any player at any time chooses to declare war, the game enters War mode. Players will be able to fire missiles and launch bombers from their continent(s) towards other player's continents.
+        </h3>
+        <h4>
+          If any player at any time chooses to declare war, the game enters War mode. Players will be able to fire missiles and launch bombers from their continent(s) towards other player's continents.
 
-        To launch a missile or bomber: Press and hold on your continent as the missile powers up. Then, drag that missile towards the enemy content. (Note: If bombers are available they will always be used first unless the target continent is outside of their range.)
+          To launch a missile or bomber: Press and hold on your continent as the missile powers up. Then, drag that missile towards the enemy content. (Note: If bombers are available they will always be used first unless the target continent is outside of their range.)
 
-        To launch a submarine-based missile: Press and hold on the ocean where your submarines are deployed and then drag to the target continent.
+          To launch a submarine-based missile: Press and hold on the ocean where your submarines are deployed and then drag to the target continent.
 
-        You can continue to launch missiles and bombers from any of your continents as long as that continent still has HP and there are still missiles/bombers to launch. When you no longer have a continent with any remaining HP, you lose.
+          You can continue to launch missiles and bombers from any of your continents as long as that continent still has HP and there are still missiles/bombers to launch. When you no longer have a continent with any remaining HP, you lose.
 
-        However, even if you have lost you can continue to launch any submarine-based missiles you have until you have used them all.
-      </h4>
+          However, even if you have lost you can continue to launch any submarine-based missiles you have until you have used them all.
+        </h4>
       </div>
-    </div>
 
-    <div>
+    <div  class="instructions">
       <h3>
         Nukes
       </h3>
@@ -73,7 +71,7 @@
       </h4>
     </div>
 
-    <div>
+    <div class="instructions">
       <h3>
         Types of forces / The Tripod
       </h3>
@@ -81,10 +79,10 @@
         ICBMs - Setup Cost: $100, Maintenance Cost: $20, Stealth: 7/10, Speed: 2
         Bombers - Setup Cost: $50, Maintenance Cost: $10, Stealth: 8/10, Speed: 1 (Note: Range limited to targets within 0-1 distance.)
         Nuclear Subs - Setup Cost: $200, Maintenance Cost: $20, Stealth: 9/10, Speed: 2
-    </h4>
+      </h4>
     </div>
 
-    <div>
+    <div class="instructions">
       <h3>
         R&D
       </h3>
@@ -93,7 +91,7 @@
       </h4>
     </div>
 
-    <div>
+    <div class="instructions">
       <h3>
         Continents
       </h3>
@@ -122,41 +120,50 @@ export default {
 @import "../assets/main.sass";
 
 .home {
-  background-color: #303030;
+  background-image: url("../assets/blankMap.png");
+  background-position: top;
+  background-size: cover;
+  // background-color:rgba(0, 0, 0, 0.5);
   font-family: $family-mono;
-  width: 75%;
+  padding-bottom: 30px;
+  margin-bottom: -8px;
+}
+
+.instructions {
+  width: 55%;
   margin: auto;
+  margin-bottom: 40px;
+  line-height: 1.8;
 }
 
 h1 {
-  padding-top: 80px;
+  font-size: 44px;
+  padding-top: 120px;
+  color: $danger;
+  margin-bottom: 60px;
 }
 
-h1, h2 {
-  // background-color: $background;
+h2 {
   font-size: 30px;
-  font-family: $family-mono;
-  color: $danger;
+  color: $primary;
   margin-bottom: 30px;
 }
 
 h3 {
   font-size: 20px;
   margin-bottom: 10px;
+  color: $primary;
 }
 
 h4 {
-  font-size: 12px;
+  font-size: 16px;
+  font-family: monospace;
+  font-weight: 100;
   text-align: justify;
-}
-
-div {
-  margin-bottom: 40px;
-  line-height: 1.5;
+  color: $text;
 }
 
 #app {
   text-align: center;
-  // color: #2c3e50;
 }
 </style>
