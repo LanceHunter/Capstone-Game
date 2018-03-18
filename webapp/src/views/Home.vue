@@ -5,41 +5,60 @@
 
     <h2>Game Instructions</h2>
 
-    <div class="instructions">
-      <h3>
-        The goal...
-      </h3>
-      <h4>
-        In this game, you play as an international power, pitted against other powers
-        in an arms race. You select territory, build your nuclear arsenal, and hope to
-        gain global dominance without firing a single shot.
 
-        You can win the game by having a declared arsenal that is twice the size of your
-        next-strongest opponent. Or, if you're feeling lucky, by winning a global
-        thermonuclear war...
-
-        Do you feel lucky?
-      </h4>
+    <div class="tabs is-toggle is-centered" id="tab_header">
+      <ul>
+        <li class="item is-active" data-option="1"><a>Goal</a></li>
+        <li class="item" data-option="2"><a>Gameplay</a></li>
+        <li class="item" data-option="3"><a>Peace</a></li>
+        <li class="item" data-option="4"><a>War</a></li>
+        <li class="item" data-option="5"><a>Nukes</a></li>
+        <li class="item" data-option="6"><a>Forces</a></li>
+        <li class="item" data-option="7"><a>R&D</a></li>
+        <li class="item" data-option="8"><a>Continents</a></li>
+      </ul>
     </div>
 
-    <div class="instructions">
-      <h3>
-        How to play...
-      </h3>
-      <h3>
-        Game Start
-      </h3>
-      <h4>
-        2-6 players will join the game. Once all players have joined, they will be
-        assigned a random order in which to select their continents from the game board.
-        They will select their continents one-at-a-time until all have been selected.
-        (If there are 2 players, they get 3 continents each. If there are 3 players,
-        they get 2 continents each. If there are 4, 5, or 6 players they will all
-        only get one continent.)
-      </h4>
-    </div>
 
-      <div class="instructions">
+    <div class="box" id="tab_container">
+
+      <div class="container_item is-active message-body instructions" data-item="1">
+        <h3>
+          The goal...
+        </h3>
+        <h4>
+          In this game, you play as an international power, pitted against other powers
+          in an arms race. You select territory, build your nuclear arsenal, and hope to
+          gain global dominance without firing a single shot.
+
+          You can win the game by having a declared arsenal that is twice the size of your
+          next-strongest opponent. Or, if you're feeling lucky, by winning a global
+          thermonuclear war...
+
+          Do you feel lucky?
+        </h4>
+      </div>
+
+
+      <div class="container_item message-body instructions" data-item="2">
+        <h3>
+          How to play...
+        </h3>
+        <h3>
+          Game Start
+        </h3>
+        <h4>
+          2-6 players will join the game. Once all players have joined, they will be
+          assigned a random order in which to select their continents from the game board.
+          They will select their continents one-at-a-time until all have been selected.
+          (If there are 2 players, they get 3 continents each. If there are 3 players,
+          they get 2 continents each. If there are 4, 5, or 6 players they will all
+          only get one continent.)
+        </h4>
+      </div>
+
+
+      <div class="container_item message-body instructions" data-item="3">
         <h3>
           "Peacetime"
         </h3>
@@ -64,7 +83,8 @@
         </h4>
       </div>
 
-      <div class="instructions">
+
+      <div class="container_item message-body instructions" data-item="4">
         <h3>
         War!
         </h3>
@@ -90,63 +110,89 @@
         </h4>
       </div>
 
-    <div  class="instructions">
-      <h3>
-        Nukes
-      </h3>
-      <h4>
-        Each nuke you launch will do 50 points of damage to the continent where it lands,
-        plus an additional 5 points of damage for every level of "Damage R&D" you have reached.
-      </h4>
+
+      <div  class="container_item message-body instructions" data-item="5">
+        <h3>
+          Nukes
+        </h3>
+        <h4>
+          Each nuke you launch will do 50 points of damage to the continent where it lands,
+          plus an additional 5 points of damage for every level of "Damage R&D" you have reached.
+        </h4>
+      </div>
+
+
+      <div class="container_item message-body instructions" data-item="6">
+        <h3>
+          Types of forces / The Tripod
+        </h3>
+        <h4>
+          ICBMs - Setup Cost: $100, Maintenance Cost: $20, Stealth: 7/10, Speed: 2
+          Bombers - Setup Cost: $50, Maintenance Cost: $10, Stealth: 8/10, Speed: 1
+          (Note: Range limited to targets within 0-1 distance.)
+          Nuclear Subs - Setup Cost: $200, Maintenance Cost: $20, Stealth: 9/10, Speed: 2
+        </h4>
+      </div>
+
+
+      <div class="container_item message-body instructions" data-item="7">
+        <h3>
+          R&D
+        </h3>
+        <h4>
+          R&D is your research and development budget. For every $500 you spend on R&D,
+          your nukes will do an additional 5 points of damage and all your forces will
+          have their speed increase by 1.
+        </h4>
+      </div>
+
+
+      <div class="container_item message-body instructions" data-item="8">
+        <h3>
+          Continents
+        </h3>
+        <h4>
+          North America - Budget: 1000 - HP: 500 - Oceans: AO, PO - Distance: SA=0,
+          AA=3, EU=2, AF=3, AU=4
+          South America - Budget: 750 - HP: 750 - Oceans: AO, PO - Distance: NA=0,
+          AA=3, EU=3, AF=2, AU=4
+          Asia - Budget: 500 - HP: 1000 - Oceans: IO, PO - Distance: NA=3, SA=3,
+          EU=0, AF=1, AU=1
+          Europe - Budget: 1100 - HP: 400 - Oceans: AO - Distance: NA=2, SA=3,
+          AA=0, AF=1, AU=5
+          Africa - Budget: 600 - HP: 900 - Oceans: AO, IO - Distance: NA=3, SA=2,
+          AA=1, EU=1, AU=3
+          Australia - Budget: 800 - HP: 700 - Oceans: IO, PO - Distance: NA=4, SA=4,
+          AA=1, EU=5, AF=3
+        </h4>
+      </div>
+
     </div>
 
-    <div class="instructions">
-      <h3>
-        Types of forces / The Tripod
-      </h3>
-      <h4>
-        ICBMs - Setup Cost: $100, Maintenance Cost: $20, Stealth: 7/10, Speed: 2
-        Bombers - Setup Cost: $50, Maintenance Cost: $10, Stealth: 8/10, Speed: 1
-        (Note: Range limited to targets within 0-1 distance.)
-        Nuclear Subs - Setup Cost: $200, Maintenance Cost: $20, Stealth: 9/10, Speed: 2
-      </h4>
+    <div class="continue">
+      <h3>Signin - Signup - or Continue without signing in.</h3>
+      <a href="/login"><button class="button is-small is-danger">Sign In</button></a>
+      <a href="/login"><button class="button is-small is-danger">Sign Up</button></a>
+      <a href="/login"><button class="button is-small is-danger">Continue</button></a>
     </div>
 
-    <div class="instructions">
-      <h3>
-        R&D
-      </h3>
-      <h4>
-        R&D is your research and development budget. For every $500 you spend on R&D,
-        your nukes will do an additional 5 points of damage and all your forces will
-        have their speed increase by 1.
-      </h4>
-    </div>
 
-    <div class="instructions">
-      <h3>
-        Continents
-      </h3>
-      <h4>
-        North America - Budget: 1000 - HP: 500 - Oceans: AO, PO - Distance: SA=0,
-        AA=3, EU=2, AF=3, AU=4
-        South America - Budget: 750 - HP: 750 - Oceans: AO, PO - Distance: NA=0,
-        AA=3, EU=3, AF=2, AU=4
-        Asia - Budget: 500 - HP: 1000 - Oceans: IO, PO - Distance: NA=3, SA=3,
-        EU=0, AF=1, AU=1
-        Europe - Budget: 1100 - HP: 400 - Oceans: AO - Distance: NA=2, SA=3,
-        AA=0, AF=1, AU=5
-        Africa - Budget: 600 - HP: 900 - Oceans: AO, IO - Distance: NA=3, SA=2,
-        AA=1, EU=1, AU=3
-        Australia - Budget: 800 - HP: 700 - Oceans: IO, PO - Distance: NA=4, SA=4,
-        AA=1, EU=5, AF=3
-      </h4>
-    </div>
   </div>
 </template>
 
 
 <script>
+// Jquery tabs
+$(document).ready(function() {
+  $('#tab_header ul li.item').on('click', function() {
+    var number = $(this).data('option');
+    $('#tab_header ul li.item').removeClass('is-active');
+    $(this).addClass('is-active');
+    $('#tab_container .container_item').removeClass('is-active');
+    $('div[data-item="' + number + '"]').addClass('is-active');
+  });
+});
+
 export default {
   name: 'Home',
 };
@@ -162,30 +208,61 @@ export default {
   background-position: center;
   background-size: cover;
   background-attachment: fixed;
-  // background-color:rgba(0, 0, 0, 0.5);
   font-family: $family-mono;
   padding-bottom: 30px;
   margin-bottom: -8px;
+  height: 980px;
+}
+
+#tab_container .container_item {
+  display: none;
+}
+
+#tab_container .container_item.is-active {
+  display: block;
+}
+
+.tabs.is-toggle a:hover {
+  background-color: transparent;
+  color: $text;
+  border-color: $text;
+}
+
+.box {
+  background-color: transparent;
+}
+
+button {
+  margin-top: 10px;
+}
+
+button.is-small:active {
+  color: $danger;
+}
+
+.message-body {
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 .instructions {
   width: 55%;
+  // width: 90%;
   margin: auto;
   margin-bottom: 40px;
-  line-height: 1.8;
+  line-height: 1.6;
 }
 
 h1 {
   font-size: 44px;
   padding-top: 150px;
   color: $danger;
-  margin-bottom: 60px;
+  margin-bottom: 50px;
 }
 
 h2 {
   font-size: 30px;
   color: $primary;
-  margin-bottom: 30px;
+  margin-bottom: 50px;
 }
 
 h3 {

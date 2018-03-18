@@ -6,7 +6,7 @@
     <div class="message-body">
       <div class="field top">
         <p class="control is-small has-icons-left">
-          <input class="input is-small" type="email" placeholder="Username">
+          <input class="input is-small" type="email" placeholder="Player Name">
           <span class="icon is-small is-left">
             <i class="fas fa-user"></i>
           </span>
@@ -22,9 +22,7 @@
       </div>
       <div class="field bottom">
         <p class="control">
-          <button class="button is-small is-danger">
-            Login
-          </button>
+          <button class="button is-small is-danger">Login</button>
         </p>
       </div>
     </div>
@@ -58,6 +56,7 @@ export default {
 .message-body {
   margin: auto;
   width: 40%;
+  background-color:rgba(0, 0, 0, 0.8);
 }
 
 .icon {
