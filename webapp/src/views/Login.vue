@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>Login</h1>
+    <button type="button" v-on:click="loginToggle">Login toggle</button>
     <router-view/>
   </div>
 </template>
@@ -8,18 +9,22 @@
 <script>
 import auth from '../common/auth.service';
 
-console.log('was logged in:', auth.isLoggedIn());
-
-if (!auth.isLoggedIn()) {
-  auth.login('test0', 'password');
-} else {
-  auth.logout();
-}
-
-console.log('now logged in:', auth.isLoggedIn());
-
 export default {
   name: 'Login',
+  methods: {
+    loginToggle() {
+      console.log('was logged in:', auth.isLoggedIn());
+      if (!auth.isLoggedIn()) {
+        auth.login('test0', 'password')
+          .then(() => {
+            console.log('now logged in:', auth.isLoggedIn());
+          });
+      } else {
+        auth.logout();
+        console.log('now logged in:', auth.isLoggedIn());
+      }
+    },
+  },
 };
 
 </script>
