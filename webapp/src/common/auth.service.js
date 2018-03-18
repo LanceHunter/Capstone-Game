@@ -8,15 +8,19 @@ const server = axios.create({
 
 const AuthService = {
   login(username, password) {
-    return server.post('/login', {
-      username,
-      password,
-    })
-      .then((response) => {
-        localStorage.setItem('username', 'username');
-        return response;
+    return new Promise((resolve, reject) => {
+      server.post('/login', {
+        username,
+        password,
       })
-      .catch(error => error);
+        .then((response) => {
+          localStorage.setItem('username', 'username');
+          resolve(response);
+        })
+        .catch((error) => {
+          reject(error);
+        })
+    });
   },
 
   logout() {

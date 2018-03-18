@@ -5,27 +5,32 @@
     <button type="button" v-on:click="loginToggle">Login toggle</button>
 
     <div class="message-body">
-      <div class="field top">
-        <p class="control is-small has-icons-left">
-          <input class="input is-small" type="email" placeholder="Player Name">
-          <span class="icon is-small is-left">
-            <i class="fas fa-user"></i>
-          </span>
-        </p>
+      <div class="is-small has-text-danger" v-if="repeate">
+        <p>Invalid credentials, try again</p>
       </div>
-      <div class="field">
-        <p class="control has-icons-left">
-          <input class="input is-small" type="password" placeholder="Password">
-          <span class="icon is-small is-left">
-            <i class="fas fa-lock"></i>
-          </span>
-        </p>
-      </div>
-      <div class="field bottom">
-        <p class="control">
-          <button class="button is-small is-danger">Login</button>
-        </p>
-      </div>
+      <form v-on:submit.prevent="tryLogin(username, password)">
+        <div class="field top">
+          <p class="control is-small has-icons-left">
+            <input class="input is-small" type="text" v-model="username" placeholder="Player Name">
+            <span class="icon is-small is-left">
+              <i class="fas fa-user"></i>
+            </span>
+          </p>
+        </div>
+        <div class="field">
+          <p class="control has-icons-left">
+            <input class="input is-small" type="password" v-model="password" placeholder="Password">
+            <span class="icon is-small is-left">
+              <i class="fas fa-lock"></i>
+            </span>
+          </p>
+        </div>
+        <div class="field bottom">
+          <p class="control">
+            <button type="submit" class="button is-small is-danger">Login</button>
+          </p>
+        </div>
+      </form>
     </div>
   </div>
 </template>
@@ -36,6 +41,13 @@ import auth from '../common/auth.service';
 
 export default {
   name: 'Login',
+  data() {
+    return {
+      username: null,
+      password: null,
+      repeate: false,
+    };
+  },
   methods: {
     loginToggle() {
       console.log('was logged in:', auth.isLoggedIn());
@@ -48,6 +60,17 @@ export default {
         auth.logout();
         console.log('now logged in:', auth.isLoggedIn());
       }
+    },
+    tryLogin(username, password) {
+      auth.login(username, password)
+        .then((response) => {
+          console.log('succeded with:', response);
+          this.$router.push({ name: 'Home' });
+        })
+        .catch((error) => {
+          console.log('failed with:', error);
+          this.repeate = true;
+        });
     },
   },
 };
