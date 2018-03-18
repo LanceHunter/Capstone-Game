@@ -36,11 +36,11 @@ router.post('/setup', (req, res) => {
         player : false,
         forces : {
           bombers : {
-            deployed : 0,
+            declared : 0,
             total : 0
           },
           icbms : {
-            deployed : 0,
+            declared : 0,
             total : 0
           }
         },
@@ -64,11 +64,11 @@ router.post('/setup', (req, res) => {
         player : false,
         forces : {
           bombers : {
-            deployed : 0,
+            declared : 0,
             total : 0
           },
           icbms : {
-            deployed : 0,
+            declared : 0,
             total : 0
           }
         },
@@ -92,11 +92,11 @@ router.post('/setup', (req, res) => {
         player : false,
         forces : {
           bombers : {
-            deployed : 0,
+            declared : 0,
             total : 0
           },
           icbms : {
-            deployed : 0,
+            declared : 0,
             total : 0
           }
         },
@@ -120,11 +120,11 @@ router.post('/setup', (req, res) => {
         player : false,
         forces : {
           bombers : {
-            deployed : 0,
+            declared : 0,
             total : 0
           },
           icbms : {
-            deployed : 0,
+            declared : 0,
             total : 0
           }
         },
@@ -147,11 +147,11 @@ router.post('/setup', (req, res) => {
         player : false,
         forces : {
           bombers : {
-            deployed : 0,
+            declared : 0,
             total : 0
           },
           icbms : {
-            deployed : 0,
+            declared : 0,
             total : 0
           }
         },
@@ -175,11 +175,11 @@ router.post('/setup', (req, res) => {
         player : false,
         forces : {
           bombers : {
-            deployed : 0,
+            declared : 0,
             total : 0
           },
           icbms : {
-            deployed : 0,
+            declared : 0,
             total : 0
           }
         },
@@ -316,7 +316,7 @@ router.post('/continentselect', (req, res) => {
           oceansArr.forEach((ocean) => {
             let oceanSubsForPlayer = {};
             oceanSubsForPlayer[playerID] = {
-              deployed : 0,
+              declared : 0,
               total : 0
             };
             gameRef.child(`oceans/${ocean}/subs`).update(oceanSubsForPlayer);

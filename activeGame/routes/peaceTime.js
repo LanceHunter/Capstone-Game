@@ -52,8 +52,8 @@ router.post('/yearcomplete', (req, res) => {
             nextYearBudget -= snap.val().oceans[ocean].subs[player].total * subMaint;
           }); // End of checking each ocean.
           gameRef.child(`players/${player}`).update({currentBudget : nextYearBudget});
+          gameRef.child(`players/${player}`).update({yearComplete : false});
         }); // End of setting the new budget for each player.
-
 
         /// Here is where we see if there are no weapons on earth at all.
         let yearsWithNoWeapons = snap.val().yearsWithNoWeapons + 1;
@@ -91,7 +91,7 @@ router.post('/yearcomplete', (req, res) => {
   }); // end of grab of firebase data for game.
 }); // end of "yearcomplete" route
 
-router.post('/deploybomber', (req, res) => {
+router.put('/deploybomber', (req, res) => {
   let gameID = req.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = req.body.playerID;
@@ -99,20 +99,159 @@ router.post('/deploybomber', (req, res) => {
   let location = req.body.location;
 
   gameRef.once('value', (snap) => {
-    if (snap.val()) {
-      if (snap.val().players[playerID].currentBudget >= bomberCost) {
-
-      } else {
-        res.send('Insufficient funds to deploy a bomber.');
+    if (snap.val() && !snap.val().war) {
+      if (snap.val().players[playerID].currentBudget >= bomberCost * quantity && snap.val().players[playerID].continents[location]) {
+        let bombers = snap.val().continents[location].forces.bombers.total + quantity;
+        let currentBudget = snap.val().players[playerID].currentBudget - (bomberCost * quantity);
+        gameRef.child(`players/${playerID}`).update({currentBudget : currentBudget});
+        gameRef.child(`continents/${location}/forces/bombers`).update({total : bombers});
+        res.sendStatus(200);
+      } else { // If the player doesn't have enough funds or is trying to put them on a continent they don't own.
+        res.send('Insufficient funds to deploy or invalid location.');
         res.end();
-      }
+      } // End of budget/location conditional.
     } else { // If gameID isn't found.
-    res.send('Invalid game ID entered or year already ended for this player.');
+    res.send('Invalid game ID entered or was were declared.');
     res.end();
     } // end of coditional checking if game ID is valid.
   }); // end of single-grab of firebase data.
-
 }); // end of "deploybomber" route
+
+router.put('/deployicbm', (req, res) => {
+  let gameID = req.body.gameID;
+  let gameRef = ref.child(gameID);
+  let playerID = req.body.playerID;
+  let quantity = req.body.quantity;
+  let location = req.body.location;
+
+  gameRef.once('value', (snap) => {
+    if (snap.val() && !snap.val().war) {
+      if (snap.val().players[playerID].currentBudget >= icbmCost * quantity && snap.val().players[playerID].continents[location]) {
+        let icbms = snap.val().continents[location].forces.icbms.total + quantity;
+        let currentBudget = snap.val().players[playerID].currentBudget - (icbmCost * quantity);
+        gameRef.child(`players/${playerID}`).update({currentBudget : currentBudget});
+        gameRef.child(`continents/${location}/forces/icbms`).update({total : icbms});
+        res.sendStatus(200);
+      } else { // If the player doesn't have enough funds or is trying to put them on a continent they don't own.
+        res.send('Insufficient funds to deploy or invalid location.');
+        res.end();
+      } // End of budget/location conditional.
+    } else { // If gameID isn't found.
+    res.send('Invalid game ID entered or war were declared.');
+    res.end();
+    } // end of coditional checking if game ID is valid.
+  }); // end of single-grab of firebase data.
+}); // end of "deployicbm" route
+
+
+router.put('/deploysub', (req, res) => {
+  let gameID = req.body.gameID;
+  let gameRef = ref.child(gameID);
+  let playerID = req.body.playerID;
+  let quantity = req.body.quantity;
+  let location = req.body.location;
+
+  gameRef.once('value', (snap) => {
+    if (snap.val() && !snap.val().war) {
+      if (snap.val().players[playerID].currentBudget >= subCost * quantity && snap.val().players[playerID].oceans[location]) {
+        let subs = snap.val().oceans[location].subs[playerID].total + quantity;
+        let currentBudget = snap.val().players[playerID].currentBudget - (subCost * quantity);
+        gameRef.child(`players/${playerID}`).update({currentBudget : currentBudget});
+        gameRef.child(`oceans/${location}/subs/${playerID}`).update({total : subs});
+        res.sendStatus(200);
+      } else { // If the player doesn't have enough funds or is trying to put them on a continent they don't own.
+        res.send('Insufficient funds to deploy or invalid location.');
+        res.end();
+      } // End of budget/location conditional.
+    } else { // If gameID isn't found.
+    res.send('Invalid game ID entered or war were declared.');
+    res.end();
+    } // end of coditional checking if game ID is valid.
+  }); // end of single-grab of firebase data.
+}); // end of "deploysub" route
+
+router.put('/declarebomber', (req, res) => {
+  let gameID = req.body.gameID;
+  let gameRef = ref.child(gameID);
+  let playerID = req.body.playerID;
+  let quantity = req.body.quantity;
+  let location = req.body.location;
+
+  gameRef.once('value', (snap) => {
+    if (snap.val() && !snap.val().war) {
+      if (snap.val().players[playerID].continents[location] && snap.val().continents[location].forces.bombers.declared + quantity <= snap.val().continents[location].forces.bombers.total) {
+        let declaredNum = snap.val().continents[location].forces.bombers.declared + quantity;
+        gameRef.child(`continents/${location}/forces/bombers`).update({declared : declaredNum});
+        let totalDeclared = snap.val().players[playerID].totalDeclaredForces + quantity;
+        gameRef.child(`players/${playerID}`).update({totalDeclaredForces : totalDeclared});
+        res.sendStatus(200);
+        res.end();
+      } else { //If continent doesn't belong to player or they are trying to delcare more bombers than their current total.
+        res.send('Invalid location or amount to delcare would have brought declared total higher than total amount of forces.')
+        res.end();
+      } // End of conditional checking on location and declared vs. total.
+    } else { // If war were delcared or game ID was invalid.
+      res.send('Invalid game ID entered or war were declared.');
+      res.end();
+    } // End of conditional checking game ID and if war were declared.
+  }); // end of single-grab of firebase data.
+}); // End of the "declarebomber" route.
+
+router.put('/declareicbm', (req, res) => {
+  let gameID = req.body.gameID;
+  let gameRef = ref.child(gameID);
+  let playerID = req.body.playerID;
+  let quantity = req.body.quantity;
+  let location = req.body.location;
+
+  gameRef.once('value', (snap) => {
+    if (snap.val() && !snap.val().war) {
+      if (snap.val().players[playerID].continents[location] && snap.val().continents[location].forces.icbms.declared + quantity <= snap.val().continents[location].forces.icbms.total) {
+        let declaredNum = snap.val().continents[location].forces.icbms.declared + quantity;
+        gameRef.child(`continents/${location}/forces/icbms`).update({declared : declaredNum});
+        let totalDeclared = snap.val().players[playerID].totalDeclaredForces + quantity;
+        gameRef.child(`players/${playerID}`).update({totalDeclaredForces : totalDeclared});
+        res.sendStatus(200);
+        res.end();
+      } else { //If continent doesn't belong to player or they are trying to delcare more bombers than their current total.
+        res.send('Invalid location or amount to delcare would have brought declared total higher than total amount of forces.')
+        res.end();
+      } // End of conditional checking on location and declared vs. total.
+    } else { // If war were delcared or game ID was invalid.
+      res.send('Invalid game ID entered or war were declared.');
+      res.end();
+    } // End of conditional checking game ID and if war were declared.
+  }); // end of single-grab of firebase data.
+}); // End of the "declareicbms" route.
+
+
+router.put('/declaresub', (req, res) => {
+  let gameID = req.body.gameID;
+  let gameRef = ref.child(gameID);
+  let playerID = req.body.playerID;
+  let quantity = req.body.quantity;
+  let location = req.body.location;
+
+  gameRef.once('value', (snap) => {
+    if (snap.val() && !snap.val().war) {
+      if (snap.val().players[playerID].oceans[location] && snap.val().oceans[location].subs[playerID].declared + quantity <= snap.val().oceans[location].subs[playerID].total) {
+        let declaredNum = snap.val().oceans[location].subs[playerID].declared + quantity;
+        gameRef.child(`oceans/${location}/subs/${playerID}`).update({declared : declaredNum});
+        let totalDeclared = snap.val().players[playerID].totalDeclaredForces + quantity;
+        gameRef.child(`players/${playerID}`).update({totalDeclaredForces : totalDeclared});
+        res.sendStatus(200);
+        res.end();
+      } else { //If continent doesn't belong to player or they are trying to delcare more bombers than their current total.
+        res.send('Invalid location or amount to delcare would have brought declared total higher than total amount of forces.')
+        res.end();
+      } // End of conditional checking on location and declared vs. total.
+    } else { // If war were delcared or game ID was invalid.
+      res.send('Invalid game ID entered or war were declared.');
+      res.end();
+    } // End of conditional checking game ID and if war were declared.
+  }); // end of single-grab of firebase data.
+}); // End of the "declaresubs" route.
+
 
 
 
