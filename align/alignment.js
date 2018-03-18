@@ -29,36 +29,106 @@ function Translator(cameraA, cameraB, displayA, displayB) {
     return height * this.stretchY;
   }
 }
+/*
+  Creates a target object to keep track of the last seen location of a target.
+*/
+function Target() {
+  this.cords = null;
+  this.isSet = false;
+  this.updated = new Date();
+
+  this.setPosition =function(cords) {
+    currentDate = new Date();
+    if (cords) {
+      this.cords = cords;
+      this.updated = currentDate;
+    } else if (currentDate - this.updated > 500) {
+      this.cords = null;
+    }
+  }
+}
+
+// helper function so laser target can be in hex
+function hexToRGB(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
 
 // test of the pointer functionality, should be repaced with running the actual game
 function testPointer(ctx, translator, translated) {
+
+
   ctx.beginPath();
-  ctx.strokeStyle = "#0F0";
+  ctx.strokeStyle = "#00F";
   ctx.rect(translated[0], translated[1], translated[2], translated[3]);
   ctx.stroke();
 
   // set up laser pointer tracker
-  let laserColor = "#00F";
-  tracking.ColorTracker.registerColor('laser', (r, g, b) => {
-    return (r > 120 && g > 150 && b < 210);
+  let greenLaserColor = hexToRGB("#7ebe86");
+  let greenTarget = new Target();
+  console.log('green:', greenLaserColor);
+  let greenTracer = "#044";
+  tracking.ColorTracker.registerColor('green', (r, g, b) => {
+    return (
+      r < greenLaserColor.r * 1.1 && r > greenLaserColor.r * .9 &&
+      g < greenLaserColor.g * 1.1 && g > greenLaserColor.g * .9 &&
+      b < greenLaserColor.b * 1.1 && b > greenLaserColor.b * .9
+    );
   });
-  let tracker = new tracking.ColorTracker(['laser']);
+  let redLaserColor = hexToRGB("#dcaaaa");
+  let redTarget = new Target();
+  console.log('red:', redLaserColor);
+  let redTracer = "#404";
+  tracking.ColorTracker.registerColor('red', (r, g, b) => {
+    return (
+      r < redLaserColor.r * 1.1 && r > redLaserColor.r * .9 &&
+      g < redLaserColor.g * 1.1 && g > redLaserColor.g * .9 &&
+      b < redLaserColor.b * 1.1 && b > redLaserColor.b * .9
+    );
+  });
+  let tracker = new tracking.ColorTracker(['green', 'red']);
   let trackerTask = tracking.track('#video', tracker, { camera: true });
 
   tracker.on('track', function(event) {
+    console.log(event.data.length);
     if (event.data.length > 0) {
-      let rect = event.data[0];
-      let [x, y] = translator.coordinates([rect.x - rect.width / 2, rect.y - rect.height / 2]);
-      let width = translator.width(rect.width);
-      let height = translator.height(rect.height);
-      ctx.clearRect(0,0, window.innerWidth, window.innerHeight);
-      ctx.beginPath()
-      ctx.fillStyle = laserColor;
-      ctx.strokeStyle = "#0F0";
-      ctx.fillRect(x, y, width, height);
-      ctx.rect(translated[0], translated[1], translated[2], translated[3]);
-      ctx.stroke();
+      event.data.forEach((rect) => {
+        let [x, y] = translator.coordinates([rect.x - rect.width / 2, rect.y - rect.height / 2]);
+
+        switch (rect.color) {
+          case 'green' :
+            greenTarget.setPosition([x, y]);
+            redTarget.setPosition();
+            break;
+          case 'red' :
+            redTarget.setPosition([x, y]);
+            greenTarget.setPosition();
+            break;
+        };
+      })
+    } else {
+      redTarget.setPosition();
+      greenTarget.setPosition();
     }
+
+    ctx.clearRect(0,0, window.innerWidth, window.innerHeight);
+    ctx.beginPath()
+
+    if (redTarget.cords) {
+      ctx.fillStyle = redTracer;
+      ctx.fillRect(...redTarget.cords, 10, 10);
+    }
+    if (greenTarget.cords) {
+      ctx.fillStyle = greenTracer;
+      ctx.fillRect(...greenTarget.cords, 10, 10);
+    }
+
+    ctx.rect(translated[0], translated[1], translated[2], translated[3]);
+    ctx.stroke();
   });
 }
 
@@ -71,8 +141,9 @@ function align(boardWidth, boardHeight) {
   let boardY = (window.innerHeight - boardHeight) / 2;
   let targetColor = "#FFF";
   let cameraColor = "#F00";
-  let translatedColor = "#0F0";
+  let translatedColor = "#00F";
   let finishedRoughAlign = true;
+  let gameRunning = false;
 
   // set up canvas
   let c = document.getElementById("canvas");
@@ -124,22 +195,25 @@ function align(boardWidth, boardHeight) {
       // ctx.fillRect(boardX, boardY, boardWidth, boardHeight);
 
       // draw board as originally detected by camera
-      // ctx.beginPath()
-      // ctx.strokeStyle = cameraColor;
-      // ctx.rect(rect.x, rect.y, rect.width, rect.height);
-      // ctx.stroke();
+      ctx.beginPath()
+      ctx.strokeStyle = cameraColor;
+      ctx.rect(rect.x, rect.y, rect.width, rect.height);
+      ctx.stroke();
 
       // draw board as translated from camera
-      // let [translatedX, translatedY] = translator.coordinates([rect.x, rect.y]);
-      // let translatedWidth = translator.width(rect.width);
-      // let translatedHeight = translator.height(rect.height);
-      // ctx.beginPath()
-      // ctx.strokeStyle = translatedColor;
-      // ctx.rect(translatedX, translatedY, translatedWidth, translatedHeight);
-      // ctx.stroke();
+      let [translatedX, translatedY] = translator.coordinates([rect.x, rect.y]);
+      let translatedWidth = translator.width(rect.width);
+      let translatedHeight = translator.height(rect.height);
+      ctx.beginPath()
+      ctx.strokeStyle = translatedColor;
+      ctx.rect(translatedX, translatedY, translatedWidth, translatedHeight);
+      ctx.stroke();
 
       setTimeout(function() {
-        testPointer(ctx, translator, [boardX, boardY, boardWidth, boardHeight]);
+        if (!gameRunning) {
+          gameRunning = true;
+          testPointer(ctx, translator, [boardX, boardY, boardWidth, boardHeight]);
+        }
         trackerTask.stop();
       }, 0);
     }
