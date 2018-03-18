@@ -19,7 +19,7 @@ const AuthService = {
         })
         .catch((error) => {
           reject(error);
-        })
+        });
     });
   },
 
