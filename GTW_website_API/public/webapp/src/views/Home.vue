@@ -127,10 +127,12 @@
           Types of forces / The Tripod
         </h3>
         <h4>
-          ICBMs - Setup Cost: $100, Maintenance Cost: $20, Stealth: 7/10, Speed: 2
-          Bombers - Setup Cost: $50, Maintenance Cost: $10, Stealth: 8/10, Speed: 1
-          (Note: Range limited to targets within 0-1 distance.)
-          Nuclear Subs - Setup Cost: $200, Maintenance Cost: $20, Stealth: 9/10, Speed: 2
+          <ul>
+            <li>ICBMs - Setup Cost: $100, Maintenance Cost: $20, Stealth: 7/10, Speed: 2</li>
+            <li>Bombers - Setup Cost: $50, Maintenance Cost: $10, Stealth: 8/10, Speed: 1
+            (Note: Range limited to targets within 0-1 distance.)</li>
+            <li>Nuclear Subs - Setup Cost: $200, Maintenance Cost: $20, Stealth: 9/10, Speed: 2</li>
+          </ul>
         </h4>
       </div>
 
@@ -152,18 +154,20 @@
           Continents
         </h3>
         <h4>
-          North America - Budget: 1000 - HP: 500 - Oceans: AO, PO - Distance: SA=0,
-          AA=3, EU=2, AF=3, AU=4
-          South America - Budget: 750 - HP: 750 - Oceans: AO, PO - Distance: NA=0,
-          AA=3, EU=3, AF=2, AU=4
-          Asia - Budget: 500 - HP: 1000 - Oceans: IO, PO - Distance: NA=3, SA=3,
-          EU=0, AF=1, AU=1
-          Europe - Budget: 1100 - HP: 400 - Oceans: AO - Distance: NA=2, SA=3,
-          AA=0, AF=1, AU=5
-          Africa - Budget: 600 - HP: 900 - Oceans: AO, IO - Distance: NA=3, SA=2,
-          AA=1, EU=1, AU=3
-          Australia - Budget: 800 - HP: 700 - Oceans: IO, PO - Distance: NA=4, SA=4,
-          AA=1, EU=5, AF=3
+          <ul>
+            <li>North America - Budget: 1000 - HP: 500 - Oceans: AO, PO - Distance: SA=0,
+            AA=3, EU=2, AF=3, AU=4</li>
+            <li>South America - Budget: 750 - HP: 750 - Oceans: AO, PO - Distance: NA=0,
+            AA=3, EU=3, AF=2, AU=4</li>
+            <li>Asia - Budget: 500 - HP: 1000 - Oceans: IO, PO - Distance: NA=3, SA=3,
+            EU=0, AF=1, AU=1</li>
+            <li>Europe - Budget: 1100 - HP: 400 - Oceans: AO - Distance: NA=2, SA=3,
+            AA=0, AF=1, AU=5</li>
+            <li>Africa - Budget: 600 - HP: 900 - Oceans: AO, IO - Distance: NA=3, SA=2,
+            AA=1, EU=1, AU=3</li>
+            <li>Australia - Budget: 800 - HP: 700 - Oceans: IO, PO - Distance: NA=4, SA=4,
+            AA=1, EU=5, AF=3</li>
+          </ul>
         </h4>
       </div>
 
@@ -277,6 +281,11 @@ h4 {
   font-weight: 100;
   text-align: justify;
   color: $text;
+}
+
+ul {
+  list-style: disc;
+  padding-left: 5px;
 }
 
 #app {
