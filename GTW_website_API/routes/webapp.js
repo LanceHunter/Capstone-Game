@@ -1,7 +1,7 @@
 const router = require('koa-router')();
 const send = require('koa-send');
 const fs = require('fs');
-const webappDir = './webapp';
+const webappDir = './public/dist';
 
 // send any static files requested
 router.get('/static/(.*)', async (ctx) => {
