@@ -23,6 +23,8 @@ router.post('/setup', (req, res) => {
   let gameInstanceRef = ref.child(`game${gameID}`);
   gameInstanceRef.set({
     year : 1950,
+    gameStarted : false, // Pushing this to firebase so all devices know when continent selection is over.
+    war : false, // Pushing this to firebase so all devices know war has started.
     continents : {
       // Continent info for North America.
       northAmerica : {
@@ -236,7 +238,6 @@ router.post('/joingame', (req, res) => {
   console.log(req.body);
   let playerID = req.body.playerID;
   let playersRef = ref.child(`${req.body.gameID}/players`);
-
   playersRef.once('value', (snap) => {
     if (snap.numChildren() < 6) {
       let playerObj = {};
@@ -251,12 +252,36 @@ router.post('/joingame', (req, res) => {
         yearComplete : false,
         spyMessage : '',
       };
-      console.log('Does this give a value?', snap.val().too);
       playersRef.update(playerObj); // End of the playersRef update.
-      res.send('Finishing this.');
+      res.sendStatus(200);
       res.end();
     } else {
       res.send('Game is already full!');
+      res.end();
+    }
+  });
+});
+
+router.post('/startgame', (req, res) => {
+  let gameID = req.body.gameID;
+  let gameRef = ref.child(gameID);
+  let players = gameRef.child('players');
+
+  players.once('value', (snap) => {
+    if (snap.val()) { // Making sure there is a game with the game ID.
+      let playersArray = Object.keys(snap.val());
+      if (playersArray.length < 2) {
+        res.send('Game cannot be started, not enough players have joined.');
+        res.end();
+      } else {
+        gameRef.update({
+          gameStarted : true
+        });
+        res.json(playersArray);
+        res.end();
+      }
+    } else {
+      res.send('Invalid game ID.');
       res.end();
     }
   });
