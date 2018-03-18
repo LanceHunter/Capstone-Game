@@ -230,7 +230,7 @@ router.post('/setup', (req, res) => {
   res.end();
 }); // end of the POST route for /pregame/setup
 
-router.post('/joingame', (req, res) => {
+router.put('/joingame', (req, res) => {
   console.log(req.body);
   let playerID = req.body.playerID;
   let gameRef = ref.child(req.body.gameID);
