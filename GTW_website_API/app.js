@@ -11,14 +11,18 @@ const bcrypt = require('bcryptjs');
 const passport = require('koa-passport');
 const localStrategy = require('passport-local').Strategy;
 const session = require('koa-session');
+const send = require('koa-send');
+const serve = require('koa-static');
 
 const index = require('./routes/index');
-const users = require('./routes/users');
+const webapp = require('./routes/webapp');
+// const users = require('./routes/users');
 
 // error handler
 onerror(app);
 
 // middlewares
+app.use(serve('../webapp/dist'));
 app.use(bodyparser({
     enableTypes:['json', 'form', 'text']
   }));
@@ -46,7 +50,8 @@ app.use(async (ctx, next) => {
 
 // routes
 app.use(index.routes()).use(index.allowedMethods());
-app.use(users.routes()).use(users.allowedMethods());
+// app.use(webapp.routes()).use(webapp.allowedMethods());
+// app.use(users.routes()).use(users.allowedMethods());
 
 // error-handling
 app.on('error', (err, ctx) => {

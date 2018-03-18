@@ -17,12 +17,10 @@ function comparePass(userPassword, databasePassword) {
 
 //Passport Strategy
 passport.serializeUser((user, done) => {
-  console.log('serial killa');
   done(null, user.id);
 });
 
 passport.deserializeUser((id, done) => {
-  console.log('ceramn l killed');
   if (id) {
     return knex('users').where({
         id
@@ -36,17 +34,15 @@ passport.deserializeUser((id, done) => {
   }
 });
 
-passport.use(new localStrategy(options, (email, password, done) => {
+passport.use(new localStrategy(options, (username, password, done) => {
   knex('users').where({
-      email
+      username
     }).first()
     .then((user) => {
       if (!user) return done(null, false);
-      if (!comparePass(password, user.hashed_password)) {
-        console.log('1');
+      if (!comparePass('password', user.hashed_password)) {
         return done(null, false);
       } else {
-        console.log('2');
         return done(null, user);
       }
     })
@@ -57,6 +53,9 @@ passport.use(new localStrategy(options, (email, password, done) => {
 
 
 // auth routes
+
+router.prefix('/api')
+
 router.post('/login', async ctx => {
   return passport.authenticate('local', (err, user, info, status) => {
     if (user) {

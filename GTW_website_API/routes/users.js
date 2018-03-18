@@ -1,4 +1,5 @@
 const router = require('koa-router')()
+const fs = require('fs');
 
 router.prefix('/users')
 
@@ -18,6 +19,11 @@ router.prefix('/users')
 
 router.get('/bar', function (ctx, next) {
   ctx.body = 'this is a users/bar response'
+})
+
+router.get('/test', async ctx => {
+  ctx.type = 'html';
+  ctx.body = fs.createReadStream('../webapp/dist/index.html');
 })
 
 module.exports = router

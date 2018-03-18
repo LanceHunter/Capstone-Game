@@ -6,9 +6,22 @@
 </template>
 
 <script>
+import auth from '../common/auth.service';
+
+console.log('was logged in:', auth.isLoggedIn());
+
+if (!auth.isLoggedIn()) {
+  auth.login('test0', 'password');
+} else {
+  auth.logout();
+}
+
+console.log('now logged in:', auth.isLoggedIn());
+
 export default {
   name: 'Login',
 };
+
 </script>
 
 <!-- Added "scoped" attribute to limit CSS to this view only -->

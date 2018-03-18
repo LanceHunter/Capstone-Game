@@ -4,16 +4,15 @@ import Vue from 'vue';
 import App from './App';
 import router from './router';
 import store from './store';
+import auth from './common/auth.service';
+
 
 Vue.config.productionTip = false;
 
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-  const isLoggedIn = store.getters.isLoggedIn;
 
-  console.log(requiresAuth, !isLoggedIn);
-
-  if (requiresAuth && !isLoggedIn) {
+  if (requiresAuth && !auth.isLoggedIn()) {
     next('/login');
   } else {
     next();
