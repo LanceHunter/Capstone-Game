@@ -1,10 +1,35 @@
 <template>
-  <div>
+  <div class="login">
+    <router-view></router-view>
     <h1>Login</h1>
     <button type="button" v-on:click="loginToggle">Login toggle</button>
-    <router-view/>
+
+    <div class="message-body">
+      <div class="field top">
+        <p class="control is-small has-icons-left">
+          <input class="input is-small" type="email" placeholder="Player Name">
+          <span class="icon is-small is-left">
+            <i class="fas fa-user"></i>
+          </span>
+        </p>
+      </div>
+      <div class="field">
+        <p class="control has-icons-left">
+          <input class="input is-small" type="password" placeholder="Password">
+          <span class="icon is-small is-left">
+            <i class="fas fa-lock"></i>
+          </span>
+        </p>
+      </div>
+      <div class="field bottom">
+        <p class="control">
+          <button class="button is-small is-danger">Login</button>
+        </p>
+      </div>
+    </div>
   </div>
 </template>
+
 
 <script>
 import auth from '../common/auth.service';
@@ -29,16 +54,60 @@ export default {
 
 </script>
 
+
 <!-- Added "scoped" attribute to limit CSS to this view only -->
 <style lang="scss" scoped>
 @import "../assets/main.sass";
 
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.login {
+  background-image: url("../assets/blankMap.png");
+  background-position: top;
+  background-size: cover;
+  // background-color:rgba(0, 0, 0, 0.5);
+  font-family: $family-mono;
+  height: 900px;
+  margin-bottom: -8px;
+}
+
+.message-body {
+  margin: auto;
+  width: 40%;
+  background-color:rgba(0, 0, 0, 0.8);
+}
+
+.icon {
+  margin-top: 2px;
+}
+
+.field {
+  margin: auto;
+  width: 70%;
+}
+
+.control {
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+}
+
+.button.is-small {
+  background-color: $primary;
+}
+
+.top {
+  margin-top: 40px;
+}
+
+.bottom {
+  margin-bottom: 40px;
+}
+
+h1 {
+  padding: 220px 0px 40px 0px;
+  font-size: 40px;
+  font-family: $family-mono;
+  color: $danger;
+}
+
+#app {
+  text-align: center;
 }
 </style>
