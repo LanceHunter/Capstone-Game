@@ -30,6 +30,7 @@ router.post('/setup', (req, res) => {
     continents : {
       // Continent info for North America.
       northAmerica : {
+        name : 'North America',
         budget : 1000,
         hp : 500,
         player : false,
@@ -57,6 +58,7 @@ router.post('/setup', (req, res) => {
       },
       // Continent info for South America.
       southAmerica : {
+        name : 'South America',
         budget : 750,
         hp : 750,
         player : false,
@@ -84,6 +86,7 @@ router.post('/setup', (req, res) => {
       },
       // Continent info for Asia
       asia : {
+        name : 'Asia',
         budget : 500,
         hp : 1000,
         player : false,
@@ -111,6 +114,7 @@ router.post('/setup', (req, res) => {
       },
       // Continent info for Europe.
       europe : {
+        name : 'Europe',
         budget : 1100,
         hp : 400,
         player : false,
@@ -137,6 +141,7 @@ router.post('/setup', (req, res) => {
       },
       // Continent info for Africa.
       africa : {
+        name : 'Africa',
         budget : 600,
         hp : 900,
         player : false,
@@ -164,6 +169,7 @@ router.post('/setup', (req, res) => {
       },
       // Continent info for Australia.
       australia : {
+        name : 'Australia',
         budget : 800,
         hp : 700,
         player : false,
@@ -236,6 +242,7 @@ router.post('/joingame', (req, res) => {
         if (playersSnap.numChildren() < 6) {
           let playerObj = {};
           playerObj[playerID] = {
+            totalDeclaredForces : 0,
             continents : true,
             oceans : true,
             rnd : {
@@ -304,6 +311,16 @@ router.post('/continentselect', (req, res) => {
           let playerAssignObj = {};
           playerAssignObj[playerID] = true;
           player.child(`continents`).update(continentAssignObj);
+
+          let oceansArr = Object.keys(snap.val().continents[continent].oceans);
+          oceansArr.forEach((ocean) => {
+            let oceanSubsForPlayer = {};
+            oceanSubsForPlayer[playerID] = {
+              deployed : 0,
+              total : 0
+            };
+            gameRef.child(`oceans/${ocean}/subs`).update(oceanSubsForPlayer);
+          });
           player.child(`oceans`).update(snap.val().continents[continent].oceans); // Adding the oceans player can access with this continent.
           gameRef.child(`continents/${continent}/player`).update(playerAssignObj);
           res.sendStatus(200);
@@ -338,7 +355,7 @@ router.post('/beginpeace', (req, res) => { // Continent selection is done, "plea
         continentsArr.forEach((continent) => { // Going through those continents...
           currentBudget.currentBudget += snap.val().continents[continent].budget; //...and adding the initial budget numbers.
         });
-        gameRef.child(`players/${player}`).update(currentBudget);
+        gameRef.child(`players/${player}`).update(currentBudget); // ...and then add the budget to Firebase
       });
       res.sendStatus(200);
       res.end();
