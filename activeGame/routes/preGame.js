@@ -26,6 +26,7 @@ router.post('/setup', (req, res) => {
     gameStarted : false, // For when a game has moved past player entry and into the "choose continents" phase..
     peacetime : false,// Pushing this to firebase so all devices know when continent is over and peacetime begins.
     war : false, // Pushing this to firebase so all devices know war has started.
+    yearsWithNoWeapons : 0,
     continents : {
       // Continent info for North America.
       northAmerica : {
@@ -230,7 +231,7 @@ router.post('/joingame', (req, res) => {
   let playersRef = gameRef.child(`/players`);
 
   gameRef.once('value', (snap) => {
-    if (snap.val() && snap.val().gameStarted) {
+    if (snap.val()) {
       playersRef.once('value', (playersSnap) => {
         if (playersSnap.numChildren() < 6) {
           let playerObj = {};
@@ -295,7 +296,7 @@ router.post('/continentselect', (req, res) => {
   let player = gameRef.child(`players/${playerID}`);
 
   gameRef.once('value', (snap) => {
-    if (snap.val()) { // Verifying that gameID is valid.
+    if (snap.val() && snap.val().gameStarted) { // Verifying that gameID is valid.
       if (snap.val().players[playerID]) { // Verifying that player is part of this game.
         if (!snap.val().continents[continent].player) { // Checking to see if continent is already assigned.
           let continentAssignObj = {};
@@ -316,9 +317,9 @@ router.post('/continentselect', (req, res) => {
         res.end();
       } // End of player verification conditional.
     } else { // If this game ID doesn't exist.
-      res.send('Invalid game ID.');
+      res.send('Invalid game ID, or game has not yet started.');
       res.end();
-    }// End of gameID verification conditional.
+    }// End of gameID/game start verification conditional.
   }) // End of the snapshot.
 }); // End of the route.
 
@@ -329,6 +330,16 @@ router.post('/beginpeace', (req, res) => { // Continent selection is done, "plea
   gameRef.once('value', (snap) => {
     if (snap.val()) {
       gameRef.update({peacetime : true});
+      let playersArray = Object.keys(snap.val().players);
+      console.log('The players - ', playersArray);
+      playersArray.forEach((player) => { // Going through each player...
+        let currentBudget = {currentBudget : 0};
+        let continentsArr = Object.keys(snap.val().players[player].continents); // Finding the continents they have assigned.
+        continentsArr.forEach((continent) => { // Going through those continents...
+          currentBudget.currentBudget += snap.val().continents[continent].budget; //...and adding the initial budget numbers.
+        });
+        gameRef.child(`players/${player}`).update(currentBudget);
+      });
       res.sendStatus(200);
       res.end();
     } else {
