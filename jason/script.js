@@ -22,6 +22,8 @@ class ICBMLaunch {
 }
 */
 
+let game;
+
 // get some useful stuff from our game object
 let players = game.players;
 players.forEach(player => player.launches = []);
@@ -46,10 +48,10 @@ class SubLaunch {
   constructor(player, origin) {
     // grab our attributes
     this.player = player;
-    this.origin = origin;
+    this.origin = {x: origin.x, y: origin.y};
 
     // set up the origin indicator
-    this.originIndicator = phaser.add.sprite(origin.x, origin.y, 'circle');
+    this.originIndicator = phaser.add.sprite(this.origin.x, this.origin.y, 'circle');
     this.originIndicator.tint = player.color;
     this.originIndicator.anchor.set(0.5);
 
@@ -97,6 +99,9 @@ class SubLaunch {
 
     // set up the countdown indicator
     this.countdownIndicator = phaser.add.sprite(origin.x, origin.y, 'circle');
+    this.countdownIndicator.tint = player.color;
+    this.countdownIndicator.anchor.set(0.5);
+    this.countdownIndicator.position = this.origin;
   }
 
   // after a destination is verified, start the countdown
