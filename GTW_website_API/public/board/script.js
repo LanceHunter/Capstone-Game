@@ -22,8 +22,6 @@ class ICBMLaunch {
 }
 */
 
-let game;
-
 // get some useful stuff from our game object
 let players = game.players;
 players.forEach(player => player.launches = []);
@@ -165,12 +163,12 @@ function preload() {
   /*
   LOAD IMAGES
   */
-  phaser.load.image('peaceMap', '/assets/peaceMap.png');
-  phaser.load.image('missile', '/assets/missile01.png');
-  phaser.load.image('submarine', '/assets/sub01.png');
-  phaser.load.image('bomber', '/assets/bomber01.png');
-  phaser.load.image('circle', '/assets/circle.png');
-  phaser.load.image('ring', '/assets/ring.png');
+  phaser.load.image('peaceMap', '/board/assets/peaceMap.png');
+  phaser.load.image('missile', '/board/assets/missile01.png');
+  phaser.load.image('submarine', '/board/assets/sub01.png');
+  phaser.load.image('bomber', '/board/assets/bomber01.png');
+  phaser.load.image('circle', '/board/assets/circle.png');
+  phaser.load.image('ring', '/board/assets/ring.png');
 }
 
 function create() {

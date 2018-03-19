@@ -14,6 +14,7 @@ const session = require('koa-session');
 
 const index = require('./routes/index');
 const webapp = require('./routes/webapp');
+const board = require('./routes/board');
 // const users = require('./routes/users');
 
 // error handler
@@ -47,6 +48,7 @@ app.use(async (ctx, next) => {
 
 // routes
 app.use(index.routes()).use(index.allowedMethods());
+app.use(board.routes()).use(board.allowedMethods());
 app.use(webapp.routes()).use(webapp.allowedMethods());
 // app.use(users.routes()).use(users.allowedMethods());
 
