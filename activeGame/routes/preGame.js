@@ -200,6 +200,7 @@ router.post('/setup', (req, res) => {
     // Ocean information.
     oceans : {
       atlantic : {
+        name : 'Atlantic Ocean',
         subs : true,
         canHit : {
           northAmerica : true,
@@ -209,6 +210,7 @@ router.post('/setup', (req, res) => {
         }
       },
       pacific : {
+        name : 'Pacific Ocean',
         subs : true,
         canHit : {
           northAmerica : true,
@@ -218,6 +220,7 @@ router.post('/setup', (req, res) => {
         }
       },
       indian : {
+        name : 'Indian Ocean',
         subs : true,
         canHit : {
           africa : true,
