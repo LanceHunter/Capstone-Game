@@ -68,7 +68,6 @@ router.put('/subshot', (req, res) => {
   let launchID = req.body.launchID;
   let shooterID = req.body.shooterID;
 
-
   gameRef.once('value', (snap) => {
     if (snap.val() && snap.val().war) { // Checking if gameID is valid.
       if (snap.val().continents[targetID].oceans[launchID] && snap.val().oceans[launchID].subs[shooterID].total > 0) {
@@ -89,7 +88,7 @@ router.put('/subshot', (req, res) => {
       res.end();
     } // end of conditional checking if gameID is valid.
   }); // end of grabbing the info from Firebase.
-});
+}); // end of "subshot" route
 
 
 
