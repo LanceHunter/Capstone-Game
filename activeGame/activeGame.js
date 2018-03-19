@@ -11,7 +11,7 @@ const port = process.env.PORT || 8888;
 
 const preGame = require('./routes/preGame.js');
 const peaceTime = require('./routes/peaceTime.js');
-//const war = require('./routes/war.js');
+const war = require('./routes/war.js');
 
 // Disabling the x-powered-by: Express header, for security.
 app.disable('x-powered-by');
@@ -22,7 +22,7 @@ app.use(morgan('short'));
 
 app.use('/pregame', preGame);
 app.use('/peacetime', peaceTime);
-// app.use('/war', war);
+app.use('/war', war);
 
 
 // Turning on listening on the specified port.

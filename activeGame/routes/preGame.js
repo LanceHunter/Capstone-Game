@@ -26,6 +26,7 @@ router.post('/setup', (req, res) => {
     gameStarted : false, // For when a game has moved past player entry and into the "choose continents" phase..
     peacetime : false,// Pushing this to firebase so all devices know when continent is over and peacetime begins.
     war : false, // Pushing this to firebase so all devices know war has started.
+    gameOver : false, // Boolean to be flipped if/when a victory condition (or final lose condition) is achieved.
     yearsWithNoWeapons : 0,
     continents : {
       // Continent info for North America.
