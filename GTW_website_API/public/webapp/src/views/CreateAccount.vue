@@ -65,10 +65,10 @@ export default {
         this.errorMsg = 'Passwords do not match, try again.';
       } else {
         auth.create(username, password)
-          .then((response) => {
+          .then((response) => { // eslint-disable-line
             this.$router.push({ name: 'Login' });
           })
-          .catch((error) => {
+          .catch((error) => { // eslint-disable-line
             this.errorMsg = 'Username taken, try again.';
           });
       }

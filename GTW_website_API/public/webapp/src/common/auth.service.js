@@ -35,7 +35,7 @@ const AuthService = {
         .catch((error) => {
           reject(error);
         });
-    })
+    });
   },
 
   logout() {
