@@ -6,9 +6,10 @@ const firebase = admin.database();
 const ref = firebase.ref('gameInstance');
 
 
-//Setting up express routing
-const express = require('express');
-const router = express.Router();
+//Setting up koa routing
+const router = require('koa-router')();
+
+router.prefix('/peacetime');
 
 // Setting up variables for deploy and maintinence costs, so we can chance them in a single place instead of everywhere.
 const subMaint = 20;
@@ -18,7 +19,10 @@ const subCost = 200;
 const icbmCost = 100;
 const bomberCost = 50;
 
-router.post('/yearcomplete', (req, res) => {
+router.post('/yearcomplete', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
   let gameID = req.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = req.body.playerID;
@@ -117,7 +121,10 @@ router.post('/yearcomplete', (req, res) => {
   }); // end of grab of firebase data for game.
 }); // end of "yearcomplete" route
 
-router.put('/deploybomber', (req, res) => {
+router.put('/deploybomber', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
   let gameID = req.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = req.body.playerID;
@@ -143,7 +150,10 @@ router.put('/deploybomber', (req, res) => {
   }); // end of single-grab of firebase data.
 }); // end of "deploybomber" route
 
-router.put('/deployicbm', (req, res) => {
+router.put('/deployicbm', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
   let gameID = req.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = req.body.playerID;
@@ -170,7 +180,10 @@ router.put('/deployicbm', (req, res) => {
 }); // end of "deployicbm" route
 
 
-router.put('/deploysub', (req, res) => {
+router.put('/deploysub', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
   let gameID = req.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = req.body.playerID;
@@ -196,7 +209,10 @@ router.put('/deploysub', (req, res) => {
   }); // end of single-grab of firebase data.
 }); // end of "deploysub" route
 
-router.put('/declarebomber', (req, res) => {
+router.put('/declarebomber', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
   let gameID = req.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = req.body.playerID;
@@ -223,7 +239,10 @@ router.put('/declarebomber', (req, res) => {
   }); // end of single-grab of firebase data.
 }); // End of the "declarebomber" route.
 
-router.put('/declareicbm', (req, res) => {
+router.put('/declareicbm', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
   let gameID = req.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = req.body.playerID;
@@ -251,7 +270,10 @@ router.put('/declareicbm', (req, res) => {
 }); // End of the "declareicbms" route.
 
 
-router.put('/declaresub', (req, res) => {
+router.put('/declaresub', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
   let gameID = req.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = req.body.playerID;
@@ -278,7 +300,10 @@ router.put('/declaresub', (req, res) => {
   }); // end of single-grab of firebase data.
 }); // End of the "declaresubs" route.
 
-router.put('/disarmbomber', (req, res) => {
+router.put('/disarmbomber', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
   let gameID = req.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = req.body.playerID;
@@ -314,7 +339,10 @@ router.put('/disarmbomber', (req, res) => {
 }); // end of "disarmbomber" route.
 
 
-router.put('/disarmicbm', (req, res) => {
+router.put('/disarmicbm', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
   let gameID = req.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = req.body.playerID;
@@ -349,7 +377,10 @@ router.put('/disarmicbm', (req, res) => {
 }); // end of "disarmicbm" route.
 
 
-router.put('/disarmsub', (req, res) => {
+router.put('/disarmsub', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
   let gameID = req.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = req.body.playerID;
@@ -383,7 +414,10 @@ router.put('/disarmsub', (req, res) => {
   }); // End of grabbing information from Firebase.
 }); // end of "disarmsub" route.
 
-router.put('/spendrnd', (req, res) => {
+router.put('/spendrnd', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
   let gameID = req.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = req.body.playerID;
@@ -417,7 +451,10 @@ router.put('/spendrnd', (req, res) => {
 }); // end of the "spendrnd" route
 
 
-router.post('/declarewar', (req, res) => {
+router.post('/declarewar', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
   let gameID = req.body.gameID;
   let gameRef = ref.child(gameID);
   console.log('War!');

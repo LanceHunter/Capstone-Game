@@ -7,10 +7,14 @@ const ref = firebase.ref('gameInstance');
 
 
 //Setting up express routing
-const express = require('express');
-const router = express.Router();
+const router = require('koa-router')();
 
-router.put('/shot', (req, res) => {
+router.prefix('/war');
+
+router.put('/shot', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
   let gameID = req.body.gameID;
   let gameRef = ref.child(gameID);
   let targetID = req.body.targetID;
@@ -61,7 +65,10 @@ router.put('/shot', (req, res) => {
 }); // end of the "shot" route.
 
 
-router.put('/subshot', (req, res) => {
+router.put('/subshot', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
   let gameID = req.body.gameID;
   let gameRef = ref.child(gameID);
   let targetID = req.body.targetID;

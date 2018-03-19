@@ -13,11 +13,15 @@ const firebase = admin.database();
 const ref = firebase.ref('gameInstance');
 
 //Setting up express routing
-const express = require('express');
-const router = express.Router();
+const router = require('koa-router')();
 
+router.prefix('/pregame');
 
-router.post('/setup', (req, res) => {
+console.log('checking setup');
+router.post('/setup', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
   // Will need some form of verification to make sure we've got a valid board.
   let gameID = Math.floor(Math.random()*10000);
   let gameInstanceRef = ref.child(`game${gameID}`);
@@ -230,11 +234,13 @@ router.post('/setup', (req, res) => {
       }
     }
   }); // End of gameInstanceRef.set
-  res.json({ gameID : `game${gameID}`});
-  res.end();
+  res.body = { gameID : `game${gameID}`};
 }); // end of the POST route for /pregame/setup
 
-router.put('/joingame', (req, res) => {
+router.put('/joingame', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
   console.log(req.body);
   let playerID = req.body.playerID;
   let gameRef = ref.child(req.body.gameID);
@@ -273,7 +279,11 @@ router.put('/joingame', (req, res) => {
   }); // end of the firebase once check.
 }); // end of the '/joingame' route.
 
-router.post('/startgame', (req, res) => { // Starting the game once players have joined.
+router.post('/startgame', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
+  // Starting the game once players have joined.
   let gameID = req.body.gameID;
   let gameRef = ref.child(gameID);
   let players = gameRef.child('players');
@@ -299,7 +309,10 @@ router.post('/startgame', (req, res) => { // Starting the game once players have
 }); // End of startgame route.
 
 
-router.post('/continentselect', (req, res) => {
+router.post('/continentselect', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
   let playerID = req.body.playerID;
   let gameID = req.body.gameID;
   let continent = req.body.continent;
@@ -345,7 +358,11 @@ router.post('/continentselect', (req, res) => {
   }) // End of the snapshot.
 }); // End of the route.
 
-router.post('/beginpeace', (req, res) => { // Continent selection is done, "pleacetime" begins.
+router.post('/beginpeace', (ctx) => {
+  let req = ctx.request;
+  let res = ctx;
+
+  // Continent selection is done, "pleacetime" begins.
   let gameID = req.body.gameID;
   let gameRef = ref.child(gameID);
 

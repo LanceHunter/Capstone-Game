@@ -5,10 +5,10 @@ let database = firebase.database();
 let gameObject;
 
 console.log('making api call');
-$.post('http://10.8.83.203:8888/pregame/setup', function(data) {
+$.post('/pregame/setup', function(data) {
   console.log('recived:', data);
   let gameID = data.gameID;
-  let gameRef = database.ref('gameInstance').child(`game${gameID}`);
+  let gameRef = database.ref('gameInstance').child(gameID);
 
   console.log('setting firebase listener');
   gameRef.on('value', function(data) {
