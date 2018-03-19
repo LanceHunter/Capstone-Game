@@ -88,7 +88,7 @@ router.put('/subshot', (req, res) => {
       res.end();
     } // end of conditional checking if gameID is valid.
   }); // end of grabbing the info from Firebase.
-}); // end of "subshot" route
+}); // end of "subshot" route 
 
 
 
