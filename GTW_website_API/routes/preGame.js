@@ -19,9 +19,6 @@ router.prefix('/pregame');
 
 console.log('checking setup');
 router.post('/setup', (ctx) => {
-  let req = ctx.request;
-  let res = ctx;
-
   // Will need some form of verification to make sure we've got a valid board.
   let gameID = Math.floor(Math.random()*10000);
   let gameInstanceRef = ref.child(`game${gameID}`);
@@ -234,16 +231,13 @@ router.post('/setup', (ctx) => {
       }
     }
   }); // End of gameInstanceRef.set
-  res.body = { gameID : `game${gameID}`};
+  ctx.body = { gameID : `game${gameID}`};
 }); // end of the POST route for /pregame/setup
 
 router.put('/joingame', (ctx) => {
-  let req = ctx.request;
-  let res = ctx;
-
-  console.log(req.body);
-  let playerID = req.body.playerID;
-  let gameRef = ref.child(req.body.gameID);
+  console.log(ctx.request.body);
+  let playerID = ctx.request.body.playerID;
+  let gameRef = ref.child(ctx.request.body.gameID);
   let playersRef = gameRef.child(`/players`);
 
   gameRef.once('value', (snap) => {
@@ -265,26 +259,26 @@ router.put('/joingame', (ctx) => {
             spyMessage : '',
           };
           playersRef.update(playerObj); // End of the playersRef update.
-          res.sendStatus(200);
-          res.end();
+          ctx.status = 200;
         } else { // If the game is already has 6 players.
-          res.send('Game is already full!');
-          res.end();
+          ctx.status = 400;
+          ctx.body = {
+            message: 'Game is already full!',
+          };
         } // End of conditional checking the number of players.
       }); // End of the firebase snap checking player values.
     } else { // If game ID is not valid.
-      res.send('Invalid game ID, or game has not yet started.');
-      res.end();
+      ctx.status = 400;
+      ctx.body = {
+        message: 'Invalid game ID, or game has not yet started.',
+      };
     }// End of conditional checking that game ID is valid.
   }); // end of the firebase once check.
 }); // end of the '/joingame' route.
 
 router.post('/startgame', (ctx) => {
-  let req = ctx.request;
-  let res = ctx;
-
   // Starting the game once players have joined.
-  let gameID = req.body.gameID;
+  let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let players = gameRef.child('players');
 
@@ -292,30 +286,31 @@ router.post('/startgame', (ctx) => {
     if (snap.val()) { // Making sure there is a game with the game ID.
       let playersArray = Object.keys(snap.val()); // Grab all the players.
       if (playersArray.length < 2) { // If there aren't enough players, send an error and don't start the game.
-        res.send('Game cannot be started, not enough players have joined.');
-        res.end();
+        ctx.status = 400;
+        ctx.body = {
+          message: 'Game cannot be started, not enough players have joined.',
+        };
       } else { // If there are enough players, start the game.
         gameRef.update({
           gameStarted : true
         });
-        res.json(playersArray);
-        res.end();
+        ctx.status = 200;
+        ctx.body = playersArray;
       } // End of the check for enough players conditional statement.
     } else { // If there is no game with that gameID...
-      res.send('Invalid game ID.');
-      res.end();
+      ctx.status = 400;
+      ctx.body = {
+        message: 'Invalid game ID.',
+      };
     } // End of the verifying gameID exists conditional statement.
   }); // End of grabbing the single-view snap of data from Firebase.
 }); // End of startgame route.
 
 
 router.post('/continentselect', (ctx) => {
-  let req = ctx.request;
-  let res = ctx;
-
-  let playerID = req.body.playerID;
-  let gameID = req.body.gameID;
-  let continent = req.body.continent;
+  let playerID = ctx.request.body.playerID;
+  let gameID = ctx.request.body.gameID;
+  let continent = ctx.request.body.continent;
 
   let gameRef = ref.child(gameID);
   let player = gameRef.child(`players/${playerID}`);
@@ -341,29 +336,31 @@ router.post('/continentselect', (ctx) => {
           });
           player.child(`oceans`).update(snap.val().continents[continent].oceans); // Adding the oceans player can access with this continent.
           gameRef.child(`continents/${continent}/player`).update(playerAssignObj);
-          res.sendStatus(200);
-          res.end();
+          ctx.status = 200;
         } else {
-          res.send('Continent has already been assigned.');
-          res.end();
+          ctx.status = 400;
+          ctx.body = {
+            message: 'Continent has already been assigned.',
+          };
         } // End of continent-already-assigned conditional.
       } else { // if player is not part of this game.
-        res.send('PlayerID is not valid for this game.');
-        res.end();
+        ctx.status = 400;
+        ctx.body = {
+          message: 'PlayerID is not valid for this game.',
+        };
       } // End of player verification conditional.
     } else { // If this game ID doesn't exist.
-      res.send('Invalid game ID, or game has not yet started.');
-      res.end();
+      ctx.status = 400;
+      ctx.body = {
+        message: 'Invalid game ID, or game has not yet started.',
+      };
     }// End of gameID/game start verification conditional.
   }) // End of the snapshot.
 }); // End of the route.
 
 router.post('/beginpeace', (ctx) => {
-  let req = ctx.request;
-  let res = ctx;
-
   // Continent selection is done, "pleacetime" begins.
-  let gameID = req.body.gameID;
+  let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
 
   gameRef.once('value', (snap) => {
@@ -379,11 +376,12 @@ router.post('/beginpeace', (ctx) => {
         });
         gameRef.child(`players/${player}`).update(currentBudget); // ...and then add the budget to Firebase
       });
-      res.sendStatus(200);
-      res.end();
+      ctx.status = 200;
     } else {
-      res.send('Invalid game ID.');
-      res.end();
+      ctx.status = 400;
+      ctx.body = {
+        message: 'Invalid game ID.',
+      }
     }
   });
 });
