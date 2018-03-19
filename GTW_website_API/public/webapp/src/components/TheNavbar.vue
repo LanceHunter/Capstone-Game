@@ -69,6 +69,10 @@ export default {
 <style lang="scss" scoped>
 @import "../assets/main.sass";
 
+.navbar-menu.is-active {
+  background-color: white;
+}
+
 .navbar {
   font-size: 20px;
   font-family: $family-mono;

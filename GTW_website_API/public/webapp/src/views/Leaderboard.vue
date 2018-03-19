@@ -159,67 +159,67 @@
 
 <script>
 // clock
-const digitSegments = [
-  [1, 2, 3, 4, 5, 6],
-  [2, 3],
-  [1, 2, 7, 5, 4],
-  [1, 2, 7, 3, 4],
-  [6, 7, 2, 3],
-  [1, 6, 7, 3, 4],
-  [1, 6, 5, 4, 3, 7],
-  [1, 2, 3],
-  [1, 2, 3, 4, 5, 6, 7],
-  [1, 2, 7, 3, 6],
-];
-
-document.addEventListener('DOMContentLoaded', function clock() { // eslint-disable-line
-  const _hours = document.querySelectorAll('.hours'); // eslint-disable-line
-  const _minutes = document.querySelectorAll('.minutes'); // eslint-disable-line
-  const _seconds = document.querySelectorAll('.seconds'); // eslint-disable-line
-
-  setInterval(function clockTime() { // eslint-disable-line
-    const date = new Date();
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const seconds = date.getSeconds();
-
-    setNumber(_hours[0], Math.floor(hours / 10), 1); // eslint-disable-line
-    setNumber(_hours[1], hours % 10, 1); // eslint-disable-line
-
-    setNumber(_minutes[0], Math.floor(minutes / 10), 1); // eslint-disable-line
-    setNumber(_minutes[1], minutes % 10, 1); // eslint-disable-line
-
-    setNumber(_seconds[0], Math.floor(seconds / 10), 1); // eslint-disable-line
-    setNumber(_seconds[1], seconds % 10, 1); // eslint-disable-line
-  }, 1000);
-});
-
-const setNumber = function clockNumber(digit, number, on) { // eslint-disable-line
-  const segments = digit.querySelectorAll('.segment');
-  const current = parseInt(digit.getAttribute('data-value')); // eslint-disable-line
-
-  // only switch if number has changed or wasn't set
-  if (!isNaN(current) && current !== number) { // eslint-disable-line
-    // unset previous number
-    digitSegments[current].forEach(function digits(digitSegment, index) { // eslint-disable-line
-      setTimeout(function digitSeg() { // eslint-disable-line
-        segments[digitSegment - 1].classList.remove('on');
-      }, index * 45);
-    });
-  }
-
-  if (isNaN(current) || current !== number) {
-    // set new number after
-    setTimeout(function nextDig() { // eslint-disable-line
-      digitSegments[number].forEach(function nextDigSeg(digitSegment, index) { // eslint-disable-line
-        setTimeout(function nds() { // eslint-disable-line
-          segments[digitSegment - 1].classList.add('on');
-        }, index * 45);
-      });
-    }, 250);
-    digit.setAttribute('data-value', number);
-  }
-};
+// const digitSegments = [
+//   [1, 2, 3, 4, 5, 6],
+//   [2, 3],
+//   [1, 2, 7, 5, 4],
+//   [1, 2, 7, 3, 4],
+//   [6, 7, 2, 3],
+//   [1, 6, 7, 3, 4],
+//   [1, 6, 5, 4, 3, 7],
+//   [1, 2, 3],
+//   [1, 2, 3, 4, 5, 6, 7],
+//   [1, 2, 7, 3, 6],
+// ];
+//
+// document.addEventListener('DOMContentLoaded', function clock() { // eslint-disable-line
+//   const _hours = document.querySelectorAll('.hours'); // eslint-disable-line
+//   const _minutes = document.querySelectorAll('.minutes'); // eslint-disable-line
+//   const _seconds = document.querySelectorAll('.seconds'); // eslint-disable-line
+//
+//   setInterval(function clockTime() { // eslint-disable-line
+//     const date = new Date();
+//     const hours = date.getHours();
+//     const minutes = date.getMinutes();
+//     const seconds = date.getSeconds();
+//
+//     setNumber(_hours[0], Math.floor(hours / 10), 1); // eslint-disable-line
+//     setNumber(_hours[1], hours % 10, 1); // eslint-disable-line
+//
+//     setNumber(_minutes[0], Math.floor(minutes / 10), 1); // eslint-disable-line
+//     setNumber(_minutes[1], minutes % 10, 1); // eslint-disable-line
+//
+//     setNumber(_seconds[0], Math.floor(seconds / 10), 1); // eslint-disable-line
+//     setNumber(_seconds[1], seconds % 10, 1); // eslint-disable-line
+//   }, 1000);
+// });
+//
+// const setNumber = function clockNumber(digit, number, on) { // eslint-disable-line
+//   const segments = digit.querySelectorAll('.segment');
+//   const current = parseInt(digit.getAttribute('data-value')); // eslint-disable-line
+//
+//   // only switch if number has changed or wasn't set
+//   if (!isNaN(current) && current !== number) { // eslint-disable-line
+//     // unset previous number
+//     digitSegments[current].forEach(function digits(digitSegment, index) { // eslint-disable-line
+//       setTimeout(function digitSeg() { // eslint-disable-line
+//         segments[digitSegment - 1].classList.remove('on');
+//       }, index * 45);
+//     });
+//   }
+//
+//   if (isNaN(current) || current !== number) {
+//     // set new number after
+//     setTimeout(function nextDig() { // eslint-disable-line
+//       digitSegments[number].forEach(function nextDigSeg(digitSegment, index) { // eslint-disable-line
+//         setTimeout(function nds() { // eslint-disable-line
+//           segments[digitSegment - 1].classList.add('on');
+//         }, index * 45);
+//       });
+//     }, 250);
+//     digit.setAttribute('data-value', number);
+//   }
+// };
 
 
 export default {
