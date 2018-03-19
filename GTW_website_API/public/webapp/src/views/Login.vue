@@ -28,6 +28,7 @@
         <div class="field bottom">
           <p class="control">
             <button type="submit" class="button is-small is-danger">Login</button>
+            <a href="/login/new" class="button is-small is-danger">Sign Up</a>
           </p>
         </div>
       </form>
