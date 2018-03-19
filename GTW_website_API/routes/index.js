@@ -40,7 +40,7 @@ passport.use(new localStrategy(options, (username, password, done) => {
     }).first()
     .then((user) => {
       if (!user) return done(null, false);
-      if (!comparePass('password', user.hashed_password)) {
+      if (!comparePass(password, user.hashed_password)) {
         return done(null, false);
       } else {
         return done(null, user);
