@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import Home from '@/views/Home';
 import Login from '@/views/Login';
 import Leaderboard from '@/views/Leaderboard';
+import CreateAccount from '@/views/CreateAccount';
 
 Vue.use(Router);
 
@@ -18,6 +19,11 @@ export default new Router({
       path: '/login',
       name: 'Login',
       component: Login,
+    },
+    {
+      path: '/login/new',
+      name: 'CreateAccount',
+      component: CreateAccount,
     },
     {
       path: '/leaderboard',
