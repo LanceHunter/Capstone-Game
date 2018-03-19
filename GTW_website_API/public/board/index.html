@@ -6,6 +6,23 @@
   </head>
   <body>
     <h1>Testing</h1>
+    <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyCrwxplvLh0Bt8X2WHR2NGohm8BGU8_q2c",
+        authDomain: "globalthermonuclearwargame.firebaseapp.com",
+        databaseURL: "https://globalthermonuclearwargame.firebaseio.com",
+        projectId: "globalthermonuclearwargame",
+        storageBucket: "globalthermonuclearwargame.appspot.com",
+        messagingSenderId: "862672254691"
+      };
+      firebase.initializeApp(config);
+    </script>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"></script>
     <script src="/board/vendor/phaser.js"></script>
     <script src="/board/testGame.js"></script>
     <script src="/board/script.js"></script>
