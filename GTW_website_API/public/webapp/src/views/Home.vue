@@ -173,7 +173,6 @@
       <h3>Signin - Signup - or Continue without signing in.</h3>
       <a href="/login"><button class="button is-small is-danger">Sign In</button></a>
       <a href="/login/new"><button class="button is-small is-danger">Sign Up</button></a>
-      <a href="/login"><button class="button is-small is-danger">Continue</button></a>
     </div>
 
 
