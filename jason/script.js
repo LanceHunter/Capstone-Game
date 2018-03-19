@@ -34,7 +34,9 @@ players[3].color = 0xffff00;
 players[4].color = 0x00ffff;
 players[5].color = 0x0fff00;
 
-//set up sub launch locations, this will eventually be the same position as the HUD
+let player = players[1];
+
+// set up sub launch locations, this will eventually be the same position as the HUD
 game.oceans[0].launchPosition = {x: 100, y: 100};
 game.oceans[1].launchPosition = {x: 100, y: 100};
 game.oceans[2].launchPosition = {x: 100, y: 100};
@@ -180,15 +182,15 @@ function create() {
   input listeners
   */
   phaser.input.onDown.add((e) => {
-    players[1].launches.push(new SubLaunch(players[1], e.position));
-    console.log(players[1].launches[players[1].launches.length - 1].state);
+    player.launches.push(new SubLaunch(player, e.position));
+    console.log(player.launches[player.launches.length - 1].state);
   });
 
   phaser.input.onUp.add((e) => {
     // put the last launch in a countdown state
-    if (players[1].launches.length > 0) {
-      players[1].launches[players[1].launches.length - 1].launch();
-      console.log(players[1].launches);
+    if (player.launches.length > 0) {
+      player.launches[player.launches.length - 1].launch();
+      console.log(player.launches);
     }
   });
 }
