@@ -23,6 +23,21 @@ const AuthService = {
     });
   },
 
+  create(username, password) {
+    return new Promise((resolve, reject) => {
+      server.post('/register', {
+        username,
+        password,
+      })
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    })
+  },
+
   logout() {
     localStorage.removeItem('username');
   },

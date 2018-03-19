@@ -3,7 +3,11 @@ import Router from 'vue-router';
 import Home from '@/views/Home';
 import Login from '@/views/Login';
 import Leaderboard from '@/views/Leaderboard';
+<<<<<<< HEAD
 import Playerstats from '@/views/Playerstats';
+=======
+import CreateAccount from '@/views/CreateAccount';
+>>>>>>> webapp
 
 Vue.use(Router);
 
@@ -19,6 +23,11 @@ export default new Router({
       path: '/login',
       name: 'Login',
       component: Login,
+    },
+    {
+      path: '/login/new',
+      name: 'CreateAccount',
+      component: CreateAccount,
     },
     {
       path: '/leaderboard',

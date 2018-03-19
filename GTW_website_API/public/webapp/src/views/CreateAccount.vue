@@ -1,14 +1,13 @@
 <template>
   <div class="login">
     <router-view></router-view>
-    <h1>Login</h1>
-    <button type="button" v-on:click="loginToggle">Login toggle</button>
+    <h1>Create Account</h1>
 
     <div class="message-body">
-      <div class="is-small has-text-danger" v-if="repeate">
-        <p>Invalid credentials, try again</p>
+      <div class="is-small has-text-danger" v-if="errorMsg">
+        <p>{{ errorMsg }}</p>
       </div>
-      <form v-on:submit.prevent="tryLogin(username, password)">
+      <form v-on:submit.prevent="tryCreate(username, password, confirmPassword)">
         <div class="field top">
           <p class="control is-small has-icons-left">
             <input class="input is-small" type="text" v-model="username" placeholder="Player Name">
@@ -25,10 +24,20 @@
             </span>
           </p>
         </div>
+        <div class="field">
+          <p class="control has-icons-left">
+            <input class="input is-small"
+                   type="password"
+                   v-model="confirmPassword"
+                   placeholder="Confirm Password">
+            <span class="icon is-small is-left">
+              <i class="fas fa-lock"></i>
+            </span>
+          </p>
+        </div>
         <div class="field bottom">
           <p class="control">
             <button type="submit" class="button is-small is-danger">Login</button>
-            <a href="/login/new" class="button is-small is-danger">Sign Up</a>
           </p>
         </div>
       </form>
@@ -41,37 +50,28 @@
 import auth from '../common/auth.service';
 
 export default {
-  name: 'Login',
+  name: 'CreateAccount',
   data() {
     return {
       username: null,
       password: null,
-      repeate: false,
+      confirmPassword: null,
+      errorMsg: null,
     };
   },
   methods: {
-    loginToggle() {
-      console.log('was logged in:', auth.isLoggedIn()); // eslint-disable-line
-      if (!auth.isLoggedIn()) {
-        auth.login('test0', 'password')
-          .then(() => {
-            console.log('now logged in:', auth.isLoggedIn()); // eslint-disable-line
-          });
+    tryCreate(username, password, confirmPassword) {
+      if (password !== confirmPassword) {
+        this.errorMsg = 'Passwords do not match, try again.';
       } else {
-        auth.logout();
-        console.log('now logged in:', auth.isLoggedIn()); // eslint-disable-line
+        auth.create(username, password)
+          .then((response) => {
+            this.$router.push({ name: 'Login' });
+          })
+          .catch((error) => {
+            this.errorMsg = 'Username taken, try again.';
+          });
       }
-    },
-    tryLogin(username, password) {
-      auth.login(username, password)
-        .then((response) => {
-          console.log('succeded with:', response); // eslint-disable-line
-          this.$router.push({ name: 'Home' });
-        })
-        .catch((error) => {
-          console.log('failed with:', error); // eslint-disable-line
-          this.repeate = true;
-        });
     },
   },
 };
@@ -87,6 +87,7 @@ export default {
   background-image: url("../assets/blankMap.png");
   background-position: top;
   background-size: cover;
+  // background-color:rgba(0, 0, 0, 0.5);
   font-family: $family-mono;
   height: 900px;
   margin-bottom: -8px;
@@ -105,10 +106,6 @@ export default {
 .field {
   margin: auto;
   width: 70%;
-}
-
-.input.is-small {
-  background-color: white;
 }
 
 .control {

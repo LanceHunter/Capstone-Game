@@ -40,7 +40,7 @@ passport.use(new localStrategy(options, (username, password, done) => {
     }).first()
     .then((user) => {
       if (!user) return done(null, false);
-      if (!comparePass('password', user.hashed_password)) {
+      if (!comparePass(password, user.hashed_password)) {
         return done(null, false);
       } else {
         return done(null, user);
@@ -81,10 +81,10 @@ router.post('/register', async ctx => {
 
     const new_user = await knex('users')
       .insert({
-        email: ctx.request.body.email,
+        // email: ctx.request.body.email,
         hashed_password: bcrypt.hashSync(ctx.request.body.password, saltRounds),
-        profile_photo: ctx.request.body.profile_photo,
-        full_name: ctx.request.body.full_name,
+        // profile_photo: ctx.request.body.profile_photo,
+        // full_name: ctx.request.body.full_name,
         username: ctx.request.body.username,
       })
       .returning('*');
