@@ -24,6 +24,8 @@ router.put('/shot', (req, res) => {
           let player = Object.keys(snap.val().continents[launchID].player)[0];
           let updateBomberObj = {total : snap.val().continents[launchID].forces.bombers.total-1};
           let updateHpObj = {hp : snap.val().continents[targetID].hp - (50 + Math.floor(snap.val().players[player].rnd.damage/500)*5)};
+          let shotsFired = snap.val().players[player].shotsFired + 1;
+          gameRef.child(`players/${playerID}`).update({shotsFired : shotsFired});
           gameRef.child(`continents/${targetID}`).update(updateHpObj);
           gameRef.child(`continents/${launchID}/forces/bombers`).update(updateBomberObj);
           res.sendStatus(200);
@@ -37,8 +39,12 @@ router.put('/shot', (req, res) => {
           let player = Object.keys(snap.val().continents[launchID].player)[0];
           let updateIcbmObj = {total : snap.val().continents[launchID].forces.icbms.total-1};
           let updateHpObj = {hp : snap.val().continents[targetID].hp - (50 + Math.floor(snap.val().players[player].rnd.damage/500)*5)};
+          let shotsFired = snap.val().players[player].shotsFired + 1;
+          gameRef.child(`players/${playerID}`).update({shotsFired : shotsFired});
           gameRef.child(`continents/${targetID}`).update(updateHpObj);
           gameRef.child(`continents/${launchID}/forces/icbms`).update(updateIcbmObj);
+          res.sendStatus(200);
+          res.end();
         } else { // If no ICBMs available.
           res.send('No ICBMs available from that location.');
           res.end();
@@ -64,16 +70,25 @@ router.put('/subshot', (req, res) => {
 
 
   gameRef.once('value', (snap) => {
-    if (snap.val()) { // Checking if gameID is valid.
-
-    } else { // If gameID is not valid.
-      res.send('Invalid Game ID.');
+    if (snap.val() && snap.val().war) { // Checking if gameID is valid.
+      if (snap.val().continents[targetID].oceans[launchID] && snap.val().oceans[launchID].subs[shooterID].total > 0) {
+        let subsTotal = snap.val().oceans[launchID].subs[shooterID].total - 1;
+        let updateHpObj = {hp : snap.val().continents[targetID].hp - (50 + Math.floor(snap.val().players[shooterID].rnd.damage/500)*5)};
+        let shotsFired = snap.val().players[shooterID].shotsFired + 1;
+        gameRef.child(`players/${shooterID}`).update({shotsFired : shotsFired});
+        gameRef.child(`continents/${targetID}`).update(updateHpObj);
+        gameRef.child(`oceans/${launchID}/subs/${shooterID}`).update({total:subsTotal});
+        res.sendStatus(200);
+        res.end();
+      } else { // If target location is not valid and that there are enough subs.
+        res.send('Target cannot be reached from subs in that ocean, or insufficient sub missiles available.');
+        res.end();
+      } // end of conditional checking if target location is valid and that there are enough subs.
+    } else { // If gameID is not valid of if war was not declared.
+      res.send('Invalid Game ID or war has not been declared.');
       res.end();
     } // end of conditional checking if gameID is valid.
   }); // end of grabbing the info from Firebase.
-
-
-
 });
 
 

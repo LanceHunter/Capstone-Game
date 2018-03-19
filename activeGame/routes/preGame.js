@@ -252,6 +252,7 @@ router.put('/joingame', (req, res) => {
             },
             currentBudget : 0,
             yearComplete : false,
+            shotsFired : 0,
             spyMessage : '',
           };
           playersRef.update(playerObj); // End of the playersRef update.
