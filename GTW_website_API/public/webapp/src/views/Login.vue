@@ -86,7 +86,6 @@ export default {
   background-image: url("../assets/blankMap.png");
   background-position: top;
   background-size: cover;
-  // background-color:rgba(0, 0, 0, 0.5);
   font-family: $family-mono;
   height: 900px;
   margin-bottom: -8px;

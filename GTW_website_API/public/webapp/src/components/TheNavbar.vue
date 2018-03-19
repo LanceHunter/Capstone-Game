@@ -5,6 +5,8 @@
         <span></span>
         <span></span>
         <span></span>
+        <span></span>
+        <span></span>
       </div>
     </div>
 
@@ -19,10 +21,15 @@
           <a class="navbar-item" href="/leaderboard">
             Leaderboard
           </a>
+          <a class="navbar-item" href="/playerstats">
+            Player stats
+          </a>
+          <a class="navbar-item" href="/">
+            Logout
+          </a>
         </div>
 
         <div class="navbar-end">
-
         </div>
     </div>
 

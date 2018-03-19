@@ -8,48 +8,60 @@
         <tr>
           <th>Rank</th>
           <th>Player Name</th>
+          <th>Win Percentage</th>
+          <th>Win-Loss</th>
           <th>Total Score</th>
           <th>Average Score</th>
-          <th>Win Percentage</th>
+          <th>Dashboard</th>
         </tr>
       </thead>
       <tfoot>
         <tr>
           <th>Rank</th>
           <th>Player Name</th>
+          <th>Win Percentage</th>
+          <th>Win-Loss</th>
           <th>Total Score</th>
           <th>Average Score</th>
-          <th>Win Percentage</th>
+          <th>Dashboard</th>
         </tr>
       </tfoot>
       <tbody>
         <tr>
           <th>1</th>
           <td>Johnny</td>
-          <td>5470</td>
-          <td>212</td>
           <td>91%</td>
+          <td>35-5</td>
+          <td>5,470</td>
+          <td>212</td>
+          <td><a href="/playerstats"><i class="fas fa-tachometer-alt"></i></a></td>
         </tr>
         <tr>
           <th>2</th>
           <td>Vlidamir</td>
-          <td>4900</td>
-          <td>175</td>
           <td>85%</td>
+          <td>30-8</td>
+          <td>4,900</td>
+          <td>175</td>
+          <td><a href="/playerstats"><i class="fas fa-tachometer-alt"></i></a></td>
         </tr>
         <tr>
           <th>3</th>
           <td>Liu</td>
-          <td>4775</td>
-          <td>165</td>
           <td>83%</td>
+          <td>29-9</td>
+          <td>4,775</td>
+          <td>165</td>
+          <td><a href="/playerstats"><i class="fas fa-tachometer-alt"></i></a></td>
         </tr>
         <tr>
           <th>4</th>
           <td>Mario</td>
-          <td>1220</td>
-          <td>58</td>
           <td>37%</td>
+          <td>12-29</td>
+          <td>1,220</td>
+          <td>58</td>
+          <td><a href="/playerstats"><i class="fas fa-tachometer-alt"></i></a></td>
         </tr>
         <tr>
           <th>5</th>
@@ -57,9 +69,13 @@
           <td></td>
           <td></td>
           <td></td>
+          <td></td>
+          <td></td>
         </tr>
         <tr>
           <th>6</th>
+          <td></td>
+          <td></td>
           <td></td>
           <td></td>
           <td></td>
