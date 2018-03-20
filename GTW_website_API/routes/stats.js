@@ -42,4 +42,27 @@ router.get('/leaders(.*)', async ctx => {
   }
 });
 
+router.get('/(.*)', async ctx => {
+  const username = ctx.request.path.split('/').pop();
+
+  const stats = await knex('users')
+  .where('username', username)
+  .join('players', 'users.id', '=', 'players.user_id')
+  .join('games', 'players.game_id', '=', 'games.id')
+  .select(
+    'won',
+    'outcome',
+    'score',
+    'hit_points',
+    'shots',
+    'rnd_multiplier',
+    knex.raw('(shots * rnd_multiplier) AS damage_caused'),
+    knex.raw('players.created_at AS end_time'),
+  )
+
+  ctx.body = {
+    stats,
+  }
+});
+
 module.exports = router
