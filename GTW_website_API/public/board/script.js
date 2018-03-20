@@ -1,8 +1,8 @@
 /*
 firebase setup
 */
-let database = firebase.database();
-let gameObject;
+const database = firebase.database();
+let game;
 
 console.log('making api call');
 $.post('/api/pregame/setup', function(data) {
@@ -13,7 +13,7 @@ $.post('/api/pregame/setup', function(data) {
   console.log('setting firebase listener');
   gameRef.on('value', function(data) {
     console.log('recived object:', data.val());
-    gameObject = data.val();
+    game = data.val();
   });
 });
 
@@ -40,25 +40,6 @@ class ICBMLaunch {
   }
 }
 */
-
-// get some useful stuff from our game object
-let players = game.players;
-players.forEach(player => player.launches = []);
-
-// set up fake player colors
-players[0].color = 0xff0000;
-players[1].color = 0x00ff00;
-players[2].color = 0x0000ff;
-players[3].color = 0xffff00;
-players[4].color = 0x00ffff;
-players[5].color = 0x0fff00;
-
-let player = players[1];
-
-// set up sub launch locations, this will eventually be the same position as the HUD
-game.oceans[0].launchPosition = {x: 100, y: 100};
-game.oceans[1].launchPosition = {x: 100, y: 100};
-game.oceans[2].launchPosition = {x: 100, y: 100};
 
 class SubLaunch {
   // these will be created whenever a players's sub-deploy thing is activated
@@ -165,13 +146,10 @@ class SubLaunch {
 
 }
 
-
-const gameObjects = {};
-
 /*
 phaser setup
 */
-const width = 800;
+const width = 1920;
 const height = width * (9 / 16);
 const phaser = new Phaser.Game(width, height, Phaser.AUTO, '', {preload: preload, create: create, update: update});
 
@@ -182,23 +160,75 @@ function preload() {
   /*
   LOAD IMAGES
   */
-  phaser.load.image('peaceMap', '/board/assets/peaceMap.png');
-  phaser.load.image('missile', '/board/assets/missile01.png');
-  phaser.load.image('submarine', '/board/assets/sub01.png');
-  phaser.load.image('bomber', '/board/assets/bomber01.png');
+  phaser.load.image('map', '/board/assets/map.png');
+  phaser.load.image('missile', '/board/assets/missile.png');
+  phaser.load.image('submarine', '/board/assets/submarine.png');
+  phaser.load.image('bomber', '/board/assets/bomber.png');
+  phaser.load.image('capital', '/board/assets/capital.png');
   phaser.load.image('circle', '/board/assets/circle.png');
   phaser.load.image('ring', '/board/assets/ring.png');
 }
+
+let subIcons = [];
+let capitalIcons = [];
+let bomberIcons = [];
+let missileIcons = [];
 
 function create() {
   /*
   create and scale the map sprite
   */
-  let peaceMap = phaser.add.sprite(0, 0, 'peaceMap');
-  const xScale = phaser.canvas.width / peaceMap.width;
-  const yScale = phaser.canvas.height / peaceMap.height;
-  peaceMap.scale.setTo(xScale, yScale);
-  gameObjects.peaceMap = peaceMap;
+  let map = phaser.add.sprite(0, 0, 'map');
+
+  /*
+  add icons
+  */
+  // Pacific
+  subIcons.push(phaser.add.sprite(130, (1080 - 310), 'submarine').anchor.set(0, 1));
+  subIcons.push(phaser.add.sprite(175, (1080 - 215), 'submarine').anchor.set(0, 1));
+  subIcons.push(phaser.add.sprite(220, (1080 - 120), 'submarine').anchor.set(0, 1));
+
+  // Atlantic
+  subIcons.push(phaser.add.sprite(625, (1080 - 435), 'submarine').anchor.set(0, 1));
+  subIcons.push(phaser.add.sprite(690, (1080 - 330), 'submarine').anchor.set(0, 1));
+  subIcons.push(phaser.add.sprite(755, (1080 - 225), 'submarine').anchor.set(0, 1));
+
+  // Indian
+  subIcons.push(phaser.add.sprite(1250, (1080 - 265), 'submarine').anchor.set(0, 1));
+  subIcons.push(phaser.add.sprite(1250, (1080 - 180), 'submarine').anchor.set(0, 1));
+  subIcons.push(phaser.add.sprite(1250, (1080 - 95), 'submarine').anchor.set(0, 1));
+
+  // North America
+  bomberIcons.push(phaser.add.sprite(260, (1080 - 500), 'bomber').anchor.set(0, 1));
+  capitalIcons.push(phaser.add.sprite(365, (1080 - 500), 'capital').anchor.set(0, 1));
+  missileIcons.push(phaser.add.sprite(470, (1080 - 500), 'missile').anchor.set(0, 1));
+
+  // South America
+  bomberIcons.push(phaser.add.sprite(495, (1080 - 285), 'bomber').anchor.set(0, 1));
+  capitalIcons.push(phaser.add.sprite(560, (1080 - 200), 'capital').anchor.set(0, 1));
+  missileIcons.push(phaser.add.sprite(540, (1080 - 90), 'missile').anchor.set(0, 1));
+
+  // Asia
+  bomberIcons.push(phaser.add.sprite(1320, (1080 - 470), 'bomber').anchor.set(0, 1));
+  capitalIcons.push(phaser.add.sprite(1425, (1080 - 470), 'capital').anchor.set(0, 1));
+  missileIcons.push(phaser.add.sprite(1530, (1080 - 470), 'missile').anchor.set(0, 1));
+
+  // Europe
+  bomberIcons.push(phaser.add.sprite(990, (1080 - 565), 'bomber').anchor.set(0, 1));
+  capitalIcons.push(phaser.add.sprite(1095, (1080 - 565), 'capital').anchor.set(0, 1));
+  missileIcons.push(phaser.add.sprite(1200, (1080 - 565), 'missile').anchor.set(0, 1));
+
+  // Australia
+  bomberIcons.push(phaser.add.sprite(1530, (1080 - 180), 'bomber').anchor.set(0, 1));
+  capitalIcons.push(phaser.add.sprite(1635, (1080 - 180), 'capital').anchor.set(0, 1));
+  missileIcons.push(phaser.add.sprite(1740, (1080 - 180), 'missile').anchor.set(0, 1));
+
+  // Africa
+  bomberIcons.push(phaser.add.sprite(850, (1080 - 365), 'bomber').anchor.set(0, 1));
+  capitalIcons.push(phaser.add.sprite(955, (1080 - 365), 'capital').anchor.set(0, 1));
+  missileIcons.push(phaser.add.sprite(1060, (1080 - 365), 'missile').anchor.set(0, 1));
+
+
 
   /*
   input listeners
@@ -219,19 +249,18 @@ function create() {
 
 function update() {
   // handle all the launch stuff
-  players.forEach(player => {
-    player.launches.forEach(launch => {
-      if (launch.state === 'impossible') {
-        // show a dialog that indicates out of ammo
-        console.log('impossible');
-      } else
-      if (launch.state === 'exploded') {
-        player.launches.shift();
-        console.log(player.launches);
-      } else {
-        launch.update();
-      }
-    });
-
-  });
+  // players.forEach(player => {
+  //   player.launches.forEach(launch => {
+  //     if (launch.state === 'impossible') {
+  //       // show a dialog that indicates out of ammo
+  //       console.log('impossible');
+  //     } else
+  //     if (launch.state === 'exploded') {
+  //       player.launches.shift();
+  //       console.log(player.launches);
+  //     } else {
+  //       launch.update();
+  //     }
+  //   });
+  // });
 }
