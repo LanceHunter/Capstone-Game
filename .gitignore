@@ -2,3 +2,4 @@ node_modules
 activeGame/.env
 GTW_website_API/globalthermonuclearwargame-firebase-adminsdk-mcs5b-ec18bb03a7.json
 .DS_Store
+.env

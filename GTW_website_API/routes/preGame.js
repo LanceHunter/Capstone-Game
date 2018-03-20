@@ -2,11 +2,11 @@
 
 // Firebase setup.
 const admin = require("firebase-admin");
-const serviceAccount = require('../globalthermonuclearwargame-firebase-adminsdk-mcs5b-ec18bb03a7.json');
+const serviceAccount = require('../../private/gtwthegame-firebase-adminsdk-xemv3-858ad1023b.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: process.env.DATABASEURL
+  databaseURL: "https://gtwthegame.firebaseio.com"
 });
 
 const firebase = admin.database();
