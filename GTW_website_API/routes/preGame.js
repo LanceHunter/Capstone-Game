@@ -23,7 +23,7 @@ router.post('/setup', async (ctx) => {
   // Will need some form of verification to make sure we've got a valid board.
   let gameID = Math.floor(Math.random()*10000);
   let gameInstanceRef = ref.child(`game${gameID}`);
-  gameInstanceRef.set({
+  await gameInstanceRef.set({
     year : 1950,
     gameStarted : false, // For when a game has moved past player entry and into the "choose continents" phase..
     peacetime : false,// Pushing this to firebase so all devices know when continent is over and peacetime begins.
