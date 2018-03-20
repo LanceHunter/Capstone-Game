@@ -5,7 +5,7 @@ let database = firebase.database();
 let gameObject;
 
 console.log('making api call');
-$.post('/pregame/setup', function(data) {
+$.post('/api/pregame/setup', function(data) {
   console.log('recived:', data);
   let gameID = data.gameID;
   let gameRef = database.ref('gameInstance').child(gameID);

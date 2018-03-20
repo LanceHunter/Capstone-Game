@@ -9,7 +9,7 @@ const ref = firebase.ref('gameInstance');
 //Setting up express routing
 const router = require('koa-router')();
 
-router.prefix('api/war');
+router.prefix('/api/war');
 
 router.put('/shot', async (ctx) => {
   let gameID = ctx.request.body.gameID;

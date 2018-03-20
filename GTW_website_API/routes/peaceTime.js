@@ -9,7 +9,7 @@ const ref = firebase.ref('gameInstance');
 //Setting up koa routing
 const router = require('koa-router')();
 
-router.prefix('api/peacetime');
+router.prefix('/api/peacetime');
 
 // Setting up variables for deploy and maintinence costs, so we can chance them in a single place instead of everywhere.
 const subMaint = 20;
