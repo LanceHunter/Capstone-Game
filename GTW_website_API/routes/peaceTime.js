@@ -9,7 +9,7 @@ const ref = firebase.ref('gameInstance');
 //Setting up koa routing
 const router = require('koa-router')();
 
-router.prefix('/peacetime');
+router.prefix('api/peacetime');
 
 // Setting up variables for deploy and maintinence costs, so we can chance them in a single place instead of everywhere.
 const subMaint = 20;
@@ -19,12 +19,12 @@ const subCost = 200;
 const icbmCost = 100;
 const bomberCost = 50;
 
-router.post('/yearcomplete', (ctx) => {
+router.post('/yearcomplete', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
   let allComplete = true;
-  gameRef.once('value', (snap) => {
+  await gameRef.once('value', (snap) => {
     if (snap.val() && !(snap.val().players[playerID].yearComplete)) { // Verifying that game ID is valid and that player hasn't double-ended year.
       gameRef.child(`players/${playerID}`).update({
         spyMessage : '',
@@ -118,14 +118,14 @@ router.post('/yearcomplete', (ctx) => {
   }); // end of grab of firebase data for game.
 }); // end of "yearcomplete" route
 
-router.put('/deploybomber', (ctx) => {
+router.put('/deploybomber', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
   let quantity = ctx.request.body.quantity;
   let location = ctx.request.body.location;
 
-  gameRef.once('value', (snap) => {
+  await gameRef.once('value', (snap) => {
     if (snap.val() && !snap.val().war) {
       if (snap.val().players[playerID].currentBudget >= bomberCost * quantity && snap.val().players[playerID].continents[location]) {
         let bombers = snap.val().continents[location].forces.bombers.total + quantity;
@@ -148,14 +148,14 @@ router.put('/deploybomber', (ctx) => {
   }); // end of single-grab of firebase data.
 }); // end of "deploybomber" route
 
-router.put('/deployicbm', (ctx) => {
+router.put('/deployicbm', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
   let quantity = ctx.request.body.quantity;
   let location = ctx.request.body.location;
 
-  gameRef.once('value', (snap) => {
+  await gameRef.once('value', (snap) => {
     if (snap.val() && !snap.val().war) {
       if (snap.val().players[playerID].currentBudget >= icbmCost * quantity && snap.val().players[playerID].continents[location]) {
         let icbms = snap.val().continents[location].forces.icbms.total + quantity;
@@ -179,14 +179,14 @@ router.put('/deployicbm', (ctx) => {
 }); // end of "deployicbm" route
 
 
-router.put('/deploysub', (ctx) => {
+router.put('/deploysub', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
   let quantity = ctx.request.body.quantity;
   let location = ctx.request.body.location;
 
-  gameRef.once('value', (snap) => {
+  await gameRef.once('value', (snap) => {
     if (snap.val() && !snap.val().war) {
       if (snap.val().players[playerID].currentBudget >= subCost * quantity && snap.val().players[playerID].oceans[location]) {
         let subs = snap.val().oceans[location].subs[playerID].total + quantity;
@@ -209,14 +209,14 @@ router.put('/deploysub', (ctx) => {
   }); // end of single-grab of firebase data.
 }); // end of "deploysub" route
 
-router.put('/declarebomber', (ctx) => {
+router.put('/declarebomber', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
   let quantity = ctx.request.body.quantity;
   let location = ctx.request.body.location;
 
-  gameRef.once('value', (snap) => {
+  await gameRef.once('value', (snap) => {
     if (snap.val() && !snap.val().war) {
       if (snap.val().players[playerID].continents[location] && snap.val().continents[location].forces.bombers.declared + quantity <= snap.val().continents[location].forces.bombers.total) {
         let declaredNum = snap.val().continents[location].forces.bombers.declared + quantity;
@@ -239,21 +239,21 @@ router.put('/declarebomber', (ctx) => {
   }); // end of single-grab of firebase data.
 }); // End of the "declarebomber" route.
 
-router.put('/declareicbm', (ctx) => {
+router.put('/declareicbm', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
   let quantity = ctx.request.body.quantity;
   let location = ctx.request.body.location;
 
-  gameRef.once('value', (snap) => {
+  await gameRef.once('value', (snap) => {
     if (snap.val() && !snap.val().war) {
       if (snap.val().players[playerID].continents[location] && snap.val().continents[location].forces.icbms.declared + quantity <= snap.val().continents[location].forces.icbms.total) {
         let declaredNum = snap.val().continents[location].forces.icbms.declared + quantity;
         gameRef.child(`continents/${location}/forces/icbms`).update({declared : declaredNum});
         let totalDeclared = snap.val().players[playerID].totalDeclaredForces + quantity;
         gameRef.child(`players/${playerID}`).update({totalDeclaredForces : totalDeclared});
-        ctx.status = 200
+        ctx.status = 200;
       } else { //If continent doesn't belong to player or they are trying to delcare more bombers than their current total.
         ctx.status = 400;
         ctx.body = {
@@ -270,14 +270,14 @@ router.put('/declareicbm', (ctx) => {
 }); // End of the "declareicbms" route.
 
 
-router.put('/declaresub', (ctx) => {
+router.put('/declaresub', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
   let quantity = ctx.request.body.quantity;
   let location = ctx.request.body.location;
 
-  gameRef.once('value', (snap) => {
+  await gameRef.once('value', (snap) => {
     if (snap.val() && !snap.val().war) {
       if (snap.val().players[playerID].oceans[location] && snap.val().oceans[location].subs[playerID].declared + quantity <= snap.val().oceans[location].subs[playerID].total) {
         let declaredNum = snap.val().oceans[location].subs[playerID].declared + quantity;
@@ -300,14 +300,14 @@ router.put('/declaresub', (ctx) => {
   }); // end of single-grab of firebase data.
 }); // End of the "declaresubs" route.
 
-router.put('/disarmbomber', (ctx) => {
+router.put('/disarmbomber', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
   let quantity = ctx.request.body.quantity;
   let location = ctx.request.body.location;
 
-  gameRef.once('value', (snap) => {
+  await gameRef.once('value', (snap) => {
     if (snap.val() && snap.val().continents[location].forces.bombers.total >= quantity) {
       let forcesObj = {
         declared : snap.val().continents[location].forces.bombers.declared,
@@ -323,7 +323,7 @@ router.put('/disarmbomber', (ctx) => {
         forcesObj.declared = declaredTotal;
 
         gameRef.child(`players/${playerID}`).update({totalDeclaredForces : declaredGrandTotal});
-        ctx.status = 200);
+        ctx.status = 200;
       } // End of conditional checking of there are any declared forces.
       forcesObj.total -= quantity;
       gameRef.child(`continents/${location}/forces/bombers`).update(forcesObj);
@@ -337,14 +337,14 @@ router.put('/disarmbomber', (ctx) => {
 }); // end of "disarmbomber" route.
 
 
-router.put('/disarmicbm', (ctx) => {
+router.put('/disarmicbm', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
   let quantity = ctx.request.body.quantity;
   let location = ctx.request.body.location;
 
-  gameRef.once('value', (snap) => {
+  await gameRef.once('value', (snap) => {
     if (snap.val() && snap.val().continents[location].forces.icbms.total >= quantity) {
       let forcesObj = {
         declared : snap.val().continents[location].forces.icbms.declared,
@@ -373,14 +373,14 @@ router.put('/disarmicbm', (ctx) => {
 }); // end of "disarmicbm" route.
 
 
-router.put('/disarmsub', (ctx) => {
+router.put('/disarmsub', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
   let quantity = ctx.request.body.quantity;
   let location = ctx.request.body.location;
 
-  gameRef.once('value', (snap) => {
+  await gameRef.once('value', (snap) => {
     if (snap.val() && snap.val().oceans[location].subs[playerID].total >= quantity) {
       let forcesObj = {
         declared : snap.val().oceans[location].subs[playerID].declared,
@@ -408,14 +408,14 @@ router.put('/disarmsub', (ctx) => {
   }); // End of grabbing information from Firebase.
 }); // end of "disarmsub" route.
 
-router.put('/spendrnd', (ctx) => {
+router.put('/spendrnd', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
   let quantity = ctx.request.body.quantity;
   let type = ctx.request.body.type;
 
-  gameRef.once('value', (snap) => {
+  await gameRef.once('value', (snap) => {
     if (snap.val() && snap.val().players[playerID].currentBudget >= quantity) {
       let currentBudget = snap.val().players[playerID].currentBudget - quantity;
       if (type === 'speed') {
@@ -444,11 +444,11 @@ router.put('/spendrnd', (ctx) => {
 }); // end of the "spendrnd" route
 
 
-router.post('/declarewar', (ctx) => {
+router.post('/declarewar', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   console.log('War!');
-  gameRef.once('value', (snap) => {
+  await gameRef.once('value', (snap) => {
     if (snap.val()) { // Making sure gameID is in the system.
       gameRef.update({war:true});
       ctx.status = 200;

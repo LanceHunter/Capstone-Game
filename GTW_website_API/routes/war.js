@@ -9,16 +9,16 @@ const ref = firebase.ref('gameInstance');
 //Setting up express routing
 const router = require('koa-router')();
 
-router.prefix('/war');
+router.prefix('api/war');
 
-router.put('/shot', (ctx) => {
+router.put('/shot', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let targetID = ctx.request.body.targetID;
   let launchID = ctx.request.body.launchID;
   let shotType = ctx.request.body.shotType;
 
-  gameRef.once('value', (snap) => {
+  await gameRef.once('value', (snap) => {
     if (snap.val() && snap.val().war) { // Checking if gameID is valid and that war was declared.
       if (shotType === 'bomber') { // If the type of shot is bomber.
         if (snap.val().continents[launchID].distances[targetID] <= 1 && snap.val().continents[launchID].forces.bombers.total > 0) {
@@ -68,14 +68,14 @@ router.put('/shot', (ctx) => {
 }); // end of the "shot" route.
 
 
-router.put('/subshot', (ctx) => {
+router.put('/subshot', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let targetID = ctx.request.body.targetID;
   let launchID = ctx.request.body.launchID;
   let shooterID = ctx.request.body.shooterID;
 
-  gameRef.once('value', (snap) => {
+  await gameRef.once('value', (snap) => {
     if (snap.val() && snap.val().war) { // Checking if gameID is valid.
       if (snap.val().continents[targetID].oceans[launchID] && snap.val().oceans[launchID].subs[shooterID].total > 0) {
         let subsTotal = snap.val().oceans[launchID].subs[shooterID].total - 1;

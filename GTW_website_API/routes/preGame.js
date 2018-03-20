@@ -15,10 +15,10 @@ const ref = firebase.ref('gameInstance');
 //Setting up express routing
 const router = require('koa-router')();
 
-router.prefix('/pregame');
+router.prefix('api/pregame');
 
 console.log('checking setup');
-router.post('/setup', (ctx) => {
+router.post('/setup', async (ctx) => {
   // Will need some form of verification to make sure we've got a valid board.
   let gameID = Math.floor(Math.random()*10000);
   let gameInstanceRef = ref.child(`game${gameID}`);
@@ -234,15 +234,15 @@ router.post('/setup', (ctx) => {
   ctx.body = { gameID : `game${gameID}`};
 }); // end of the POST route for /pregame/setup
 
-router.put('/joingame', (ctx) => {
+router.put('/joingame', async (ctx) => {
   console.log(ctx.request.body);
   let playerID = ctx.request.body.playerID;
   let gameRef = ref.child(ctx.request.body.gameID);
   let playersRef = gameRef.child(`/players`);
 
-  gameRef.once('value', (snap) => {
+  await gameRef.once('value', (snap) => {
     if (snap.val()) {
-      playersRef.once('value', (playersSnap) => {
+      await playersRef.once('value', (playersSnap) => {
         if (playersSnap.numChildren() < 6) {
           let playerObj = {};
           playerObj[playerID] = {
@@ -276,13 +276,13 @@ router.put('/joingame', (ctx) => {
   }); // end of the firebase once check.
 }); // end of the '/joingame' route.
 
-router.post('/startgame', (ctx) => {
+router.post('/startgame', async (ctx) => {
   // Starting the game once players have joined.
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let players = gameRef.child('players');
 
-  players.once('value', (snap) => {
+  await players.once('value', (snap) => {
     if (snap.val()) { // Making sure there is a game with the game ID.
       let playersArray = Object.keys(snap.val()); // Grab all the players.
       if (playersArray.length < 2) { // If there aren't enough players, send an error and don't start the game.
@@ -307,7 +307,7 @@ router.post('/startgame', (ctx) => {
 }); // End of startgame route.
 
 
-router.post('/continentselect', (ctx) => {
+router.post('/continentselect', async (ctx) => {
   let playerID = ctx.request.body.playerID;
   let gameID = ctx.request.body.gameID;
   let continent = ctx.request.body.continent;
@@ -315,7 +315,7 @@ router.post('/continentselect', (ctx) => {
   let gameRef = ref.child(gameID);
   let player = gameRef.child(`players/${playerID}`);
 
-  gameRef.once('value', (snap) => {
+  await gameRef.once('value', (snap) => {
     if (snap.val() && snap.val().gameStarted) { // Verifying that gameID is valid.
       if (snap.val().players[playerID]) { // Verifying that player is part of this game.
         if (!snap.val().continents[continent].player) { // Checking to see if continent is already assigned.
@@ -358,12 +358,12 @@ router.post('/continentselect', (ctx) => {
   }) // End of the snapshot.
 }); // End of the route.
 
-router.post('/beginpeace', (ctx) => {
+router.post('/beginpeace', async (ctx) => {
   // Continent selection is done, "pleacetime" begins.
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
 
-  gameRef.once('value', (snap) => {
+  await gameRef.once('value', (snap) => {
     if (snap.val()) {
       gameRef.update({peacetime : true});
       let playersArray = Object.keys(snap.val().players);
