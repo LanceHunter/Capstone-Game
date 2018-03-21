@@ -10,28 +10,46 @@ const database = firebase.database();
 /*
 set up the firebase bind
 */
+// a global fbGame
+let fbGameRef;
+
 $.post('/api/pregame/setup', function(data) {
-  console.log('recieved:', data);
+  console.log('hit /api/pregame/setup');
   let gameID = data.gameID;
-  let gameRef = database.ref('gameInstance').child(gameID);
+  fbGameRef = database.ref('gameInstance').child(gameID);
 
   console.log('setting firebase listener');
-  gameRef.on('value', onGameChange).then(() => {console.log('then')});
+  fbGameRef.once('value', onGameInit);
 });
 
 /*
-the callback for the on('value') call
+the callback for the once('value') function
 */
-function onGameChange(data) {
-  console.log('recieved object:', data.val());
+function onGameInit(data) {
+  console.log('game init');
   game = data.val();
-  console.log('set game', game);
+  makeTestGame();
+  fbGameRef.on('value', onGameUpdate);
+  console.log(game);
+}
+
+function makeTestGame() {
+  console.log('make test');
+}
+
+
+/*
+the callback for the on('value') function
+*/
+function onGameUpdate(data) {
+  console.log('game update');
+  game = data.val();
 }
 
 /*
 give the game object a convincing wartime state*.
-
 /*
+
 phaser setup
 written for phaser-ce 2.10.1
 */
