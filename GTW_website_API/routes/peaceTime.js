@@ -133,10 +133,32 @@ router.post('/yearcomplete', async (ctx) => {
   } // end of coditional checking if game ID is valid.
 
   // If we end up in a situation where the game is over because of a "peace" win (no weapons on earth for 3 years).
-  if (gameOver) {
+  if (gameOver) { // TEMP set to true to test knex
+    let continentArr = Object.keys(gameObj.continents);
     gameRef.update({gameOver : {type: 'worldPeace', winner: 'all'}});
-    let returnVal = await knex('users').where({username : 'test0'}).select('wins');
-    console.log('Here is the returnVal', returnVal);
+    let userIDs = await knex.select('id', 'username').from('users').whereIn('username', playersArr);
+    let gameIDforDB = await knex('games').returning('id').insert({outcome : 'peace'});
+    let playersDatabaseWrite = userIDs.map((entry) => {
+      let rndMultiplier = Math.floor(gameObj.players[(entry.username)].rnd.damage/500);
+      let hitPoints = 0;
+      continentArr.forEach((continent) => {
+        if (gameObj.continents[continent].player[(entry.username)]) {
+          hitPoints += gameObj.continents[continent].hp;
+        }
+      });
+      return {
+        user_id : entry.id,
+        game_id : gameIDforDB[0],
+        won : true,
+        hit_points : hitPoints,
+        score : 5000,
+        shots : 0,
+        rnd_multiplier : rndMultiplier
+      };
+    });
+    await knex('players').insert(playersDatabaseWrite);
+    console.log('Here is the gameIDforDB - ', gameIDforDB);
+    console.log('Here is the playersDatabaseWrite', playersDatabaseWrite);
     ctx.status = 200;
   }
 
