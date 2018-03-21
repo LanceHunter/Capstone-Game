@@ -15,16 +15,16 @@
           <a class="navbar-item" href="/">
             Home
           </a>
-          <a class="navbar-item" href="/login">
+          <a v-if="!username" class="navbar-item" href="/login">
             Login
           </a>
-          <a class="navbar-item" href="/leaderboard">
+          <a v-if="username" class="navbar-item" href="/leaderboard">
             Leaderboard
           </a>
-          <a class="navbar-item" href="/playerstats">
-            Player stats
+          <a v-if="username" class="navbar-item" v-bind:href="'/stats/' + username">
+            My stats
           </a>
-          <a class="navbar-item" href="/">
+          <a v-if="username" class="navbar-item" v-on:click="logout" href="/">
             Logout
           </a>
         </div>
@@ -58,12 +58,29 @@ document.addEventListener('DOMContentLoaded', function jsnav() { // eslint-disab
   }
 });
 
+import auth from '../common/auth.service';
 
 export default {
   name: 'TheNavbar',
+  data() {
+    return {
+      username: auth.getUser(),
+    };
+  },
+  methods: {
+    logout() {
+      auth.logout();
+    }
+  },
+  watch: {
+    '$route' (to, from) {
+      if (to.path === '/') {
+        this.username = auth.getUser();
+      }
+    }
+  },
 };
 </script>
-
 
 <!-- Added "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>

@@ -20,12 +20,11 @@ const StatsService = {
     })
   },
 
-  user() {
-    let username = auth.getUser();
+  user(username) {
     return new Promise((resolve, reject) => {
       server.get(`/${username}`)
         .then((response) => {
-          resolve(response);
+          resolve(response.data.stats);
         })
         .catch((error) => {
           reject(error);

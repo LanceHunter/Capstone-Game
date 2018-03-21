@@ -233,9 +233,27 @@ $(document).ready(function char() { // eslint-disable-line
 //   InitBarChart();
 // });
 
+import stats from '../common/stats.service';
 
 export default {
   name: 'Playerstats',
+  data() {
+    return {
+      stats: null,
+    }
+  },
+  methods: {
+    getStats(username) {
+      stats.user(username)
+        .then((stats) => {
+          this.stats = stats;
+          console.log('set stats to:', this.stats);
+        })
+    }
+  },
+  beforeMount(){
+    this.getStats(this.$route.params.username);
+  },
 };
 </script>
 

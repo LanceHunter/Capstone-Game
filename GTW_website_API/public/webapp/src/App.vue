@@ -7,6 +7,7 @@
 
 
 <script>
+import auth from './common/auth.service';
 import TheNavbar from '@/components/TheNavbar';
 
 export default {

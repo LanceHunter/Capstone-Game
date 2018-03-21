@@ -36,7 +36,7 @@ export default new Router({
       },
     },
     {
-      path: '/playerstats',
+      path: '/stats/:username',
       name: 'Playerstats',
       component: Playerstats,
       meta: {
