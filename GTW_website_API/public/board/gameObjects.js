@@ -13,17 +13,22 @@ class ICBMLaunch {
 }
 */
 
-let subIcons = [];
-let capitalIcons = [];
-let bomberIcons = [];
-let missileIcons = [];
+// globals
+let playerIDs = [];
+let colors = [
+  0xff0000,
+  0x00ff00,
+  0x0000ff
+];
+let subIcons;
+let continents;
+
 
 class SubIcon {
-  constructor(x, y, ocean) {
+  constructor(x, y) {
     this.sprite = phaser.add.sprite(x, y, 'submarine');
     this.sprite.anchor.set(0, 1);
     this.sprite.inputEnabled = true;
-    this.ocean = ocean;
     this.launches = [];
 
     this.sprite.events.onInputDown.add(() => {

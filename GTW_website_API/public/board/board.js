@@ -6,53 +6,64 @@ firebase setup
 */
 const database = firebase.database();
 
+// a global firebase reference
+let fbGame;
+let gameID;
 
 /*
 set up the firebase bind
-*/
-// a global fbGame
-let fbGameRef;
-
 $.post('/api/pregame/setup', function(data) {
-  console.log('hit /api/pregame/setup');
-  let gameID = data.gameID;
-  fbGameRef = database.ref('gameInstance').child(gameID);
+  console.log('/api/pregame/setup:', data);
+  gameID = data.gameID;
+  fbGame = database.ref('gameInstance').child(gameID);
+  console.log('gameID', gameID);
 
   console.log('setting firebase listener');
-  fbGameRef.once('value', onGameInit);
+  fbGame.once('value', onGameInit);
 });
+*/
 
 /*
-the callback for the once('value') function
+test game
+*/
+function testGame(gameID) {
+  fbGame = database.ref('gameInstance').child(gameID);
+  console.log('gameID', gameID);
+
+  console.log('setting firebase listener');
+  fbGame.once('value', onGameInit);
+}
+
+testGame('game8928');
+
+/*
+callback for game init
 */
 function onGameInit(data) {
-  console.log('game init');
+  console.log('onGameChange');
   game = data.val();
-  makeTestGame();
-  fbGameRef.on('value', onGameUpdate);
-  console.log(game);
+  console.log('game object:', game)
+  playerIDs = Object.keys(game.players);
+  for (let i = 0; i < playerIDs.length; i++) {
+    game.players[playerIDs[i]].color = colors[i];
+  }
+  fbGame.on('value', onGameChange);
 }
-
-function makeTestGame() {
-  console.log('make test');
-}
-
 
 /*
-the callback for the on('value') function
+callback for fb game changes
 */
-function onGameUpdate(data) {
-  console.log('game update');
-  game = data.val();
+function onGameChange(data) {
+  console.log('onGameChange');
+  Object.assign(game, data.val());
+  console.log('game object:', game)
 }
 
 /*
-give the game object a convincing wartime state*.
-/*
-
 phaser setup
 written for phaser-ce 2.10.1
 */
+
 // a few things that get our canvas and phaser instance ready
 const width = 1920;
 const height = width * (9 / 16);
@@ -81,22 +92,26 @@ function create() {
   let map = phaser.add.sprite(0, 0, 'map');
 
   /*
-  add icons
+  sub icons
+    * these indices are parallel to playerIDs
   */
-  // Pacific
-  subIcons.push(new SubIcon(130, (1080 - 310), 'pacific'));
-  subIcons.push(new SubIcon(175, (1080 - 215), 'pacific'));
-  subIcons.push(new SubIcon(220, (1080 - 120), 'pacific'));
-
-  // Atlantic
-  subIcons.push(new SubIcon(625, (1080 - 435), 'atlantic'));
-  subIcons.push(new SubIcon(690, (1080 - 330), 'atlantic'));
-  subIcons.push(new SubIcon(755, (1080 - 225), 'atlantic'));
-
-  // Indian
-  subIcons.push(new SubIcon(1250, (1080 - 265), 'indian'));
-  subIcons.push(new SubIcon(1250, (1080 - 180), 'indian'));
-  subIcons.push(new SubIcon(1250, (1080 - 95), 'indian'));
+  subIcons = {
+    pacific : [
+      new SubIcon(130, (1080 - 310), 0),
+      new SubIcon(175, (1080 - 215), 1),
+      new SubIcon(220, (1080 - 120), 2)
+    ],
+    atlantic : [
+      new SubIcon(625, (1080 - 435)),
+      new SubIcon(690, (1080 - 330)),
+      new SubIcon(755, (1080 - 225))
+    ],
+    indian : [
+      new SubIcon(1250, (1080 - 265)),
+      new SubIcon(1250, (1080 - 180)),
+      new SubIcon(1250, (1080 - 95))
+    ]
+  }
 
   // North America
   bomberIcons.push(new BomberIcon(260, (1080 - 500), 'northAmerica'));
