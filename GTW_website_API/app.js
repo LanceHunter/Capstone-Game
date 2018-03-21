@@ -34,7 +34,7 @@ app.use(views(__dirname + '/views', {
   extension: 'pug'
 }));
 
-//Added middlewares
+// Added middlewares
 
 app.use(passport.initialize());
 app.use(passport.session());
