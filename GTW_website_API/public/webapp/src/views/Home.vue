@@ -175,7 +175,7 @@
             </tr>
             <tr>
               <th>North America</th>
-              <td>n/a</td>
+              <td></td>
               <td>0</td>
               <td>2</td>
               <td>3</td>
@@ -185,7 +185,7 @@
             <tr>
               <th>South America</th>
               <td>0</td>
-              <td>n/a</td>
+              <td></td>
               <td>3</td>
               <td>2</td>
               <td>3</td>
@@ -195,7 +195,7 @@
               <th>Europe</th>
               <td>2</td>
               <td>3</td>
-              <td>n/a</td>
+              <td></td>
               <td>1</td>
               <td>0</td>
               <td>5</td>
@@ -205,7 +205,7 @@
               <td>3</td>
               <td>2</td>
               <td>1</td>
-              <td>n/a</td>
+              <td></td>
               <td>1</td>
               <td>3</td>
             </tr>
@@ -215,7 +215,7 @@
               <td>3</td>
               <td>0</td>
               <td>1</td>
-              <td>n/a</td>
+              <td></td>
               <td>1</td>
             </tr>
             <tr>
@@ -225,7 +225,7 @@
               <td>5</td>
               <td>3</td>
               <td>1</td>
-              <td>n/a</td>
+              <td></td>
             </tr>
           </table>
         </h4>

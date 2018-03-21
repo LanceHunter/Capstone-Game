@@ -211,7 +211,8 @@
 //   if (isNaN(current) || current !== number) {
 //     // set new number after
 //     setTimeout(function nextDig() { // eslint-disable-line
-//       digitSegments[number].forEach(function nextDigSeg(digitSegment, index) { // eslint-disable-line
+//       digitSegments[number]
+// .forEach(function nextDigSeg(digitSegment, index) { // eslint-disable-line
 //         setTimeout(function nds() { // eslint-disable-line
 //           segments[digitSegment - 1].classList.add('on');
 //         }, index * 45);
