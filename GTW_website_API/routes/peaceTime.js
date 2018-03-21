@@ -82,7 +82,7 @@ router.post('/yearcomplete', async (ctx) => {
           if (Math.random() > 0.8 && gameObj.continents[continent].forces.bombers.total !== gameObj.continents[continent].forces.bombers.declared) {
             let spyPlayersArr = playersArr.splice(playersArr.indexOf(gameObj.continents[continent].player), 1);
             let recipientPlayer = spyPlayersArr[Math.floor(Math.random()*spyPlayersArr.length)];
-            let spyMessage = gameObj.players[recipientPlayer].spyMessage + `Your spies discovered that ${gameObj.continents[continent].player} has ${gameObj.continents[continent].forces.bombers.total - gameObj.continents[continent].forces.bombers.declared} undeclared bombers in ${continent.name}! `;
+            let spyMessage = gameObj.players[recipientPlayer].spyMessage + `Your spies discovered that ${Object.keys(gameObj.continents[continent].player)[0]} has ${gameObj.continents[continent].forces.bombers.total - gameObj.continents[continent].forces.bombers.declared} undeclared bombers in ${continent}! `;
             gameRef.child(`players/${recipientPlayer}`).update({spyMessage:spyMessage});
           } // End of spy message.
         } // End of checking for bombers.
@@ -93,7 +93,7 @@ router.post('/yearcomplete', async (ctx) => {
             let spyPlayersArr = playersArr.slice(0);
             spyPlayersArr.splice(playersArr.indexOf(gameObj.continents[continent].player), 1);
             let recipientPlayer = spyPlayersArr[Math.floor(Math.random()*spyPlayersArr.length)];
-            let spyMessage = gameObj.players[recipientPlayer].spyMessage + `Your spies discovered that ${gameObj.continents[continent].player} has ${gameObj.continents[continent].forces.icbms.total - gameObj.continents[continent].forces.icbms.declared} undeclared ICBMs in ${continent.name}! `;
+            let spyMessage = gameObj.players[recipientPlayer].spyMessage + `Your spies discovered that ${Object.keys(gameObj.continents[continent].player)[0]} has ${gameObj.continents[continent].forces.icbms.total - gameObj.continents[continent].forces.icbms.declared} undeclared ICBMs in ${continent.name}! `;
             gameRef.child(`players/${recipientPlayer}`).update({spyMessage:spyMessage});
           } // End of spy message roll.
         } // End of checking for ICBMs.
@@ -116,7 +116,7 @@ router.post('/yearcomplete', async (ctx) => {
       }); // End of checking all oceans for weapons.
       gameRef.update({yearsWithNoWeapons : yearsWithNoWeapons}); // Finally, updating yearsWithNoWeapons in Firebase.
       if (yearsWithNoWeapons >= 3) {
-        // If there are no weapons for 3 years, we have world peace and need to handle some knex writes in a seperate function down there.
+        // If there are no weapons for 3 years, we have world peace and need to handle some knex writes further down.
         gameOver = true;
       } else {
         // Otherwise, set the status to 200, all is good.
@@ -130,15 +130,15 @@ router.post('/yearcomplete', async (ctx) => {
     ctx.body = {
       message: 'Invalid game ID entered or year already ended for this player.',
     };
-  } // end of coditional checking if game ID is valid.
+  } // end of conditional checking if game ID is valid.
 
   // If we end up in a situation where the game is over because of a "peace" win (no weapons on earth for 3 years).
-  if (gameOver) { // TEMP set to true to test knex
+  if (gameOver || true) { // TEMP setting to true to make it go.
     let continentArr = Object.keys(gameObj.continents);
     gameRef.update({gameOver : {type: 'worldPeace', winner: 'all'}});
-    let userIDs = await knex.select('id', 'username').from('users').whereIn('username', playersArr);
+    let userTableInfo = await knex.select('*').from('users').whereIn('username', playersArr);
     let gameIDforDB = await knex('games').returning('id').insert({outcome : 'peace'});
-    let playersDatabaseWrite = userIDs.map((entry) => {
+    let playersDatabaseWrite = userTableInfo.map((entry) => {
       let rndMultiplier = Math.floor(gameObj.players[(entry.username)].rnd.damage/500);
       let hitPoints = 0;
       continentArr.forEach((continent) => {
@@ -157,11 +157,62 @@ router.post('/yearcomplete', async (ctx) => {
       };
     });
     await knex('players').insert(playersDatabaseWrite);
-    console.log('Here is the gameIDforDB - ', gameIDforDB);
-    console.log('Here is the playersDatabaseWrite', playersDatabaseWrite);
+    await knex('users').whereIn('username', playersArr).increment('wins', 1);
+    if (playersArr.length === 2) { // If we have two players in the game, updating info for two players.
+      let firstPlayerInfo = userTableInfo.filter((entry) => {
+        return entry.username === playersArr[0];
+      });
+      let updatePlayerOne = {
+        average_score : (((firstPlayerInfo[0].wins + firstPlayerInfo[0].losses) * firstPlayerInfo[0].average_score) + 5000) / (firstPlayerInfo[0].wins + firstPlayerInfo[0].losses)
+      };
+      if (firstPlayerInfo[0].high_score < 5000) {
+        updatePlayerOne.high_score = 5000;
+      }
+      let secondPlayerInfo = userTableInfo.filter((entry) => {
+        return entry.username === playersArr[1];
+      });
+      let updatePlayerTwo = {
+        average_score : (((secondPlayerInfo[0].wins + secondPlayerInfo[0].losses) * secondPlayerInfo[0].average_score) + 5000) / (secondPlayerInfo[0].wins + secondPlayerInfo[0].losses)
+      };
+      if (secondPlayerInfo[0].high_score < 5000) {
+        updatePlayerTwo.high_score = 5000;
+      }
+      await knex('users').where('username', playersArr[0]).update(updatePlayerOne);
+      await knex('users').where('username', playersArr[1]).update(updatePlayerTwo);
+    } else if (playersArr.length === 3) { // If we have three players in the game, updating info for three players.
+      let firstPlayerInfo = userTableInfo.filter((entry) => {
+        return entry.username === playersArr[0];
+      });
+      let updatePlayerOne = {
+        average_score : (((firstPlayerInfo[0].wins + firstPlayerInfo[0].losses) * firstPlayerInfo[0].average_score) + 5000) / (firstPlayerInfo[0].wins + firstPlayerInfo[0].losses)
+      };
+      if (firstPlayerInfo[0].high_score < 5000) {
+        updatePlayerOne.high_score = 5000;
+      }
+      let secondPlayerInfo = userTableInfo.filter((entry) => {
+        return entry.username === playersArr[1];
+      });
+      let updatePlayerTwo = {
+        average_score : (((secondPlayerInfo[0].wins + secondPlayerInfo[0].losses) * secondPlayerInfo[0].average_score) + 5000) / (secondPlayerInfo[0].wins + secondPlayerInfo[0].losses)
+      };
+      if (secondPlayerInfo[0].high_score < 5000) {
+        updatePlayerTwo.high_score = 5000;
+      }
+      let thirdPlayerInfo = userTableInfo.filter((entry) => {
+        return entry.username === playersArr[2];
+      });
+      let updatePlayerThree = {
+        average_score : (((thirdPlayerInfo[0].wins + thirdPlayerInfo[0].losses) * thirdPlayerInfo[0].average_score) + 5000) / (thirdPlayerInfo[0].wins + thirdPlayerInfo[0].losses)
+      };
+      if (thirdPlayerInfo[0].high_score < 5000) {
+        updatePlayerThree.high_score = 5000;
+      }
+      await knex('users').where('username', playersArr[0]).update(updatePlayerOne);
+      await knex('users').where('username', playersArr[1]).update(updatePlayerTwo);
+      await knex('users').where('username', playersArr[2]).update(updatePlayerThree);
+    }
     ctx.status = 200;
-  }
-
+  } // end of conditional checking if game was won through peace.
 }); // end of "yearcomplete" route
 
 
