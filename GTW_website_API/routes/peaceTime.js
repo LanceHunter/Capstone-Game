@@ -103,7 +103,11 @@ router.post('/yearcomplete', async (ctx) => {
           }); // End of going through all the players in the ocean.
         }); // End of checking all oceans for weapons.
         gameRef.update({yearsWithNoWeapons : yearsWithNoWeapons}); // Finally, updating yearsWithNoWeapons in Firebase.
-
+        if (yearsWithNoWeapons >= 3) {
+          // If there are no weapons for 3 years, declare world peace.
+          /// NEED TO ADD Knex writing info about win to database!
+          gameRef.update({gameOver : {type: 'worldPeace', winner: 'all'}});
+        }
 
         ctx.status = 200;
       } else { // If not all players have marked the year as complete.
