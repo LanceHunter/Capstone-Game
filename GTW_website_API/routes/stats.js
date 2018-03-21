@@ -25,43 +25,78 @@ router.get('/leaders(.*)', async ctx => {
       break;
   }
 
-  const leaders = await knex('users')
-  .select(
-    'username',
-    'wins',
-    'losses',
-    'average_score',
-    'high_score',
-    knex.raw('(100.0 * wins / (wins + losses)) AS win_percentage'),
-  )
-  .orderBy(order, 'desc')
-  .limit(100)
+  try {
+    const leaders = await knex('users')
+    .select(
+      'username',
+      'wins',
+      'losses',
+      'average_score',
+      'high_score',
+      knex.raw('(100.0 * wins / (wins + losses)) AS win_percentage'),
+    )
+    .orderBy(order, 'desc')
+    .limit(100)
 
-  ctx.body = {
-    leaders,
+    if (leaders.length) {
+      ctx.body = {
+        status: 'success',
+        data: leaders,
+      }
+    } else {
+      ctx.status = 400;
+      ctx.body = {
+        status: 'error',
+        message: err.message || 'No results found.'
+      };
+    }
+  } catch (err) {
+    ctx.status = 400;
+    ctx.body = {
+      status: 'error',
+      message: err.message || 'Sorry, an error has occurred.'
+    };
   }
+
 });
 
 router.get('/(.*)', async ctx => {
   const username = ctx.request.path.split('/').pop();
 
-  const stats = await knex('users')
-  .where('username', username)
-  .join('players', 'users.id', '=', 'players.user_id')
-  .join('games', 'players.game_id', '=', 'games.id')
-  .select(
-    'won',
-    'outcome',
-    'score',
-    'hit_points',
-    'shots',
-    'rnd_multiplier',
-    knex.raw('(shots * rnd_multiplier) AS damage_caused'),
-    knex.raw('players.created_at AS end_time'),
-  )
+  try {
+    const stats = await knex('users')
+    .where('username', username)
+    .join('players', 'users.id', '=', 'players.user_id')
+    .join('games', 'players.game_id', '=', 'games.id')
+    .select(
+      'won',
+      'outcome',
+      'score',
+      'hit_points',
+      'shots',
+      'rnd_multiplier',
+      knex.raw('(shots * rnd_multiplier) AS damage_caused'),
+      knex.raw('players.created_at AS end_time'),
+    )
 
-  ctx.body = {
-    stats,
+    if (stats.length) {
+      ctx.body = {
+        status: 'success',
+        data: stats,
+      }
+    } else {
+      ctx.status = 400;
+      ctx.body = {
+        status: 'error',
+        message: err.message || 'No results found.'
+      };
+    }
+  } catch (err) {
+    ctx.status = 400;
+    ctx.body = {
+      status: 'error',
+      message: err.message || 'Sorry, an error has occurred.'
+    };
   }
 });
 
