@@ -133,7 +133,7 @@ router.post('/yearcomplete', async (ctx) => {
   } // end of conditional checking if game ID is valid.
 
   // If we end up in a situation where the game is over because of a "peace" win (no weapons on earth for 3 years).
-  if (gameOver || true) { // TEMP setting to true to make it go.
+  if (gameOver) {
     let continentArr = Object.keys(gameObj.continents);
     gameRef.update({gameOver : {type: 'worldPeace', winner: 'all'}});
     let userTableInfo = await knex.select('*').from('users').whereIn('username', playersArr);
@@ -210,7 +210,7 @@ router.post('/yearcomplete', async (ctx) => {
       await knex('users').where('username', playersArr[0]).update(updatePlayerOne);
       await knex('users').where('username', playersArr[1]).update(updatePlayerTwo);
       await knex('users').where('username', playersArr[2]).update(updatePlayerThree);
-    }
+    } // End of conditional checking if there are 2 or 3 players in the game.
     ctx.status = 200;
   } // end of conditional checking if game was won through peace.
 }); // end of "yearcomplete" route
