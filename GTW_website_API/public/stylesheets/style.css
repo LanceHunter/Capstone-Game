@@ -1,8 +1,72 @@
-body {
+/* body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: #00B7FF;
+} */
+
+body {
+  padding: 0px;
+  margin: 0px;
+}
+
+.hudcontainer {
+  width: 1920px;
+  /* height: 24%; */
+  height: 44%;
+  position: absolute;
+  z-index: 1;
+}
+
+.newsholder {
+  width: 1920px;
+  height: 100%;
+  /* position: absolute; */
+  z-index: 2;
+  background-color: rgba(0, 0, 0, 0.4);
+  border: 2px solid white;
+  display: flex;
+}
+
+.gamenews {
+  height: 92%;
+  width: 20%;
+  /* position: absolute; */
+  z-index: 3;
+  border: 2px solid white;
+  margin: 10px;
+  color: white;
+}
+
+.playernews {
+  height: 92%;
+  width: 20%;
+  /* position: absolute; */
+  z-index: 3;
+  border: 2px solid white;
+  margin: 10px;
+  color: white;
+}
+
+h5 {
+  margin: 20px 0px 20px 10px;
+}
+
+h5, h6, li {
+  font-size: 22px;
+}
+
+h6 {
+  margin: 10px 0px 0px 10px;
+}
+
+ul {
+  margin-top: 0px;
+}
+
+li {
+  margin-left: 10px;
+  list-style-type: none;
 }
