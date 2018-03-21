@@ -7,10 +7,11 @@ exports.up = function(knex, Promise) {
     table.integer('game_id').unsigned();
     table.foreign('game_id').references('games.id').onDelete('cascade');
     table.boolean('won');
-    table.integer('hp');
+    table.integer('hit_points');
     table.integer('score');
     table.integer('shots');
     table.float('rnd_multiplier');
+    table.timestamps(true, true);
   });
 };
 
