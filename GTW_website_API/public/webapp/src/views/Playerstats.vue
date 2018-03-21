@@ -17,7 +17,7 @@
     </div>
 
     <div class='message-body bar'>
-      <!-- Score, hit points, shots, R&D -->
+      <!-- Score, hit points, shots, R&D  versus Averages for all players-->
       <h5>Offensive Strategy</h5>
       <svg id='barchart' width='500' height='250'></svg>
     </div>
@@ -31,14 +31,16 @@
 <script>
 const d3 = require('d3');
 
+// Circle Chart
 function InitCircleChart() {
   const dataset = [{
     label: 'Wins',
     'test-score': 90,
-  }, {
-    label: 'Losses',
-    'test-score': 75,
   },
+  // {
+  //   label: 'Losses',
+  //   'test-score': 75,
+  // },
   ];
 
   const width = 205;
@@ -109,7 +111,7 @@ function InitCircleChart() {
       // .curve(d3.curveBasis);
       const interpolate = d3.interpolate(0, 360 * (d['test-score'] / 100) * Math.PI / 180);
       // let interpolate = d3.curve(0, 360 * (d['test-score'] / 100) * Math.PI / 180);
-      return function rt(t) {
+      return function (t) {
         d.endAngle = interpolate(t);
         return drawArc(d);
       };
@@ -118,6 +120,7 @@ function InitCircleChart() {
 }
 
 
+// Line Chart Graph
 function InitLineChart() {
   const data = [{
     sale: '202',
@@ -248,13 +251,16 @@ export default {
   font-family: $family-mono;
   height: 900px;
   margin-bottom: -8px;
-  padding-top: 100px;
 }
 
 h1 {
-  font-size: 30px;
+  /* font-size: 30px;
   color: $primary;
-  margin-bottom: 50px;
+  margin-bottom: 50px; */
+  padding: 120px 0px 40px 0px;
+  font-size: 40px;
+  font-family: $family-mono;
+  color: $danger;
 }
 
 h5 {
