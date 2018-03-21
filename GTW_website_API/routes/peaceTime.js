@@ -1,11 +1,13 @@
 'use strict';
 
 // Firebase setup.
-const admin = require("firebase-admin");
+const admin = require('firebase-admin');
 const firebase = admin.database();
 const ref = firebase.ref('gameInstance');
 
 // Getting Knex
+const config = require('../knexfile')[process.env.ENV || 'development'];
+const knex = require('knex')(config);
 
 
 //Setting up koa routing
@@ -25,104 +27,121 @@ router.post('/yearcomplete', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
-  let allComplete = true;
+  let allComplete = true; // Boolean for if everyone marked the year as complete.
+  let gameOver = false; // Boolean for if we've reached a win condition.
+  let gameObj;
+
   await gameRef.once('value', (snap) => {
-    if (snap.val() && !(snap.val().players[playerID].yearComplete)) { // Verifying that game ID is valid and that player hasn't double-ended year.
-      gameRef.child(`players/${playerID}`).update({
-        spyMessage : '',
-        yearComplete: true
-      });
-      let playersArr = Object.keys(snap.val().players);
-
-      playersArr.forEach((player) => {
-        if (player !== playerID && !snap.val().players[player].yearComplete) {
-          allComplete = false;
-        }
-      });
-
-      if (allComplete) {
-        console.log(`They're all complete, time for next year!`);
-        let newYear = snap.val().year + 1;
-        console.log('The new year is - ', newYear);
-        gameRef.update({year : newYear}); // Updating the year.
-        playersArr.forEach((player) => {
-          let nextYearBudget = 0;
-          let myContinentsArr = Object.keys(snap.val().players[player].continents);
-          myContinentsArr.forEach((continent) => {
-            nextYearBudget += snap.val().continents[continent].budget;
-            nextYearBudget -= snap.val().continents[continent].forces.bombers.total * bomberMaint;
-            nextYearBudget -= snap.val().continents[continent].forces.icbms.total * icbmMaint;
-          }); // End of checking each continent.
-          let myOceansArr = Object.keys(snap.val().players[player].oceans);
-          myOceansArr.forEach((ocean) => {
-            nextYearBudget -= snap.val().oceans[ocean].subs[player].total * subMaint;
-          }); // End of checking each ocean.
-          gameRef.child(`players/${player}`).update({currentBudget : nextYearBudget});
-          gameRef.child(`players/${player}`).update({yearComplete : false});
-        }); // End of setting the new budget for each player.
-
-        /// Here is where we see if there are no weapons on earth at all.
-        let yearsWithNoWeapons = snap.val().yearsWithNoWeapons + 1;
-        let allContinentsArr = Object.keys(snap.val().continents);
-        let allOceansArr = Object.keys(snap.val().oceans);
-
-        allContinentsArr.forEach((continent) => {
-          if (snap.val().continents[continent].forces.bombers.total > 0) {
-            yearsWithNoWeapons = 0;
-            if (Math.random() > 0.8 && snap.val().continents[continent].forces.bombers.total !== snap.val().continents[continent].forces.bombers.declared) {
-              let spyPlayersArr = playersArr.splice(playersArr.indexOf(snap.val().continents[continent].player), 1);
-              let recipientPlayer = spyPlayersArr[Math.floor(Math.random()*spyPlayersArr.length)];
-              let spyMessage = snap.val().players[recipientPlayer].spyMessage + `Your spies discovered that ${snap.val().continents[continent].player} has ${snap.val().continents[continent].forces.bombers.total - snap.val().continents[continent].forces.bombers.declared} undeclared bombers in ${continent.name}! `;
-              gameRef.child(`players/${recipientPlayer}`).update({spyMessage:spyMessage});
-            } // End of spy message.
-          } // End of checking for bombers.
-
-          if (snap.val().continents[continent].forces.icbms.total > 0) {
-            yearsWithNoWeapons = 0;
-            if (Math.random() > 0.7 && snap.val().continents[continent].forces.icbms.total !== snap.val().continents[continent].forces.icbms.declared) {
-              let spyPlayersArr = playersArr.slice(0);
-              spyPlayersArr.splice(playersArr.indexOf(snap.val().continents[continent].player), 1);
-              let recipientPlayer = spyPlayersArr[Math.floor(Math.random()*spyPlayersArr.length)];
-              let spyMessage = snap.val().players[recipientPlayer].spyMessage + `Your spies discovered that ${snap.val().continents[continent].player} has ${snap.val().continents[continent].forces.icbms.total - snap.val().continents[continent].forces.icbms.declared} undeclared ICBMs in ${continent.name}! `;
-              gameRef.child(`players/${recipientPlayer}`).update({spyMessage:spyMessage});
-            } // End of spy message roll.
-          } // End of checking for ICBMs.
-        }); // End of checking all continents for weapons.
-
-        allOceansArr.forEach((ocean) => {
-          let playerSubsArr = Object.keys(snap.val().oceans[ocean].subs);
-          playerSubsArr.forEach((playerInOcean) => {
-            if (snap.val().oceans[ocean].subs[playerInOcean].total > 0) {
-              yearsWithNoWeapons = 0;
-              if (Math.random() > 0.9 && snap.val().oceans[ocean].subs[playerInOcean].total !== snap.val().oceans[ocean].subs[playerInOcean].declared) {
-                let spyPlayersArr = playersArr.slice(0);
-                spyPlayersArr.splice(playersArr.indexOf(playerInOcean), 1);
-                let recipientPlayer = spyPlayersArr[Math.floor(Math.random()*spyPlayersArr.length)];
-                let spyMessage = snap.val().players[recipientPlayer].spyMessage + `Your spies discovered that ${playerInOcean} has ${snap.val().oceans[ocean].subs[playerInOcean].total - snap.val().oceans[ocean].subs[playerInOcean].declared} undeclared submarines in the ${ocean.name}! `;
-                gameRef.child(`players/${recipientPlayer}`).update({spyMessage:spyMessage});
-              } // End of conditional checking spy roll fail.
-            } // End of conditional checking if there are subs in the ocean for that player.
-          }); // End of going through all the players in the ocean.
-        }); // End of checking all oceans for weapons.
-        gameRef.update({yearsWithNoWeapons : yearsWithNoWeapons}); // Finally, updating yearsWithNoWeapons in Firebase.
-        if (yearsWithNoWeapons >= 3) {
-          // If there are no weapons for 3 years, declare world peace.
-          /// NEED TO ADD Knex writing info about win to database!
-          gameRef.update({gameOver : {type: 'worldPeace', winner: 'all'}});
-        }
-
-        ctx.status = 200;
-      } else { // If not all players have marked the year as complete.
-        ctx.status = 200;
-      } // End of conditional checking to see if all players have marked the year as complete.
-    } else { // If game ID isn't valid or player already ended this year.
-      ctx.status = 400;
-      ctx.body = {
-        message: 'Invalid game ID entered or year already ended for this player.',
-      };
-    } // end of coditional checking if game ID is valid.
+    gameObj = snap.val();
   }); // end of grab of firebase data for game.
+
+  // Getting an array of the players.
+  let playersArr = Object.keys(gameObj.players);
+
+  if (gameObj && !(gameObj.players[playerID].yearComplete)) { // Verifying that game ID is valid and that player hasn't double-ended year.
+    gameRef.child(`players/${playerID}`).update({
+      spyMessage : '',
+      yearComplete: true
+    });
+
+    playersArr.forEach((player) => {
+      if (player !== playerID && !gameObj.players[player].yearComplete) {
+        allComplete = false;
+      }
+    });
+
+    if (allComplete) {
+      console.log(`They're all complete, time for next year!`);
+      let newYear = gameObj.year + 1;
+      console.log('The new year is - ', newYear);
+      gameRef.update({year : newYear}); // Updating the year.
+      playersArr.forEach((player) => {
+        let nextYearBudget = 0;
+        let myContinentsArr = Object.keys(gameObj.players[player].continents);
+        myContinentsArr.forEach((continent) => {
+          nextYearBudget += gameObj.continents[continent].budget;
+          nextYearBudget -= gameObj.continents[continent].forces.bombers.total * bomberMaint;
+          nextYearBudget -= gameObj.continents[continent].forces.icbms.total * icbmMaint;
+        }); // End of checking each continent.
+        let myOceansArr = Object.keys(gameObj.players[player].oceans);
+        myOceansArr.forEach((ocean) => {
+          nextYearBudget -= gameObj.oceans[ocean].subs[player].total * subMaint;
+        }); // End of checking each ocean.
+        gameRef.child(`players/${player}`).update({currentBudget : nextYearBudget});
+        gameRef.child(`players/${player}`).update({yearComplete : false});
+      }); // End of setting the new budget for each player.
+
+      /// Here is where we see if there are no weapons on earth at all.
+      let yearsWithNoWeapons = gameObj.yearsWithNoWeapons + 1;
+      let allContinentsArr = Object.keys(gameObj.continents);
+      let allOceansArr = Object.keys(gameObj.oceans);
+
+      allContinentsArr.forEach((continent) => {
+        if (gameObj.continents[continent].forces.bombers.total > 0) {
+          yearsWithNoWeapons = 0;
+          if (Math.random() > 0.8 && gameObj.continents[continent].forces.bombers.total !== gameObj.continents[continent].forces.bombers.declared) {
+            let spyPlayersArr = playersArr.splice(playersArr.indexOf(gameObj.continents[continent].player), 1);
+            let recipientPlayer = spyPlayersArr[Math.floor(Math.random()*spyPlayersArr.length)];
+            let spyMessage = gameObj.players[recipientPlayer].spyMessage + `Your spies discovered that ${gameObj.continents[continent].player} has ${gameObj.continents[continent].forces.bombers.total - gameObj.continents[continent].forces.bombers.declared} undeclared bombers in ${continent.name}! `;
+            gameRef.child(`players/${recipientPlayer}`).update({spyMessage:spyMessage});
+          } // End of spy message.
+        } // End of checking for bombers.
+
+        if (gameObj.continents[continent].forces.icbms.total > 0) {
+          yearsWithNoWeapons = 0;
+          if (Math.random() > 0.7 && gameObj.continents[continent].forces.icbms.total !== gameObj.continents[continent].forces.icbms.declared) {
+            let spyPlayersArr = playersArr.slice(0);
+            spyPlayersArr.splice(playersArr.indexOf(gameObj.continents[continent].player), 1);
+            let recipientPlayer = spyPlayersArr[Math.floor(Math.random()*spyPlayersArr.length)];
+            let spyMessage = gameObj.players[recipientPlayer].spyMessage + `Your spies discovered that ${gameObj.continents[continent].player} has ${gameObj.continents[continent].forces.icbms.total - gameObj.continents[continent].forces.icbms.declared} undeclared ICBMs in ${continent.name}! `;
+            gameRef.child(`players/${recipientPlayer}`).update({spyMessage:spyMessage});
+          } // End of spy message roll.
+        } // End of checking for ICBMs.
+      }); // End of checking all continents for weapons.
+
+      allOceansArr.forEach((ocean) => {
+        let playerSubsArr = Object.keys(gameObj.oceans[ocean].subs);
+        playerSubsArr.forEach((playerInOcean) => {
+          if (gameObj.oceans[ocean].subs[playerInOcean].total > 0) {
+            yearsWithNoWeapons = 0;
+            if (Math.random() > 0.9 && gameObj.oceans[ocean].subs[playerInOcean].total !== gameObj.oceans[ocean].subs[playerInOcean].declared) {
+              let spyPlayersArr = playersArr.slice(0);
+              spyPlayersArr.splice(playersArr.indexOf(playerInOcean), 1);
+              let recipientPlayer = spyPlayersArr[Math.floor(Math.random()*spyPlayersArr.length)];
+              let spyMessage = gameObj.players[recipientPlayer].spyMessage + `Your spies discovered that ${playerInOcean} has ${gameObj.oceans[ocean].subs[playerInOcean].total - gameObj.oceans[ocean].subs[playerInOcean].declared} undeclared submarines in the ${ocean.name}! `;
+              gameRef.child(`players/${recipientPlayer}`).update({spyMessage:spyMessage});
+            } // End of conditional checking spy roll fail.
+          } // End of conditional checking if there are subs in the ocean for that player.
+        }); // End of going through all the players in the ocean.
+      }); // End of checking all oceans for weapons.
+      gameRef.update({yearsWithNoWeapons : yearsWithNoWeapons}); // Finally, updating yearsWithNoWeapons in Firebase.
+      if (yearsWithNoWeapons >= 3) {
+        // If there are no weapons for 3 years, we have world peace and need to handle some knex writes in a seperate function down there.
+        gameOver = true;
+      } else {
+        // Otherwise, set the status to 200, all is good.
+        ctx.status = 200;
+      }
+    } else { // If not all players have marked the year as complete.
+      ctx.status = 200;
+    } // End of conditional checking to see if all players have marked the year as complete.
+  } else { // If game ID isn't valid or player already ended this year.
+    ctx.status = 400;
+    ctx.body = {
+      message: 'Invalid game ID entered or year already ended for this player.',
+    };
+  } // end of coditional checking if game ID is valid.
+
+  // If we end up in a situation where the game is over because of a "peace" win (no weapons on earth for 3 years).
+  if (gameOver) {
+    gameRef.update({gameOver : {type: 'worldPeace', winner: 'all'}});
+    let returnVal = await knex('users').where({username : 'test0'}).select('wins');
+    console.log('Here is the returnVal', returnVal);
+    ctx.status = 200;
+  }
+
 }); // end of "yearcomplete" route
+
 
 router.put('/deploybomber', async (ctx) => {
   let gameID = ctx.request.body.gameID;
