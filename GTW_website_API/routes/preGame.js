@@ -17,9 +17,7 @@ const router = require('koa-router')();
 
 router.prefix('/api/pregame');
 
-console.log('checking setup');
 router.post('/setup', async (ctx) => {
-  console.log('in setup');
   // Will need some form of verification to make sure we've got a valid board.
   let gameID = Math.floor(Math.random()*10000);
   let gameInstanceRef = ref.child(`game${gameID}`);
