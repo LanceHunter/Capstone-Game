@@ -41,7 +41,7 @@ router.get('/leaders(.*)', async ctx => {
     if (leaders.length) {
       ctx.body = {
         status: 'success',
-        data: leaders,
+        leaders,
       }
     } else {
       ctx.status = 400;
@@ -82,7 +82,7 @@ router.get('/(.*)', async ctx => {
     if (stats.length) {
       ctx.body = {
         status: 'success',
-        data: stats,
+        stats,
       }
     } else {
       ctx.status = 400;

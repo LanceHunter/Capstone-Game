@@ -10,7 +10,7 @@
           <th>Player Name</th>
           <th>Win Percentage</th>
           <th>Win-Loss</th>
-          <th>Total Score</th>
+          <th>High Score</th>
           <th>Average Score</th>
           <th>Dashboard</th>
         </tr>
@@ -21,65 +21,20 @@
           <th>Player Name</th>
           <th>Win Percentage</th>
           <th>Win-Loss</th>
-          <th>Total Score</th>
+          <th>High Score</th>
           <th>Average Score</th>
           <th>Dashboard</th>
         </tr>
       </tfoot>
       <tbody>
-        <tr>
-          <th>1</th>
-          <td>Johnny</td>
-          <td>91%</td>
-          <td>35-5</td>
-          <td>5,470</td>
-          <td>212</td>
+        <tr v-for="player of leaders" :key="player.rank">
+          <th> {{ player.rank }} </th>
+          <td> {{ player.username }} </td>
+          <td> {{ Number(player.win_percentage).toFixed(1) + '%' }} </td>
+          <td> {{ player.wins }} - {{ player.losses }} </td>
+          <td> {{ player.high_score }} </td>
+          <td> {{ player.average_score }} </td>
           <td><a href="/playerstats"><i class="fas fa-tachometer-alt"></i></a></td>
-        </tr>
-        <tr>
-          <th>2</th>
-          <td>Vlidamir</td>
-          <td>85%</td>
-          <td>30-8</td>
-          <td>4,900</td>
-          <td>175</td>
-          <td><a href="/playerstats"><i class="fas fa-tachometer-alt"></i></a></td>
-        </tr>
-        <tr>
-          <th>3</th>
-          <td>Liu</td>
-          <td>83%</td>
-          <td>29-9</td>
-          <td>4,775</td>
-          <td>165</td>
-          <td><a href="/playerstats"><i class="fas fa-tachometer-alt"></i></a></td>
-        </tr>
-        <tr>
-          <th>4</th>
-          <td>Mario</td>
-          <td>37%</td>
-          <td>12-29</td>
-          <td>1,220</td>
-          <td>58</td>
-          <td><a href="/playerstats"><i class="fas fa-tachometer-alt"></i></a></td>
-        </tr>
-        <tr>
-          <th>5</th>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <th>6</th>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
         </tr>
       </tbody>
     </table>
@@ -159,72 +114,90 @@
 
 <script>
 // clock
-// const digitSegments = [
-//   [1, 2, 3, 4, 5, 6],
-//   [2, 3],
-//   [1, 2, 7, 5, 4],
-//   [1, 2, 7, 3, 4],
-//   [6, 7, 2, 3],
-//   [1, 6, 7, 3, 4],
-//   [1, 6, 5, 4, 3, 7],
-//   [1, 2, 3],
-//   [1, 2, 3, 4, 5, 6, 7],
-//   [1, 2, 7, 3, 6],
-// ];
-//
-// document.addEventListener('DOMContentLoaded', function clock() { // eslint-disable-line
-//   const _hours = document.querySelectorAll('.hours'); // eslint-disable-line
-//   const _minutes = document.querySelectorAll('.minutes'); // eslint-disable-line
-//   const _seconds = document.querySelectorAll('.seconds'); // eslint-disable-line
-//
-//   setInterval(function clockTime() { // eslint-disable-line
-//     const date = new Date();
-//     const hours = date.getHours();
-//     const minutes = date.getMinutes();
-//     const seconds = date.getSeconds();
-//
-//     setNumber(_hours[0], Math.floor(hours / 10), 1); // eslint-disable-line
-//     setNumber(_hours[1], hours % 10, 1); // eslint-disable-line
-//
-//     setNumber(_minutes[0], Math.floor(minutes / 10), 1); // eslint-disable-line
-//     setNumber(_minutes[1], minutes % 10, 1); // eslint-disable-line
-//
-//     setNumber(_seconds[0], Math.floor(seconds / 10), 1); // eslint-disable-line
-//     setNumber(_seconds[1], seconds % 10, 1); // eslint-disable-line
-//   }, 1000);
-// });
-//
-// const setNumber = function clockNumber(digit, number, on) { // eslint-disable-line
-//   const segments = digit.querySelectorAll('.segment');
-//   const current = parseInt(digit.getAttribute('data-value')); // eslint-disable-line
-//
-//   // only switch if number has changed or wasn't set
-//   if (!isNaN(current) && current !== number) { // eslint-disable-line
-//     // unset previous number
-//     digitSegments[current].forEach(function digits(digitSegment, index) { // eslint-disable-line
-//       setTimeout(function digitSeg() { // eslint-disable-line
-//         segments[digitSegment - 1].classList.remove('on');
-//       }, index * 45);
-//     });
-//   }
-//
-//   if (isNaN(current) || current !== number) {
-//     // set new number after
-//     setTimeout(function nextDig() { // eslint-disable-line
-//       digitSegments[number]
-// .forEach(function nextDigSeg(digitSegment, index) { // eslint-disable-line
-//         setTimeout(function nds() { // eslint-disable-line
-//           segments[digitSegment - 1].classList.add('on');
-//         }, index * 45);
-//       });
-//     }, 250);
-//     digit.setAttribute('data-value', number);
-//   }
-// };
+const digitSegments = [
+  [1, 2, 3, 4, 5, 6],
+  [2, 3],
+  [1, 2, 7, 5, 4],
+  [1, 2, 7, 3, 4],
+  [6, 7, 2, 3],
+  [1, 6, 7, 3, 4],
+  [1, 6, 5, 4, 3, 7],
+  [1, 2, 3],
+  [1, 2, 3, 4, 5, 6, 7],
+  [1, 2, 7, 3, 6],
+];
 
+document.addEventListener('DOMContentLoaded', function clock() { // eslint-disable-line
+  const _hours = document.querySelectorAll('.hours'); // eslint-disable-line
+  const _minutes = document.querySelectorAll('.minutes'); // eslint-disable-line
+  const _seconds = document.querySelectorAll('.seconds'); // eslint-disable-line
+
+  setInterval(function clockTime() { // eslint-disable-line
+    const date = new Date();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+
+    setNumber(_hours[0], Math.floor(hours / 10), 1); // eslint-disable-line
+    setNumber(_hours[1], hours % 10, 1); // eslint-disable-line
+
+    setNumber(_minutes[0], Math.floor(minutes / 10), 1); // eslint-disable-line
+    setNumber(_minutes[1], minutes % 10, 1); // eslint-disable-line
+
+    setNumber(_seconds[0], Math.floor(seconds / 10), 1); // eslint-disable-line
+    setNumber(_seconds[1], seconds % 10, 1); // eslint-disable-line
+  }, 1000);
+});
+
+const setNumber = function clockNumber(digit, number, on) { // eslint-disable-line
+  const segments = digit.querySelectorAll('.segment');
+  const current = parseInt(digit.getAttribute('data-value')); // eslint-disable-line
+
+  // only switch if number has changed or wasn't set
+  if (!isNaN(current) && current !== number) { // eslint-disable-line
+    // unset previous number
+    digitSegments[current].forEach(function digits(digitSegment, index) { // eslint-disable-line
+      setTimeout(function digitSeg() { // eslint-disable-line
+        segments[digitSegment - 1].classList.remove('on');
+      }, index * 45);
+    });
+  }
+
+  if (isNaN(current) || current !== number) {
+    // set new number after
+    setTimeout(function nextDig() { // eslint-disable-line
+      digitSegments[number]
+.forEach(function nextDigSeg(digitSegment, index) { // eslint-disable-line
+        setTimeout(function nds() { // eslint-disable-line
+          segments[digitSegment - 1].classList.add('on');
+        }, index * 45);
+      });
+    }, 250);
+    digit.setAttribute('data-value', number);
+  }
+};
+
+import stats from '../common/stats.service';
 
 export default {
   name: 'Leaderboard',
+  data() {
+    return {
+      leaders: this.getLeaders('percentage'),
+    }
+  },
+  methods: {
+    getLeaders(order) {
+      stats.leaders(order)
+        .then((leaders) => {
+          leaders.forEach((player, index) => {
+            player.rank = index + 1;
+          });
+
+          this.leaders = leaders;
+        });
+    },
+  },
 };
 </script>
 
