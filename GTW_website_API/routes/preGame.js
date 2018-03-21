@@ -18,6 +18,7 @@ const router = require('koa-router')();
 router.prefix('/api/pregame');
 
 router.post('/setup', async (ctx) => {
+  console.log('in setup');
   // Will need some form of verification to make sure we've got a valid board.
   let gameID = Math.floor(Math.random()*10000);
   let gameInstanceRef = ref.child(`game${gameID}`);
@@ -241,8 +242,8 @@ router.put('/joingame', async (ctx) => {
 
   await gameRef.once('value', (snap) => {
     if (snap.val()) {
-      playersRef.once('value', (playersSnap) => {
-        if (playersSnap.numChildren() < 6) {
+      if (snap.val().players) { // checking to see if there's a 'players' node yet.
+        if (Object.keys(snap.val().players).length < 3) {
           let playerObj = {};
           playerObj[playerID] = {
             totalDeclaredForces : 0,
@@ -258,14 +259,33 @@ router.put('/joingame', async (ctx) => {
             spyMessage : '',
           };
           playersRef.update(playerObj); // End of the playersRef update.
+          console.log('Setting ctx-status');
           ctx.status = 200;
-        } else { // If the game is already has 6 players.
+        } else { // If the game is already has 3 players.
           ctx.status = 400;
           ctx.body = {
             message: 'Game is already full!',
           };
         } // End of conditional checking the number of players.
-      }); // End of the firebase snap checking player values.
+      } else { // if there is no player node
+        let playerObj = {};
+        playerObj[playerID] = {
+          totalDeclaredForces : 0,
+          continents : true,
+          oceans : true,
+          rnd : {
+            speed : 0,
+            damage : 0
+          },
+          currentBudget : 0,
+          yearComplete : false,
+          shotsFired : 0,
+          spyMessage : '',
+        };
+        playersRef.update(playerObj); // End of the playersRef update.
+        console.log('Setting ctx-status');
+        ctx.status = 200;
+      } // end of conditional checking if there is a player node.
     } else { // If game ID is not valid.
       ctx.status = 400;
       ctx.body = {
