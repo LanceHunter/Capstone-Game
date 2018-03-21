@@ -9,7 +9,6 @@ const ref = firebase.ref('gameInstance');
 const config = require('../knexfile')[process.env.ENV || 'development'];
 const knex = require('knex')(config);
 
-
 //Setting up koa routing
 const router = require('koa-router')();
 
