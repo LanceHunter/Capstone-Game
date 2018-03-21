@@ -153,28 +153,88 @@
         <h3>
           Continents
         </h3>
-        <h4>
-          <ul>
-            <li>North America - Budget: 1000 - HP: 500 - Oceans: AO, PO - Distance: SA=0,
-            AA=3, EU=2, AF=3, AU=4</li>
-            <li>South America - Budget: 750 - HP: 750 - Oceans: AO, PO - Distance: NA=0,
-            AA=3, EU=3, AF=2, AU=4</li>
-            <li>Asia - Budget: 500 - HP: 1000 - Oceans: IO, PO - Distance: NA=3, SA=3,
-            EU=0, AF=1, AU=1</li>
-            <li>Europe - Budget: 1100 - HP: 400 - Oceans: AO - Distance: NA=2, SA=3,
-            AA=0, AF=1, AU=5</li>
-            <li>Africa - Budget: 600 - HP: 900 - Oceans: AO, IO - Distance: NA=3, SA=2,
-            AA=1, EU=1, AU=3</li>
-            <li>Australia - Budget: 800 - HP: 700 - Oceans: IO, PO - Distance: NA=4, SA=4,
-            AA=1, EU=5, AF=3</li>
-          </ul>
+          <!-- <ul> -->
+            <h4>North America - Budget: 1000 - HP: 500 - Oceans: AO, PO</h4>
+            <h4>South America - Budget: 750 - HP: 750 - Oceans: AO, PO</h4>
+            <h4>Asia - Budget: 500 - HP: 1000 - Oceans: IO, PO</h4>
+            <h4>Europe - Budget: 1100 - HP: 400 - Oceans: AO</h4>
+            <h4>Africa - Budget: 600 - HP: 900 - Oceans: AO, IO</h4>
+            <h4>Australia - Budget: 800 - HP: 700 - Oceans: IO, PO</h4>
+          <!-- </ul> -->
+          <h3>Distance Table</h3>
+          <h4>
+          <table class="table">
+            <tr>
+              <th></th>
+              <th>North America</th>
+              <th>South America</th>
+              <th>Europe</th>
+              <th>Africa</th>
+              <th>Asia</th>
+              <th>Australia</th>
+            </tr>
+            <tr>
+              <th>North America</th>
+              <td></td>
+              <td>0</td>
+              <td>2</td>
+              <td>3</td>
+              <td>3</td>
+              <td>4</td>
+            </tr>
+            <tr>
+              <th>South America</th>
+              <td>0</td>
+              <td></td>
+              <td>3</td>
+              <td>2</td>
+              <td>3</td>
+              <td>4</td>
+            </tr>
+            <tr>
+              <th>Europe</th>
+              <td>2</td>
+              <td>3</td>
+              <td></td>
+              <td>1</td>
+              <td>0</td>
+              <td>5</td>
+            </tr>
+            <tr>
+              <th>Africa</th>
+              <td>3</td>
+              <td>2</td>
+              <td>1</td>
+              <td></td>
+              <td>1</td>
+              <td>3</td>
+            </tr>
+            <tr>
+              <th>Asia</th>
+              <td>3</td>
+              <td>3</td>
+              <td>0</td>
+              <td>1</td>
+              <td></td>
+              <td>1</td>
+            </tr>
+            <tr>
+              <th>Australia</th>
+              <td>4</td>
+              <td>4</td>
+              <td>5</td>
+              <td>3</td>
+              <td>1</td>
+              <td></td>
+            </tr>
+          </table>
         </h4>
       </div>
 
     </div>
 
     <div class="continue">
-      <h3>Signin - Signup - or Continue without signing in.</h3>
+      <!-- <h3>Signin - Signup - or Continue without signing in.</h3> -->
       <a href="/login"><button class="button is-small is-danger">Sign In</button></a>
       <a href="/login/new"><button class="button is-small is-danger">Sign Up</button></a>
     </div>
@@ -214,7 +274,7 @@ export default {
   font-family: $family-mono;
   padding-bottom: 30px;
   margin-bottom: -8px;
-  height: 980px;
+  height: 1200px;
 }
 
 #tab_container .container_item {
@@ -285,6 +345,21 @@ h4 {
 ul {
   list-style: disc;
   padding-left: 5px;
+}
+
+.table {
+  margin: auto;
+  // background-color: #ffffff;
+  border-radius: 5px;
+  background-color:rgba(0, 0, 0, 0.8);
+  color: white;
+  border: 1px solid white;
+}
+
+.table thead th, .table tfoot th, .table th, .table td {
+  text-align: center;
+  color: white;
+  font-size: 14px;
 }
 
 #app {
