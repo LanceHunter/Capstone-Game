@@ -5,6 +5,8 @@ const admin = require("firebase-admin");
 const firebase = admin.database();
 const ref = firebase.ref('gameInstance');
 
+// Getting Knex
+
 
 //Setting up koa routing
 const router = require('koa-router')();
