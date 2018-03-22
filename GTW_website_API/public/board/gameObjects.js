@@ -16,46 +16,79 @@ class ICBMLaunch {
 // globals
 
 class SubIcon {
-  constructor(x, y, ocean, player) {
+  constructor(x, y, ocean, playerID) {
     this.sprite = phaser.add.sprite(x, y, 'submarine');
     this.sprite.anchor.set(0, 1);
     this.sprite.inputEnabled = true;
     this.launches = [];
-    this.sprite.tint = colors[playerIDs.indexOf(player)];
-    console.log(colors[playerIDs.indexOf(player)], colors);
+    this.sprite.tint = colors[playerIDs.indexOf(playerID)];
 
-    this.player = player;
+    this.playerID = playerID;
     this.ocean = ocean;
 
     this.sprite.events.onInputDown.add(() => {
-      console.log(this.ocean);
-      this.launches.push(new SubLaunch('fakeplayer', {x: this.sprite.centerX, y: this.sprite.centerY}));
+      this.launches.push(new SubLaunch(this.playerID, {x: this.sprite.centerX, y: this.sprite.centerY}, this.ocean));
     }, this);
 
     this.sprite.events.onInputUp.add(() => {
       this.launches[this.launches.length - 1].launch({x: 10, y: 10});
     }, this);
+  }
+}
 
-    console.log(playerIDs.indexOf(player));
+class CapitalIcon {
+  constructor(x, y, continent) {
+    this.sprite = phaser.add.sprite(x, y, 'capital');
+    this.sprite.anchor.set(0, 1);
+    this.sprite.inputEnabled = true;
+    this.continent = continent;
+    this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
+  }
+}
+
+class BomberIcon {
+  constructor(x, y, continent) {
+    this.sprite = phaser.add.sprite(x, y, 'bomber');
+    this.sprite.anchor.set(0, 1);
+    this.sprite.inputEnabled = true;
+    this.continent = continent;
+    this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
+  }
+}
+
+class MissileIcon {
+  constructor(x, y, continent) {
+    this.sprite = phaser.add.sprite(x, y, 'missile');
+    this.sprite.anchor.set(0, 1);
+    this.sprite.inputEnabled = true;
+    this.continent = continent;
+    this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
   }
 }
 
 class SubLaunch {
   // these will be created whenever a players's sub-deploy thing is activated
-  constructor(player, origin) {
+  constructor(playerID, origin, ocean) {
     // grab our attributes
-    this.player = player;
+    this.playerID = playerID;
     this.origin = {x: origin.x, y: origin.y};
 
-    // set up the origin indicator
+    // set up the origin indicator, doesn't move
     this.originIndicator = phaser.add.sprite(this.origin.x, this.origin.y, 'circle');
-    this.originIndicator.tint = 0xff0000;
+    this.originIndicator.tint = colors[playerIDs.indexOf(playerID)];
     this.originIndicator.anchor.set(0.5);
+
+    // set up the target indicator, follows the mouse/pointer
+    this.targetIndicator = phaser.add.sprite(origin.x, origin.y, 'circle');
+    this.targetIndicator.position = phaser.input.mousePointer.position;
+    this.targetIndicator.tint = colors[playerIDs.indexOf(playerID)];
+    this.targetIndicator.anchor.set(0.5);
 
     // this is fake, it will be determined by the origin
     this.ocean = game.oceans[0];
 
-    if (true) {
+    // make sure they have inventory
+    if (game.players[playerID]) {
       // some fake stuff for testing
       this.enrouteCount = 0;
       this.explodingCount = 0;
@@ -86,6 +119,9 @@ class SubLaunch {
     let theta = (this.frame / 15)
     this.originIndicator.scale.set((Math.sin(theta) + 2) / 5);
     this.originIndicator.alpha = (Math.sin(theta + Math.PI) + 2) / 3;
+
+    this.targetIndicator.scale.set((Math.sin(theta) + 2) / 5);
+    this.targetIndicator.alpha = (Math.sin(theta + Math.PI) + 2) / 3;
   }
 
   // when user releases drag on a destination
@@ -94,6 +130,7 @@ class SubLaunch {
     this.state = 'countdown';
     this.originIndicator.destroy();
 
+    this.targetIndicator.position = {x: phaser.input.mousePointer.position.x, y: phaser.input.mousePointer.position.y};
     // set up the countdown indicator
     // this.countdownIndicator = phaser.add.sprite(origin.x, origin.y, 'circle');
     // this.countdownIndicator.tint = player.color;
@@ -103,7 +140,7 @@ class SubLaunch {
 
   // after a destination is verified, start the countdown
   countdown() {
-    console.log('countdown');
+    let theta = (this.frame / 15)
     // figure out which of the launch points to use
     // start the countdown clock and animation
     // when the countdown is over, this.state = 'enroute'
@@ -112,6 +149,8 @@ class SubLaunch {
     } else {
       this.count++;
       // continue countdown animation
+      this.targetIndicator.scale.set((Math.sin(theta) + 2) / 5);
+      this.targetIndicator.alpha = (Math.sin(theta + Math.PI) + 2) / 3;
     }
   }
 
@@ -143,27 +182,6 @@ class SubLaunch {
     // when done exploding, this.state = 'exploded'
   }
 
-}
-
-class CapitalIcon {
-  constructor(x, y, continent) {
-    this.sprite = phaser.add.sprite(x, y, 'capital').anchor.set(0, 1);
-    this.continent = continent;
-  }
-}
-
-class BomberIcon {
-  constructor(x, y, continent) {
-    this.sprite = phaser.add.sprite(x, y, 'bomber').anchor.set(0, 1);
-    this.continent = continent;
-  }
-}
-
-class MissileIcon {
-  constructor(x, y, continent) {
-    this.sprite = phaser.add.sprite(x, y, 'missile').anchor.set(0, 1);
-    this.continent = continent;
-  }
 }
 
 /*
