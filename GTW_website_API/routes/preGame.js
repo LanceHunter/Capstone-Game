@@ -407,4 +407,38 @@ router.post('/beginpeace', async (ctx) => {
 }); // end of the "beginpeace" route.
 
 
+/// Here is a "seed" route, that's gonna pass a seed game object into Firebase for testing purposes. DELETE THIS BEFORE DEPLOYING.
+router.post('/makeseed', async (ctx) => {
+  let gameObjJSON;
+  let gameID = ctx.request.body.gameID;
+  let fileName = ctx.request.body.fileName;
+  let gameRef = ref.child(gameID);
+  // Grab the game data.
+  await gameRef.once('value', (snap) => {
+    gameObjJSON = JSON.stringify(snap.val());
+  });
+  // Write it to a file.
+  await fs.writeFile(`${fileName}`, gameObjJSON);
+  // Tell ctx that it worked. (Not gonna do a lot of error-checking here because this is mostly for me.)
+  ctx.status = 200;
+});
+
+router.post('/runseed', async (ctx) => {
+  console.log('This is here.');
+  let fileName = ctx.request.body.fileName;
+  let seedGameName = ctx.request.body.seedGameName;
+  let gameObj;
+  console.log('fileName - ', fileName);
+  console.log('seedGameName - ', seedGameName);
+  await fs.readFile(`./${fileName}`, (err, data) => {
+    gameObj = JSON.parse(data);
+    ref.child(seedGameName).update(gameObj);
+  });
+
+  // Tell ctx that it worked. (Not gonna do a lot of error-checking here because this is mostly for me.)
+  ctx.status = 200;
+});
+
+
+
 module.exports = router;

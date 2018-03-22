@@ -22,6 +22,113 @@ const subCost = 200;
 const icbmCost = 100;
 const bomberCost = 50;
 
+///////// The "overwhelming" win function. To handle a win caused by overwhelming force.
+
+async function overwhelming(winner, enemies) {
+  let gameObj;
+  await gameRef.once('value', (snap) => {
+    gameObj = snap.val();
+  }); // grabbing info from Firebase for final point tally.
+
+  let playerContinents = Object.keys(gameObj.players[winner].continents);
+
+  gameRef.update({gameOver : {type: 'overwhelmed', winner: player}});
+  let enemyTableInfo = await knex.select('*').from('users').whereIn('username', enemyPlayerArr);
+  let playerTableInfo = await knex.select('*').from('users').whereIn('username', winner);
+  let gameIDforDB = await knex('games').returning('id').insert({outcome : 'overwhelmed'});
+
+  // Here is where we map the enemy player info to write to player DB.
+  let enemiesDatabaseWrite = enemyTableInfo.map((entry) => {
+    let rndMultiplier = Math.floor(gameObj.players[(entry.username)].rnd.damage/500);
+    let hitPoints = 0;
+    continentArr.forEach((continent) => {
+      if (gameObj.continents[continent].player[(entry.username)]) {
+        hitPoints += gameObj.continents[continent].hp;
+      }
+    });
+    return {
+      user_id : entry.id,
+      game_id : gameIDforDB[0],
+      won : false,
+      hit_points : 0,
+      score : 0,
+      shots : gameObj.players[(entry.username)].shotsFired,
+      rnd_multiplier : rndMultiplier
+    };
+  });
+  // And here is where we write the enemy player info to DB.
+  await knex('players').insert(enemiesDatabaseWrite);
+
+  let winnerHitPoints = 0;
+  let playerDatabaseWrite = playerTableInfo.map((entry) => {
+    let rndMultiplier = Math.floor(gameObj.players[(entry.username)].rnd.damage/500);
+    playerContinents.forEach((continent) => {
+      winnerHitPoints += gameObj.continents[continent].hp;
+    });
+    return {
+      user_id : entry.id,
+      game_id : gameIDforDB[0],
+      won : true,
+      hit_points : winnerHitPoints,
+      score : (winnerHitPoints+5000),
+      shots : gameObj.players[(entry.username)].shotsFired,
+      rnd_multiplier : rndMultiplier
+    };
+  });
+
+  // And here is where we write the winning player info to DB.
+  await knex('players').insert(playerDatabaseWrite);
+  // Then we increase the enemy's losses by 1.
+  await knex('users').whereIn('username', enemyPlayerArr).increment('losses', 1);
+  // While increasing the player's wins by 1.
+  await knex('users').where('username', winner).increment('wins', 1);
+
+  if (enemyPlayerArr.length + 1 === 2) { // If we have two players in the game, updating info for two players.
+    // let firstPlayerInfo = userTableInfo.filter((entry) => {
+    //   return entry.username === playersArr[0];
+    // });
+    let updatePlayerOne = {
+      average_score : (((playerTableInfo[0].wins + playerTableInfo[0].losses) * playerTableInfo[0].average_score) + winnerHitPoints + 5000) / (playerTableInfo[0].wins + playerTableInfo[0].losses + 1)
+    };
+    if (playerTableInfo[0].high_score < winnerHitPoints + 5000) {
+      updatePlayerOne.high_score = winnerHitPoints + 5000;
+    }
+    let updatePlayerTwo = {
+      average_score : (((enemyTableInfo[0].wins + enemyTableInfo[0].losses) * enemyTableInfo[0].average_score)) / (enemyTableInfo[0].wins + enemyTableInfo[0].losses + 1)
+    };
+    await knex('users').where('username', winner).update(updatePlayerOne);
+    await knex('users').where('username', enemyPlayerArr[0]).update(updatePlayerTwo);
+
+  } else if (enemyPlayerArr.length + 1 === 3) { // If we have three players in the game, updating info for three players.
+
+    let updatePlayerOne = {
+      average_score : (((playerTableInfo[0].wins + playerTableInfo[0].losses) * playerTableInfo[0].average_score) + winnerHitPoints + 5000) / (playerTableInfo[0].wins + playerTableInfo[0].losses + 1)
+    };
+    if (playerTableInfo[0].high_score < winnerHitPoints + 5000) {
+      updatePlayerOne.high_score = winnerHitPoints + 5000;
+    }
+
+    let secondPlayerInfo = enemyTableInfo.filter((entry) => {
+      return entry.username === enemyPlayerArr[0];
+    });
+    let updatePlayerTwo = {
+      average_score : ((secondPlayerInfo[0].wins + secondPlayerInfo[0].losses) * secondPlayerInfo[0].average_score) / (secondPlayerInfo[0].wins + secondPlayerInfo[0].losses + 1)
+    };
+    let thirdPlayerInfo = enemyTableInfo.filter((entry) => {
+      return entry.username === enemyPlayerArr[1];
+    });
+    let updatePlayerThree = {
+      average_score : ((thirdPlayerInfo[0].wins + thirdPlayerInfo[0].losses) * thirdPlayerInfo[0].average_score) / (thirdPlayerInfo[0].wins + thirdPlayerInfo[0].losses + 1)
+    };
+    await knex('users').where('username', winner).update(updatePlayerOne);
+    await knex('users').where('username', enemyPlayerArr[0]).update(updatePlayerTwo);
+    await knex('users').where('username', enemyPlayerArr[1]).update(updatePlayerThree);
+  } // End of conditional checking if there are 2 or 3 players in the game.
+
+} // end of function.
+
+///////// Beginning the routes.
+
 router.post('/yearcomplete', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
@@ -312,49 +419,34 @@ router.put('/declarebomber', async (ctx) => {
   let playerID = ctx.request.body.playerID;
   let quantity = ctx.request.body.quantity;
   let location = ctx.request.body.location;
-
-  await gameRef.once('value', (snap) => {
-    if (snap.val() && !snap.val().war) {
-      if (snap.val().players[playerID].continents[location] && snap.val().continents[location].forces.bombers.declared + quantity <= snap.val().continents[location].forces.bombers.total) {
-        let declaredNum = snap.val().continents[location].forces.bombers.declared + quantity;
-        gameRef.child(`continents/${location}/forces/bombers`).update({declared : declaredNum});
-        let totalDeclared = snap.val().players[playerID].totalDeclaredForces + quantity;
-        gameRef.child(`players/${playerID}`).update({totalDeclaredForces : totalDeclared});
-        ctx.status = 200;
-      } else { //If continent doesn't belong to player or they are trying to delcare more bombers than their current total.
-        ctx.status = 400;
-        ctx.body = {
-          message: 'Invalid location or amount to delcare would have brought declared total higher than total amount of forces.',
-        };
-      } // End of conditional checking on location and declared vs. total.
-    } else { // If war were delcared or game ID was invalid.
-      ctx.status = 400;
-      ctx.body = {
-        message: 'Invalid game ID entered or war were declared.',
-      };
-    } // End of conditional checking game ID and if war were declared.
-  }); // end of single-grab of firebase data.
-}); // End of the "declarebomber" route.
-
-router.put('/declareicbm', async (ctx) => {
-  let gameID = ctx.request.body.gameID;
-  let gameRef = ref.child(gameID);
-  let playerID = ctx.request.body.playerID;
-  let quantity = ctx.request.body.quantity;
-  let location = ctx.request.body.location;
   let gameObj;
+  let overwhelmingForce = false;
 
   await gameRef.once('value', (snap) => {
     gameObj = snap.val();
   }); // end of single-grab of firebase data.
 
+  // Getting an array of all the enemy players.
+  let playerArr = Object.keys(gameObj.players);
+  let enemyPlayerArr = playerArr.slice(0);
+  enemyPlayerArr.splice(enemyPlayerArr.indexOf(playerID), 1);
+
 
   if (gameObj && !gameObj.war) {
-    if (gameObj.players[playerID].continents[location] && gameObj.continents[location].forces.icbms.declared + quantity <= gameObj.continents[location].forces.icbms.total) {
-      let declaredNum = gameObj.continents[location].forces.icbms.declared + quantity;
-      gameRef.child(`continents/${location}/forces/icbms`).update({declared : declaredNum});
+    if (gameObj.players[playerID].continents[location] && gameObj.continents[location].forces.bombers.declared + quantity <= gameObj.continents[location].forces.bombers.total) {
+      let declaredNum = gameObj.continents[location].forces.bombers.declared + quantity;
+      gameRef.child(`continents/${location}/forces/bombers`).update({declared : declaredNum});
       let totalDeclared = gameObj.players[playerID].totalDeclaredForces + quantity;
       gameRef.child(`players/${playerID}`).update({totalDeclaredForces : totalDeclared});
+      // Checking if this player just won by overwhelming force.
+      if (totalDeclared >= 10) {
+        overwhelmingForce = true;
+        enemyPlayerArr.forEach((enemy) => {
+          if (totalDeclared <= enemy.totalDeclaredForces*2) {
+            overwhelmingForce = false;
+          }
+        });
+      }
       ctx.status = 200;
     } else { //If continent doesn't belong to player or they are trying to delcare more bombers than their current total.
       ctx.status = 400;
@@ -369,7 +461,65 @@ router.put('/declareicbm', async (ctx) => {
     };
   } // End of conditional checking game ID and if war were declared.
 
+  // If player won by overwhelming force, call that function.
+  if (overwhelmingForce) {
+    overwhelming(playerID, enemyPlayerArr);
+  }
 
+}); // End of the "declarebomber" route.
+
+router.put('/declareicbm', async (ctx) => {
+  let gameID = ctx.request.body.gameID;
+  let gameRef = ref.child(gameID);
+  let playerID = ctx.request.body.playerID;
+  let quantity = ctx.request.body.quantity;
+  let location = ctx.request.body.location;
+  let gameObj;
+  let overwhelmingForce = false;
+
+  await gameRef.once('value', (snap) => {
+    gameObj = snap.val();
+  }); // end of single-grab of firebase data.
+
+  // Getting an array of all the enemy players.
+  let playerArr = Object.keys(gameObj.players);
+  let enemyPlayerArr = playerArr.slice(0);
+  enemyPlayerArr.splice(enemyPlayerArr.indexOf(playerID), 1);
+
+
+  if (gameObj && !gameObj.war) {
+    if (gameObj.players[playerID].continents[location] && gameObj.continents[location].forces.icbms.declared + quantity <= gameObj.continents[location].forces.icbms.total) {
+      let declaredNum = gameObj.continents[location].forces.icbms.declared + quantity;
+      gameRef.child(`continents/${location}/forces/icbms`).update({declared : declaredNum});
+      let totalDeclared = gameObj.players[playerID].totalDeclaredForces + quantity;
+      gameRef.child(`players/${playerID}`).update({totalDeclaredForces : totalDeclared});
+      // Checking if this player just won by overwhelming force.
+      if (totalDeclared >= 10) {
+        overwhelmingForce = true;
+        enemyPlayerArr.forEach((enemy) => {
+          if (totalDeclared <= enemy.totalDeclaredForces*2) {
+            overwhelmingForce = false;
+          }
+        });
+      }
+      ctx.status = 200;
+    } else { //If continent doesn't belong to player or they are trying to delcare more bombers than their current total.
+      ctx.status = 400;
+      ctx.body = {
+        message: 'Invalid location or amount to delcare would have brought declared total higher than total amount of forces.',
+      };
+    } // End of conditional checking on location and declared vs. total.
+  } else { // If war were delcared or game ID was invalid.
+    ctx.status = 400;
+    ctx.body = {
+      message: 'Invalid game ID entered or war were declared.',
+    };
+  } // End of conditional checking game ID and if war were declared.
+
+  // If player won by overwhelming force, call that function.
+  if (overwhelmingForce) {
+    overwhelming(playerID, enemyPlayerArr);
+  }
 
 }); // End of the "declareicbms" route.
 
@@ -380,28 +530,52 @@ router.put('/declaresub', async (ctx) => {
   let playerID = ctx.request.body.playerID;
   let quantity = ctx.request.body.quantity;
   let location = ctx.request.body.location;
+  let gameObj;
+  let overwhelmingForce = false;
 
   await gameRef.once('value', (snap) => {
-    if (snap.val() && !snap.val().war) {
-      if (snap.val().players[playerID].oceans[location] && snap.val().oceans[location].subs[playerID].declared + quantity <= snap.val().oceans[location].subs[playerID].total) {
-        let declaredNum = snap.val().oceans[location].subs[playerID].declared + quantity;
-        gameRef.child(`oceans/${location}/subs/${playerID}`).update({declared : declaredNum});
-        let totalDeclared = snap.val().players[playerID].totalDeclaredForces + quantity;
-        gameRef.child(`players/${playerID}`).update({totalDeclaredForces : totalDeclared});
-        ctx.status = 200;
-      } else { //If continent doesn't belong to player or they are trying to delcare more bombers than their current total.
-      ctx.status = 400;
-      ctx.body = {
-        message: 'Invalid location or amount to delcare would have brought declared total higher than total amount of forces.',
-      };
-      } // End of conditional checking on location and declared vs. total.
-    } else { // If war were delcared or game ID was invalid.
-      ctx.status = 400;
-      ctx.body = {
-        message: 'Invalid game ID entered or war were declared.',
-      };
-    } // End of conditional checking game ID and if war were declared.
+    gameObj = snap.val();
   }); // end of single-grab of firebase data.
+
+  // Getting an array of all the enemy players.
+  let playerArr = Object.keys(gameObj.players);
+  let enemyPlayerArr = playerArr.slice(0);
+  enemyPlayerArr.splice(enemyPlayerArr.indexOf(playerID), 1);
+
+  if (gameObj && !gameObj.war) {
+    if (gameObj.players[playerID].oceans[location] && gameObj.oceans[location].subs[playerID].declared + quantity <= gameObj.oceans[location].subs[playerID].total) {
+      let declaredNum = gameObj.oceans[location].subs[playerID].declared + quantity;
+      gameRef.child(`oceans/${location}/subs/${playerID}`).update({declared : declaredNum});
+      let totalDeclared = gameObj.players[playerID].totalDeclaredForces + quantity;
+      gameRef.child(`players/${playerID}`).update({totalDeclaredForces : totalDeclared});
+      // Checking if this player just won by overwhelming force.
+      if (totalDeclared >= 10) {
+        overwhelmingForce = true;
+        enemyPlayerArr.forEach((enemy) => {
+          if (totalDeclared <= enemy.totalDeclaredForces*2) {
+            overwhelmingForce = false;
+          }
+        });
+      }
+      ctx.status = 200;
+    } else { //If continent doesn't belong to player or they are trying to delcare more bombers than their current total.
+    ctx.status = 400;
+    ctx.body = {
+      message: 'Invalid location or amount to delcare would have brought declared total higher than total amount of forces.',
+    };
+    } // End of conditional checking on location and declared vs. total.
+  } else { // If war were delcared or game ID was invalid.
+    ctx.status = 400;
+    ctx.body = {
+      message: 'Invalid game ID entered or war were declared.',
+    };
+  } // End of conditional checking game ID and if war were declared.
+
+  // If player won by overwhelming force, call that function.
+  if (overwhelmingForce) {
+    overwhelming(playerID, enemyPlayerArr);
+  }
+
 }); // End of the "declaresubs" route.
 
 router.put('/disarmbomber', async (ctx) => {
@@ -564,7 +738,6 @@ router.post('/declarewar', async (ctx) => {
     } // End of conditional checking to make sure gameID is valid.
   }); // End of grabbing data from Firebase.
 }); // End of the "declarwar" route.
-
 
 
 module.exports = router;
