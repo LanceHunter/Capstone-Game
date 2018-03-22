@@ -14,22 +14,18 @@ class ICBMLaunch {
 */
 
 // globals
-let playerIDs = [];
-let colors = [
-  0xff0000,
-  0x00ff00,
-  0x0000ff
-];
-let subIcons;
-let continents;
-
 
 class SubIcon {
-  constructor(x, y) {
+  constructor(x, y, ocean, player) {
     this.sprite = phaser.add.sprite(x, y, 'submarine');
     this.sprite.anchor.set(0, 1);
     this.sprite.inputEnabled = true;
     this.launches = [];
+    this.sprite.tint = colors[playerIDs.indexOf(player)];
+    console.log(colors[playerIDs.indexOf(player)], colors);
+
+    this.player = player;
+    this.ocean = ocean;
 
     this.sprite.events.onInputDown.add(() => {
       console.log(this.ocean);
@@ -39,6 +35,8 @@ class SubIcon {
     this.sprite.events.onInputUp.add(() => {
       this.launches[this.launches.length - 1].launch({x: 10, y: 10});
     }, this);
+
+    console.log(playerIDs.indexOf(player));
   }
 }
 
@@ -86,7 +84,7 @@ class SubLaunch {
   // when user is still dragging from origin to destination
   aiming() {
     let theta = (this.frame / 15)
-    this.originIndicator.scale.set((Math.sin(theta) + 2) / 15);
+    this.originIndicator.scale.set((Math.sin(theta) + 2) / 5);
     this.originIndicator.alpha = (Math.sin(theta + Math.PI) + 2) / 3;
   }
 

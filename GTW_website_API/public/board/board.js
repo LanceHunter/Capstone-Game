@@ -1,14 +1,20 @@
-// we need a game object
-let game;
+/*
+Global Thermonuclear Warfare Gameboard
+*/
+
+// globals
+let game, firebaseRef, playerIDs, playerIndices;
+let colors = [0x05f140, 0xe22245, 0x5cc8ff];
+
+let subIcons, bomberIcons, capitalIcons, missileIcons;
+let width = 1920;
+let height = width * (9 / 16);
+let phaser;
 
 /*
 firebase setup
 */
 const database = firebase.database();
-
-// a global firebase reference
-let fbGame;
-let gameID;
 
 /*
 set up the firebase bind
@@ -27,47 +33,46 @@ $.post('/api/pregame/setup', function(data) {
 test game
 */
 function testGame(gameID) {
-  fbGame = database.ref('gameInstance').child(gameID);
-  console.log('gameID', gameID);
-
-  console.log('setting firebase listener');
-  fbGame.once('value', onGameInit);
+  firebaseRef = database.ref('gameInstance').child(gameID);
+  firebaseRef.once('value', onGameInit);
 }
-
-testGame('game8928');
 
 /*
 callback for game init
 */
 function onGameInit(data) {
-  console.log('onGameChange');
   game = data.val();
-  console.log('game object:', game)
+  console.log('game object onInit:', game)
+
+  // set up the player lookup structures
   playerIDs = Object.keys(game.players);
+  playerIndices = {};
   for (let i = 0; i < playerIDs.length; i++) {
-    game.players[playerIDs[i]].color = colors[i];
+    playerIndices[game.players[playerIDs[i]]] = i;
   }
-  fbGame.on('value', onGameChange);
+
+  phaser = new Phaser.Game(width, height, Phaser.AUTO, '', {preload: preload, create: create, update: update});
+
+  // our firebase value listener
+  firebaseRef.on('value', onGameChange);
 }
 
 /*
-callback for fb game changes
+callback for game changes
 */
 function onGameChange(data) {
   console.log('onGameChange');
-  Object.assign(game, data.val());
+  game = data.val();
   console.log('game object:', game)
 }
+
+testGame('game8928');
 
 /*
 phaser setup
 written for phaser-ce 2.10.1
 */
 
-// a few things that get our canvas and phaser instance ready
-const width = 1920;
-const height = width * (9 / 16);
-const phaser = new Phaser.Game(width, height, Phaser.AUTO, '', {preload: preload, create: create, update: update});
 
 /*
 load textures
@@ -93,25 +98,22 @@ function create() {
 
   /*
   sub icons
-    * these indices are parallel to playerIDs
   */
-  subIcons = {
-    pacific : [
-      new SubIcon(130, (1080 - 310), 0),
-      new SubIcon(175, (1080 - 215), 1),
-      new SubIcon(220, (1080 - 120), 2)
-    ],
-    atlantic : [
-      new SubIcon(625, (1080 - 435)),
-      new SubIcon(690, (1080 - 330)),
-      new SubIcon(755, (1080 - 225))
-    ],
-    indian : [
-      new SubIcon(1250, (1080 - 265)),
-      new SubIcon(1250, (1080 - 180)),
-      new SubIcon(1250, (1080 - 95))
-    ]
-  }
+  subIcons = [
+    new SubIcon(130, (1080 - 310), 'pacific', playerIDs[0]),
+    new SubIcon(175, (1080 - 215), 'pacific', playerIDs[1]),
+    new SubIcon(220, (1080 - 120), 'pacific', playerIDs[2]),
+    new SubIcon(625, (1080 - 435), 'atlantic', playerIDs[0]),
+    new SubIcon(690, (1080 - 330), 'atlantic', playerIDs[1]),
+    new SubIcon(755, (1080 - 225), 'atlantic', playerIDs[2]),
+    new SubIcon(1250, (1080 - 265), 'indian', playerIDs[0]),
+    new SubIcon(1250, (1080 - 180), 'indian', playerIDs[1]),
+    new SubIcon(1250, (1080 - 95), 'indian', playerIDs[2]),
+  ];
+
+  bomberIcons = [];
+  capitalIcons = [];
+  missileIcons = [];
 
   // North America
   bomberIcons.push(new BomberIcon(260, (1080 - 500), 'northAmerica'));
