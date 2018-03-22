@@ -407,7 +407,7 @@ router.post('/beginpeace', async (ctx) => {
 }); // end of the "beginpeace" route.
 
 
-/// Here is a "seed" route, that's gonna pass a seed game object into Firebase for testing purposes. DELETE THIS BEFORE DEPLOYING.
+/// Here is a "seed" route, that's gonna grab a game and save the object to a file for use. DELETE THIS BEFORE DEPLOYING.
 router.post('/makeseed', async (ctx) => {
   let gameObjJSON;
   let gameID = ctx.request.body.gameID;
@@ -423,6 +423,7 @@ router.post('/makeseed', async (ctx) => {
   ctx.status = 200;
 });
 
+/// The other "seed" route, that's gonna pass a seed game object into Firebase for testing purposes. DELETE THIS BEFORE DEPLOYING.
 router.post('/runseed', async (ctx) => {
   console.log('This is here.');
   let fileName = ctx.request.body.fileName;

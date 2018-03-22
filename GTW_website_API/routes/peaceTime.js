@@ -126,8 +126,7 @@ async function overwhelming(winner, enemyPlayerArr, gameRef) {
     await knex('users').where('username', enemyPlayerArr[0]).update(updatePlayerTwo);
     await knex('users').where('username', enemyPlayerArr[1]).update(updatePlayerThree);
   } // End of conditional checking if there are 2 or 3 players in the game.
-
-} // end of function.
+} // end of overwhelming function.
 
 ///////// Beginning the routes.
 
