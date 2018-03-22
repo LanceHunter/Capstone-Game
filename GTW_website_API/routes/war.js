@@ -33,7 +33,7 @@ router.put('/shot', async (ctx) => {
   let playerArr = Object.keys(gameObj.players);
   let player = Object.keys(gameObj.continents[launchID].player)[0];
   // An array of all the enemy players. (Everybody except this player.)
-  let enemyPlayerArr = playerArr.splice(0);
+  let enemyPlayerArr = playerArr.slice(0);
   enemyPlayerArr.splice(enemyPlayerArr.indexOf(player), 1);
 
 
@@ -62,7 +62,7 @@ router.put('/shot', async (ctx) => {
           // Check the enemy subs to see if there are any left.
           let enemyOceans = Object.keys(gameObj.players[enemy].oceans);
           enemyOceans.forEach((enemyOcean) => {
-            if (gameObj.oceans[enemyOcean].subs[enemyContinent].total > 0) {
+            if (gameObj.oceans[enemyOcean].subs[enemy].total > 0) {
               gameOver = false;
             }
           });
@@ -121,7 +121,7 @@ router.put('/shot', async (ctx) => {
   } // end of conditional checking if gameID is valid.
 
   // If the game is over, we end game and start writing to database.
-  if (gameOver) {
+  if (gameOver && gameObj.war) {
     await gameRef.once('value', (snap) => {
       gameObj = snap.val();
     }); // end of grabbing the info from Firebase one more time in case there were cross-fire shots that caused everyone to lose.
@@ -168,7 +168,7 @@ router.put('/shot', async (ctx) => {
           won : true,
           hit_points : winnerHitPoints,
           score : winnerHitPoints,
-          shots : 0,
+          shots : gameObj.players[(entry.username)].shotsFired,
           rnd_multiplier : rndMultiplier
         };
       });
@@ -256,7 +256,7 @@ router.put('/shot', async (ctx) => {
           won : false,
           hit_points : 0,
           score : 0,
-          shots : 0,
+          shots : gameObj.players[(entry.username)].shotsFired,
           rnd_multiplier : rndMultiplier
         };
       });
@@ -264,7 +264,7 @@ router.put('/shot', async (ctx) => {
       await knex('players').insert(playerDatabaseWrite);
       // Then we increase the enemy's losses by 1.
       await knex('users').whereIn('username', enemyPlayerArr).increment('losses', 1);
-      // While increasing the player's wins by 1.
+      // While increasing the player's losses by 1.
       await knex('users').where('username', player).increment('losses', 1);
 
 
@@ -330,7 +330,7 @@ router.put('/subshot', async (ctx) => {
   let playerArr = Object.keys(gameObj.players);
   let player = shooterID;
   // An array of all the enemy players. (Everybody except this player.)
-  let enemyPlayerArr = playerArr.splice(0);
+  let enemyPlayerArr = playerArr.slice(0);
   enemyPlayerArr.splice(enemyPlayerArr.indexOf(player), 1);
 
 
@@ -357,7 +357,7 @@ router.put('/subshot', async (ctx) => {
         // Check the enemy subs to see if there are any left.
         let enemyOceans = Object.keys(gameObj.players[enemy].oceans);
         enemyOceans.forEach((enemyOcean) => {
-          if (gameObj.oceans[enemyOcean].subs[enemyContinent].total > 0) {
+          if (gameObj.oceans[enemyOcean].subs[enemy].total > 0) {
             gameOver = false;
           }
         });
@@ -378,7 +378,7 @@ router.put('/subshot', async (ctx) => {
 
 
   // If the game is over, we end game and start writing to database.
-  if (gameOver) {
+  if (gameOver && gameObj.war) {
     await gameRef.once('value', (snap) => {
       gameObj = snap.val();
     }); // end of grabbing the info from Firebase one more time in case there were cross-fire shots that caused everyone to lose.
@@ -425,7 +425,7 @@ router.put('/subshot', async (ctx) => {
           won : true,
           hit_points : winnerHitPoints,
           score : winnerHitPoints,
-          shots : 0,
+          shots : gameObj.players[(entry.username)].shotsFired,
           rnd_multiplier : rndMultiplier
         };
       });
@@ -513,7 +513,7 @@ router.put('/subshot', async (ctx) => {
           won : false,
           hit_points : 0,
           score : 0,
-          shots : 0,
+          shots : gameObj.players[(entry.username)].shotsFired,
           rnd_multiplier : rndMultiplier
         };
       });
@@ -521,7 +521,7 @@ router.put('/subshot', async (ctx) => {
       await knex('players').insert(playerDatabaseWrite);
       // Then we increase the enemy's losses by 1.
       await knex('users').whereIn('username', enemyPlayerArr).increment('losses', 1);
-      // While increasing the player's wins by 1.
+      // While increasing the player's losses by 1.
       await knex('users').where('username', player).increment('losses', 1);
 
 
@@ -563,7 +563,6 @@ router.put('/subshot', async (ctx) => {
 
     } // end of conditional checking if game was won or if everyone lost.
   } // end of conditional checking if we are in a gameOver state.
-
 
 
 }); // end of "subshot" route

@@ -342,28 +342,35 @@ router.put('/declareicbm', async (ctx) => {
   let playerID = ctx.request.body.playerID;
   let quantity = ctx.request.body.quantity;
   let location = ctx.request.body.location;
+  let gameObj;
 
   await gameRef.once('value', (snap) => {
-    if (snap.val() && !snap.val().war) {
-      if (snap.val().players[playerID].continents[location] && snap.val().continents[location].forces.icbms.declared + quantity <= snap.val().continents[location].forces.icbms.total) {
-        let declaredNum = snap.val().continents[location].forces.icbms.declared + quantity;
-        gameRef.child(`continents/${location}/forces/icbms`).update({declared : declaredNum});
-        let totalDeclared = snap.val().players[playerID].totalDeclaredForces + quantity;
-        gameRef.child(`players/${playerID}`).update({totalDeclaredForces : totalDeclared});
-        ctx.status = 200;
-      } else { //If continent doesn't belong to player or they are trying to delcare more bombers than their current total.
-        ctx.status = 400;
-        ctx.body = {
-          message: 'Invalid location or amount to delcare would have brought declared total higher than total amount of forces.',
-        };
-      } // End of conditional checking on location and declared vs. total.
-    } else { // If war were delcared or game ID was invalid.
+    gameObj = snap.val();
+  }); // end of single-grab of firebase data.
+
+
+  if (gameObj && !gameObj.war) {
+    if (gameObj.players[playerID].continents[location] && gameObj.continents[location].forces.icbms.declared + quantity <= gameObj.continents[location].forces.icbms.total) {
+      let declaredNum = gameObj.continents[location].forces.icbms.declared + quantity;
+      gameRef.child(`continents/${location}/forces/icbms`).update({declared : declaredNum});
+      let totalDeclared = gameObj.players[playerID].totalDeclaredForces + quantity;
+      gameRef.child(`players/${playerID}`).update({totalDeclaredForces : totalDeclared});
+      ctx.status = 200;
+    } else { //If continent doesn't belong to player or they are trying to delcare more bombers than their current total.
       ctx.status = 400;
       ctx.body = {
-        message: 'Invalid game ID entered or war were declared.',
+        message: 'Invalid location or amount to delcare would have brought declared total higher than total amount of forces.',
       };
-    } // End of conditional checking game ID and if war were declared.
-  }); // end of single-grab of firebase data.
+    } // End of conditional checking on location and declared vs. total.
+  } else { // If war were delcared or game ID was invalid.
+    ctx.status = 400;
+    ctx.body = {
+      message: 'Invalid game ID entered or war were declared.',
+    };
+  } // End of conditional checking game ID and if war were declared.
+
+
+
 }); // End of the "declareicbms" route.
 
 

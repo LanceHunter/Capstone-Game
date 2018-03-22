@@ -3,6 +3,7 @@
 // Firebase setup.
 const admin = require("firebase-admin");
 const serviceAccount = require('../../../private/gtwthegame-firebase-adminsdk-xemv3-858ad1023b.json');
+const fs = require('fs');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -403,7 +404,7 @@ router.post('/beginpeace', async (ctx) => {
       }
     }
   });
-});
+}); // end of the "beginpeace" route.
 
 
 module.exports = router;
