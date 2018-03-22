@@ -8,61 +8,28 @@
   <body>
     <div class="hudcontainer">
       <div class="newsholder">
-        <!-- <div class="gamenews">
-          <h5>Year: </h5>
-          <h5>Message: </h5>
-        </div> -->
-        <div class="playernews">
-          <h5>Player Name: </h5>
-          <h6>Declared Forces </h6>
-          <h6>Peacetime: </h6>
-          <ul>
-            <li>ICBMs: </li>
-            <li>Bombers: </li>
-            <li>Nuclear Subs: </li>
-          </ul>
-          <h6>War: </h6>
-          <ul>
-            <li>Hit Points: </li>
-          </ul>
-        </div>
-        <div class="playernews">
-          <h5>Player Name: </h5>
-          <h6>Declared Forces </h6>
-          <h6>Peacetime: </h6>
-          <ul>
-            <li>ICBMs: </li>
-            <li>Bombers: </li>
-            <li>Nuclear Subs: </li>
-          </ul>
-          <h6>War: </h6>
-          <ul>
-            <li>Hit Points: </li>
-          </ul>
-        </div>
-        <div class="playernews">
-          <h5>Player Name: </h5>
-          <h6>Declared Forces </h6>
-          <h6>Peacetime: </h6>
-          <ul>
-            <li>ICBMs: </li>
-            <li>Bombers: </li>
-            <li>Nuclear Subs: </li>
-          </ul>
-          <h6>War: </h6>
-          <ul>
-            <li>Hit Points: </li>
-          </ul>
+        <div id="hud">
+          <div v-for="player in players" v-bind:key="player.username">
+            <div class="playernews">
+              <h5>Player Name: {{ player.username }}</h5>
+              <ul>
+                <li>ICBMs: {{ player.icbms }}</li>
+                <li>Bombers: {{ player.bombers }}</li>
+                <li>Nuclear Subs: {{ player.subs }}</li>
+                <li v-if="war">Hit Points: {{ player.hp }}</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="ticker-holder">
+      <!-- <div class="ticker-holder">
         <div class="ticker">
           <div class="tickeritem">Year: 1950</div>
           <div class="tickeritem">Subs deployed to Atlantic Ocean... </div>
           <div class="tickeritem">ICBMs declared in South America...</div>
           <div class="tickeritem">More spy messages...</div>
         </div>
-      </div>
+      </div> -->
     </div>
     <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
     <script>
@@ -81,6 +48,8 @@
       src="https://code.jquery.com/jquery-3.3.1.min.js"
       integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
       crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="/board/hud.js"></script>
     <script src="/board/vendor/phaser.js"></script>
     <script src="/board/board.js"></script>
     <script src="/board/gameObjects.js"></script>
