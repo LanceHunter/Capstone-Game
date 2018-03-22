@@ -35,6 +35,7 @@ function InitChart(stats) {
   // Define the line
   const statsline = d3.line()
     .x(function (d) {
+      console.log('Ln 38: date on x axis: ', d.date);
       return x(d.date);
     })
     .y(function (d) {
@@ -48,13 +49,13 @@ function InitChart(stats) {
     .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-  console.log('Ln 51: these are the stats: ', stats);
+  console.log('Ln 52: these are the stats: ', stats);
 
   stats.forEach(function (d) {
-    console.log('Ln 54: this is d: ', d);
-    console.log('Ln 55: date: ', d.end_time);
+    console.log('Ln 55: this is d: ', d);
+    console.log('Ln 56: date: ', d.end_time);
     d.date = new Date(d.end_time);
-    console.log('Ln 57: parsed date: ', d.date);
+    console.log('Ln 58: parsed date: ', d.date);
     d.score = +d.score;
   });
 
@@ -75,8 +76,8 @@ function InitChart(stats) {
 
   // Loop through each symbol / key
   statsNest.forEach(function (d) {
-    console.log('Ln 78: another d: ', d);
-    console.log('Ln 81: d.values: ', d.values);
+    console.log('Ln 79: another d: ', d);
+    console.log('Ln 80: d.values: ', d.values);
     svg.append('path')
       .attr('class', 'line')
       .attr('d', statsline(d.values));
