@@ -54,7 +54,7 @@ app.use(index.routes()).use(index.allowedMethods());
 app.use(stats.routes()).use(stats.allowedMethods());
 app.use(preGame.routes()).use(preGame.allowedMethods());
 app.use(peaceTime.routes()).use(peaceTime.allowedMethods());
-app.use(peaceTime.routes()).use(peaceTime.allowedMethods());
+app.use(war.routes()).use(war.allowedMethods());
 app.use(board.routes()).use(board.allowedMethods());
 app.use(webapp.routes()).use(webapp.allowedMethods());
 

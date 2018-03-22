@@ -92,7 +92,7 @@ router.post('/yearcomplete', async (ctx) => {
             let spyPlayersArr = playersArr.slice(0);
             spyPlayersArr.splice(playersArr.indexOf(gameObj.continents[continent].player), 1);
             let recipientPlayer = spyPlayersArr[Math.floor(Math.random()*spyPlayersArr.length)];
-            let spyMessage = gameObj.players[recipientPlayer].spyMessage + `Your spies discovered that ${Object.keys(gameObj.continents[continent].player)[0]} has ${gameObj.continents[continent].forces.icbms.total - gameObj.continents[continent].forces.icbms.declared} undeclared ICBMs in ${continent.name}! `;
+            let spyMessage = gameObj.players[recipientPlayer].spyMessage + `Your spies discovered that ${Object.keys(gameObj.continents[continent].player)[0]} has ${gameObj.continents[continent].forces.icbms.total - gameObj.continents[continent].forces.icbms.declared} undeclared ICBMs in ${continent}! `;
             gameRef.child(`players/${recipientPlayer}`).update({spyMessage:spyMessage});
           } // End of spy message roll.
         } // End of checking for ICBMs.
@@ -162,7 +162,7 @@ router.post('/yearcomplete', async (ctx) => {
         return entry.username === playersArr[0];
       });
       let updatePlayerOne = {
-        average_score : (((firstPlayerInfo[0].wins + firstPlayerInfo[0].losses) * firstPlayerInfo[0].average_score) + 5000) / (firstPlayerInfo[0].wins + firstPlayerInfo[0].losses)
+        average_score : (((firstPlayerInfo[0].wins + firstPlayerInfo[0].losses) * firstPlayerInfo[0].average_score) + 5000) / (firstPlayerInfo[0].wins + firstPlayerInfo[0].losses + 1)
       };
       if (firstPlayerInfo[0].high_score < 5000) {
         updatePlayerOne.high_score = 5000;
@@ -171,7 +171,7 @@ router.post('/yearcomplete', async (ctx) => {
         return entry.username === playersArr[1];
       });
       let updatePlayerTwo = {
-        average_score : (((secondPlayerInfo[0].wins + secondPlayerInfo[0].losses) * secondPlayerInfo[0].average_score) + 5000) / (secondPlayerInfo[0].wins + secondPlayerInfo[0].losses)
+        average_score : (((secondPlayerInfo[0].wins + secondPlayerInfo[0].losses) * secondPlayerInfo[0].average_score) + 5000) / (secondPlayerInfo[0].wins + secondPlayerInfo[0].losses + 1)
       };
       if (secondPlayerInfo[0].high_score < 5000) {
         updatePlayerTwo.high_score = 5000;
@@ -183,7 +183,7 @@ router.post('/yearcomplete', async (ctx) => {
         return entry.username === playersArr[0];
       });
       let updatePlayerOne = {
-        average_score : (((firstPlayerInfo[0].wins + firstPlayerInfo[0].losses) * firstPlayerInfo[0].average_score) + 5000) / (firstPlayerInfo[0].wins + firstPlayerInfo[0].losses)
+        average_score : (((firstPlayerInfo[0].wins + firstPlayerInfo[0].losses) * firstPlayerInfo[0].average_score) + 5000) / (firstPlayerInfo[0].wins + firstPlayerInfo[0].losses + 1)
       };
       if (firstPlayerInfo[0].high_score < 5000) {
         updatePlayerOne.high_score = 5000;
@@ -192,7 +192,7 @@ router.post('/yearcomplete', async (ctx) => {
         return entry.username === playersArr[1];
       });
       let updatePlayerTwo = {
-        average_score : (((secondPlayerInfo[0].wins + secondPlayerInfo[0].losses) * secondPlayerInfo[0].average_score) + 5000) / (secondPlayerInfo[0].wins + secondPlayerInfo[0].losses)
+        average_score : (((secondPlayerInfo[0].wins + secondPlayerInfo[0].losses) * secondPlayerInfo[0].average_score) + 5000) / (secondPlayerInfo[0].wins + secondPlayerInfo[0].losses + 1)
       };
       if (secondPlayerInfo[0].high_score < 5000) {
         updatePlayerTwo.high_score = 5000;
@@ -201,7 +201,7 @@ router.post('/yearcomplete', async (ctx) => {
         return entry.username === playersArr[2];
       });
       let updatePlayerThree = {
-        average_score : (((thirdPlayerInfo[0].wins + thirdPlayerInfo[0].losses) * thirdPlayerInfo[0].average_score) + 5000) / (thirdPlayerInfo[0].wins + thirdPlayerInfo[0].losses)
+        average_score : (((thirdPlayerInfo[0].wins + thirdPlayerInfo[0].losses) * thirdPlayerInfo[0].average_score) + 5000) / (thirdPlayerInfo[0].wins + thirdPlayerInfo[0].losses + 1)
       };
       if (thirdPlayerInfo[0].high_score < 5000) {
         updatePlayerThree.high_score = 5000;
