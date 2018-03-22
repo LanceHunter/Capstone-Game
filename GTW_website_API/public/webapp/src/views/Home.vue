@@ -154,14 +154,14 @@
           Continents
         </h3>
           <!-- <ul> -->
-            <h4>North America - Budget: 1000 - HP: 500 - Oceans: AO, PO</h4>
-            <h4>South America - Budget: 750 - HP: 750 - Oceans: AO, PO</h4>
-            <h4>Asia - Budget: 500 - HP: 1000 - Oceans: IO, PO</h4>
-            <h4>Europe - Budget: 1100 - HP: 400 - Oceans: AO</h4>
-            <h4>Africa - Budget: 600 - HP: 900 - Oceans: AO, IO</h4>
-            <h4>Australia - Budget: 800 - HP: 700 - Oceans: IO, PO</h4>
+            <h4 class="continents">North America - Budget: 1000 - HP: 500 - Oceans: AO, PO</h4>
+            <h4 class="continents">South America - Budget: 750 - HP: 750 - Oceans: AO, PO</h4>
+            <h4 class="continents">Asia - Budget: 500 - HP: 1000 - Oceans: IO, PO</h4>
+            <h4 class="continents">Europe - Budget: 1100 - HP: 400 - Oceans: AO</h4>
+            <h4 class="continents">Africa - Budget: 600 - HP: 900 - Oceans: AO, IO</h4>
+            <h4 class="continents">Australia - Budget: 800 - HP: 700 - Oceans: IO, PO</h4>
           <!-- </ul> -->
-          <h3>Distance Table</h3>
+          <h3 class="distance">Distance Table</h3>
           <h4>
           <table class="table">
             <tr>
@@ -244,6 +244,9 @@
 </template>
 
 
+<!-- Jquery -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <script>
 // Jquery tabs
 $(document).ready(function jqtabs() { // eslint-disable-line
@@ -345,6 +348,14 @@ h4 {
 ul {
   list-style: disc;
   padding-left: 5px;
+}
+
+.continents {
+  text-align: center;
+}
+
+.distance {
+  margin-top: 20px;
 }
 
 .table {

@@ -6,24 +6,24 @@
     <table class="table">
       <thead>
         <tr>
-          <th>Rank</th>
-          <th>Player Name</th>
-          <th v-on:click="getLeaders('percentage')">Win Percentage</th>
-          <th v-on:click="getLeaders('wins')">Win-Loss</th>
-          <th v-on:click="getLeaders('high')">High Score</th>
-          <th v-on:click="getLeaders('average')">Average Score</th>
-          <th>Dashboard</th>
+          <th class="headfoot">Rank</th>
+          <th class="headfoot">Player Name</th>
+          <th class="headfoot" v-on:click="getLeaders('percentage')">Win Percentage</th>
+          <th class="headfoot" v-on:click="getLeaders('wins')">Win-Loss</th>
+          <th class="headfoot" v-on:click="getLeaders('high')">High Score</th>
+          <th class="headfoot" v-on:click="getLeaders('average')">Average Score</th>
+          <th class="headfoot">Dashboard</th>
         </tr>
       </thead>
       <tfoot>
         <tr>
-          <th>Rank</th>
-          <th>Player Name</th>
-          <th v-on:click="getLeaders('percentage')">Win Percentage</th>
-          <th v-on:click="getLeaders('wins')">Win-Loss</th>
-          <th v-on:click="getLeaders('high')">High Score</th>
-          <th v-on:click="getLeaders('average')">Average Score</th>
-          <th>Dashboard</th>
+          <th class="headfoot">Rank</th>
+          <th class="headfoot">Player Name</th>
+          <th class="headfoot" v-on:click="getLeaders('percentage')">Win Percentage</th>
+          <th class="headfoot" v-on:click="getLeaders('wins')">Win-Loss</th>
+          <th class="headfoot" v-on:click="getLeaders('high')">High Score</th>
+          <th class="headfoot" v-on:click="getLeaders('average')">Average Score</th>
+          <th class="headfoot">Dashboard</th>
         </tr>
       </tfoot>
       <tbody>
@@ -243,6 +243,10 @@ tr, td {
   color: black;
 }
 
+.headfoot {
+  font-size: 20px;
+}
+
 h1 {
   padding: 120px 0px 40px 0px;
   font-size: 40px;
@@ -258,7 +262,7 @@ h1 {
   // width: 100%;
   margin-left: -450px;
   // margin-top: 300px;
-  padding-top: 150px;
+  padding-top: 100px;
   text-align: center;
   margin: auto;
 }

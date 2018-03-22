@@ -16,8 +16,8 @@ const StatsService = {
         })
         .catch((error) => {
           reject(error);
-        })
-    })
+        });
+    });
   },
 
   user(username) {
@@ -28,8 +28,8 @@ const StatsService = {
         })
         .catch((error) => {
           reject(error);
-        })
-    })
+        });
+    });
   },
 };
 

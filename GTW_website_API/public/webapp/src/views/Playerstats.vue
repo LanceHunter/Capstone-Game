@@ -1,15 +1,15 @@
 <template>
   <div class='Playerstats'>
     <router-view></router-view>
-    <h1>Player Statistics</h1>
+    <h1>My Statistics</h1>
 
-    <div class='message-body circle'>
+    <!-- <div class='message-body circle'> -->
       <!-- wins / total games -->
-      <h5>Win/Loss Percentages</h5>
+      <!-- <h5>Win/Loss Percentages</h5> -->
       <!-- <svg id='circlechart' width='500' height='250'></svg> -->
-      <div id='circlechart' width='500' height='250'></div>
-    </div>
-    
+      <!-- <div id='circlechart' width='500' height='250'></div> -->
+    <!-- </div> -->
+
 
     <div class='message-body line'>
       <!-- wins & losses -->
@@ -17,11 +17,11 @@
       <svg id='linechart' width='500' height='250'></svg>
     </div>
 
-    <div class='message-body bar'>
+    <!-- <div class='message-body bar'> -->
       <!-- Score, hit points, shots, R&D  versus Averages for all players-->
-      <h5>Offensive Strategy</h5>
-      <svg id='barchart' width='500' height='250'></svg>
-    </div>
+      <!-- <h5>Offensive Strategy</h5> -->
+      <!-- <svg id='barchart' width='500' height='250'></svg> -->
+    <!-- </div> -->
 
     <!-- <line-chart :data='{'2017-05-13': 2, '2017-05-14': 5}'></line-chart> -->
 
@@ -33,92 +33,92 @@
 const d3 = require('d3');
 
 // Circle Chart
-function InitCircleChart() {
-  const dataset = [{
-    label: 'Wins',
-    'test-score': 90,
-  },
-  // {
-  //   label: 'Losses',
-  //   'test-score': 75,
-  // },
-  ];
-
-  const width = 205;
-  const height = 205;
-  const innerRadius = 185;
-
-  const drawArc = d3.arc()
-    .innerRadius(innerRadius / 2)
-    .outerRadius(width / 2)
-    .startAngle(0);
-
-  const vis = d3.select('#circlechart').selectAll('svg')
-    .data(dataset)
-    .enter()
-    .append('svg')
-    .attr('class', 'svgCircle')
-    .attr('width', width)
-    .attr('height', height)
-    .append('g')
-    .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')'); // eslint-disable-line
-
-  vis.append('circle')
-    .attr('fill', '#ffffff')
-    .attr('stroke', '#dfe5e6')
-    .attr('stroke-width', 1)
-    .attr('r', width / 2);
-
-  d3.selectAll('.svgCircle')
-    .append('text')
-    .text(function sa(d) { // eslint-disable-line
-      return d.label;
-    })
-    .style('stroke', 'black')
-    .attr('dy', '1em');
-
-  vis.append('path')
-    .attr('fill', 'blueviolet')
-    .attr('class', 'arc')
-    .each(function ae(d) { // eslint-disable-line
-      d.endAngle = 0;
-    })
-    .attr('d', drawArc)
-    .transition()
-    .duration(1200)
-    .ease(d3.easeLinear)
-    .call(arcTween);
-
-
-  vis.append('text')
-    .text(0)
-    .attr('class', 'perc')
-    .attr('text-anchor', 'middle')
-    .attr('font-size', '36px')
-    .attr('y', +10)
-    .transition()
-    .duration(1200)
-    .tween('.percentage', function tw(d) {
-      const i = d3.interpolate(this.textContent, d['test-score']),
-        prec = (d.value + '').split('.'),
-        round = (prec.length > 1) ? 10 ** prec[1].length : 1;
-      return function rf(t) {
-        this.textContent = Math.round(i(t) * round) / round + '%'; // eslint-disable-line
-      };
-    });
-
-  function arcTween(transition) {
-    transition.attrTween('d', function ta(d) {
-      // .curve(d3.curveBasis);
-      const interpolate = d3.interpolate(0, 360 * (d['test-score'] / 100) * Math.PI / 180);
-      // let interpolate = d3.curve(0, 360 * (d['test-score'] / 100) * Math.PI / 180);
-      return function (t) {
-        d.endAngle = interpolate(t);
-        return drawArc(d);
-      };
-    });
-  }
-}
+// function InitCircleChart() {
+//   const dataset = [{
+//     label: 'Wins',
+//     'test-score': 90,
+//   },
+//   {
+//     label: 'Losses',
+//     'test-score': 75,
+//   },
+//   ];
+//
+//   const width = 205;
+//   const height = 205;
+//   const innerRadius = 185;
+//
+//   const drawArc = d3.arc()
+//     .innerRadius(innerRadius / 2)
+//     .outerRadius(width / 2)
+//     .startAngle(0);
+//
+//   const vis = d3.select('#circlechart').selectAll('svg')
+//     .data(dataset)
+//     .enter()
+//     .append('svg')
+//     .attr('class', 'svgCircle')
+//     .attr('width', width)
+//     .attr('height', height)
+//     .append('g')
+//     .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')'); // eslint-disable-line
+//
+//   vis.append('circle')
+//     .attr('fill', '#ffffff')
+//     .attr('stroke', '#dfe5e6')
+//     .attr('stroke-width', 1)
+//     .attr('r', width / 2);
+//
+//   d3.selectAll('.svgCircle')
+//     .append('text')
+//     .text(function sa(d) { // eslint-disable-line
+//       return d.label;
+//     })
+//     .style('stroke', 'black')
+//     .attr('dy', '1em');
+//
+//   vis.append('path')
+//     .attr('fill', 'blueviolet')
+//     .attr('class', 'arc')
+//     .each(function ae(d) { // eslint-disable-line
+//       d.endAngle = 0;
+//     })
+//     .attr('d', drawArc)
+//     .transition()
+//     .duration(1200)
+//     .ease(d3.easeLinear)
+//     .call(arcTween);
+//
+//
+//   vis.append('text')
+//     .text(0)
+//     .attr('class', 'perc')
+//     .attr('text-anchor', 'middle')
+//     .attr('font-size', '36px')
+//     .attr('y', +10)
+//     .transition()
+//     .duration(1200)
+//     .tween('.percentage', function tw(d) {
+//       const i = d3.interpolate(this.textContent, d['test-score']),
+//         prec = (d.value + '').split('.'),
+//         round = (prec.length > 1) ? 10 ** prec[1].length : 1;
+//       return function rf(t) {
+//         this.textContent = Math.round(i(t) * round) / round + '%'; // eslint-disable-line
+//       };
+//     });
+//
+//   function arcTween(transition) {
+//     transition.attrTween('d', function ta(d) {
+//       // .curve(d3.curveBasis);
+//       const interpolate = d3.interpolate(0, 360 * (d['test-score'] / 100) * Math.PI / 180);
+//       // let interpolate = d3.curve(0, 360 * (d['test-score'] / 100) * Math.PI / 180);
+//       return function (t) {
+//         d.endAngle = interpolate(t);
+//         return drawArc(d);
+//       };
+//     });
+//   }
+// }
 
 
 // Line Chart Graph
@@ -164,8 +164,8 @@ function InitLineChart() {
   }];
 
   const vis = d3.select('#linechart').append('svg'), // eslint-disable-line
-    WIDTH = 500,
-    HEIGHT = 250,
+    WIDTH = 100,
+    HEIGHT = 500,
     MARGINS = {
       top: 20,
       right: 20,
@@ -222,9 +222,9 @@ function InitLineChart() {
     .attr('fill', 'none');
 }
 
-$(document).ready(function char() { // eslint-disable-line
-  InitCircleChart(); // eslint-disable-line
-});
+// $(document).ready(function char() { // eslint-disable-line
+//   InitCircleChart(); // eslint-disable-line
+// });
 
 $(document).ready(function char() { // eslint-disable-line
   InitLineChart(); // eslint-disable-line
@@ -241,7 +241,7 @@ export default {
   data() {
     return {
       stats: null,
-    }
+    };
   },
   methods: {
     getStats(username) {
@@ -249,10 +249,10 @@ export default {
         .then((stats) => {
           this.stats = stats;
           console.log('set stats to:', this.stats);
-        })
-    }
+        });
+    },
   },
-  beforeMount(){
+  beforeMount() {
     this.getStats(this.$route.params.username);
   },
 };
