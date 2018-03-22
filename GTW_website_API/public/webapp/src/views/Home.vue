@@ -27,13 +27,13 @@
           The goal...
         </h3>
         <h4>
-          In this game, you play as an international power, pitted against other powers
-          in an arms race. You select territory, build your nuclear arsenal, and hope to
-          gain global dominance without firing a single shot.
+          You are an international power, pitted against the rest of the world
+          in an arms race. Select territory, build your nuclear arsenal, and hope
+          to gain global dominance without firing a single shot.
 
-          You can win the game by having a declared arsenal that is twice the size of your
-          next-strongest opponent. Or, if you're feeling lucky, by winning a global
-          thermonuclear war...
+          You can win the game by having a declared arsenal that is twice the
+          size of your next-strongest opponent. Or, if you're feeling lucky, by
+          winning a global thermonuclear war...
 
           Do you feel lucky?
         </h4>
@@ -48,12 +48,11 @@
           Game Start
         </h3>
         <h4>
-          2-6 players will join the game. Once all players have joined, they will be
-          assigned a random order in which to select their continents from the game board.
-          They will select their continents one-at-a-time until all have been selected.
-          (If there are 2 players, they get 3 continents each. If there are 3 players,
-          they get 2 continents each. If there are 4, 5, or 6 players they will all
-          only get one continent.)
+          2 or 3 players can join the game. Once all players have joined, they
+          will be assigned a random order in which to select their continents
+          from the game board. They will select their continents one-at-a-time
+          until all have been selected. (If there are 2 players, they get 3
+          continents each. If there are 3 players, they get 2 continents each.)
         </h4>
       </div>
 
@@ -63,23 +62,30 @@
           "Peacetime"
         </h3>
         <h4>
-          "Peacetime" is the main phase of the game. A year counter will begin at 1950
-          and each player will be given their budget. A new year will begin every 60 seconds.
+          "Peacetime" is the main phase of the game. A year counter will begin
+          at 1950 and each player will be given their budget.
 
-          All players will spend that budget between deploying the three types of
-          forces and/or R&D. As the year ends, the players can choose to "declare"
-          any forces they have placed. These forces lose all stealth but are now
-          counted towards the player's "declared forces" total. They can also choose
-          to "disarm" forces, removing a previously-declared force from the board.
-          The player will no longer have to pay for the upkeep to that force.
+          Players will spend their budgets deploying the three types of forces
+          and/or spending on the two types of R&D. At any time, players can choose
+          to "declare" any forces they have placed. These forces lose all stealth
+          and become visible on the board, but are now counted towards the player's
+          "declared forces" total. They can also choose to "disarm" forces, removing
+          a previously-deployed force from the board. The player will no longer have
+          to pay for the upkeep to that force.
 
-          If one player's "declared forces" total is both greater than 10 and twice
-          the size of the opponent with the next-highest "declared forces" total,
-          that player wins the game!
+          If one player's "declared forces" total is both greater than 10 and
+          twice the size of the opponent with the next-highest "declared forces"
+          total, that player wins the game!
 
           Note: At the beginning of each year, any non-declared forces may be
-          "discovered" by other players. Only the player who has discovered the forces
-          will know that they are there.
+          "discovered" by other players' spies. Only the player whose spies have
+          discovered the forces will know that they are there.
+
+          When a player has finished taking all the actions they want to take for
+          that year, they will then choose to end their year. When all players in
+          the game have ended their year, a new year will begin. All players will
+          then receive their budget for the new year (minus the upkeep cost of
+          their existing forces).
         </h4>
       </div>
 
@@ -89,24 +95,28 @@
         War!
         </h3>
         <h4>
-          If any player at any time chooses to declare war, the game enters War mode.
-          Players will be able to fire missiles and launch bombers from their continent(s)
-          towards other player's continents.
+          If any player at <strong>any</strong> time chooses to declare war, the
+          game enters <strong>War</strong> mode. Players will be able to fire
+          missiles and launch bombers from their continents towards another
+          player's continents.
 
-          To launch a missile or bomber: Press and hold on your continent as the missile
-          powers up. Then, drag that missile towards the enemy content. (Note: If bombers
-          are available they will always be used first unless the target continent is
-          outside of their range.)
+          To launch a missile or bomber: Point at the missile or bomber icon on
+          your continent. Then, drag towards the enemy content. The bomber or
+          missile nuke will then begin a launch countdown to fire its nuke at
+          the target continent.
 
-          To launch a submarine-based missile: Press and hold on the ocean where your
-          submarines are deployed and then drag to the target continent.
+          To launch a submarine-based missile: Press on the submarine that is
+          your color in the ocean where your submarines are deployed, then drag
+          to the target continent.
 
-          You can continue to launch missiles and bombers from any of your continents
-          as long as that continent still has HP and there are still missiles/bombers
-          to launch. When you no longer have a continent with any remaining HP, you lose.
+          You can continue to launch missiles and bombers from any of your
+          continents for as long as that continent still has HP and there are still
+          missiles/bombers to launch.
 
-          However, even if you have lost you can continue to launch any submarine-based
-          missiles you have until you have used them all.
+          When you no longer have a continent with any remaining HP, you lose.
+
+          <strong>However</strong>, even if you have lost you can continue to launch
+          any submarine-based missiles you have until you have used them all.
         </h4>
       </div>
 
@@ -116,8 +126,9 @@
           Nukes
         </h3>
         <h4>
-          Each nuke you launch will do 50 points of damage to the continent where it lands,
-          plus an additional 5 points of damage for every level of "Damage R&D" you have reached.
+          Each nuke you launch will do 50 points of damage to the continent where
+          it lands, plus an additional 5 points of damage for every level of
+          "Damage R&D" you have reached.
         </h4>
       </div>
 
@@ -142,9 +153,11 @@
           R&D
         </h3>
         <h4>
-          R&D is your research and development budget. For every $500 you spend on R&D,
-          your nukes will do an additional 5 points of damage and all your forces will
-          have their speed increase by 1.
+          R&D is your research and development budget. It can go into two areas:
+          "Speed" or "Damage". For every $500 you spend on Damage R&D, your nukes
+          will do an additional 5 points of damage. For every $500 you spend on Speed
+          R&D your forces will have their speed increase by 1 (making their launch
+          countdown faster).
         </h4>
       </div>
 
@@ -244,23 +257,20 @@
 </template>
 
 
-<!-- Jquery -->
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <script>
-// Jquery tabs
-$(document).ready(function jqtabs() { // eslint-disable-line
-  $('#tab_header ul li.item').on('click', function jqtabscl() { // eslint-disable-line
-    const number = $(this).data('option'); // eslint-disable-line
-    $('#tab_header ul li.item').removeClass('is-active'); // eslint-disable-line
-    $(this).addClass('is-active'); // eslint-disable-line
-    $('#tab_container .container_item').removeClass('is-active'); // eslint-disable-line
-    $('div[data-item="' + number + '"]').addClass('is-active'); // eslint-disable-line
-  });
-});
-
 export default {
   name: 'Home',
+  beforeMount(){
+    $(document).ready(function jqtabs() { // eslint-disable-line
+      $('#tab_header ul li.item').on('click', function jqtabscl() { // eslint-disable-line
+        const number = $(this).data('option'); // eslint-disable-line
+        $('#tab_header ul li.item').removeClass('is-active'); // eslint-disable-line
+        $(this).addClass('is-active'); // eslint-disable-line
+        $('#tab_container .container_item').removeClass('is-active'); // eslint-disable-line
+        $('div[data-item="' + number + '"]').addClass('is-active'); // eslint-disable-line
+      });
+    });
+  },
 };
 </script>
 

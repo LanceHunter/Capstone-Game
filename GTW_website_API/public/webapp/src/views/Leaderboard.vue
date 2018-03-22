@@ -248,7 +248,7 @@ tr, td {
 }
 
 h1 {
-  padding: 120px 0px 40px 0px;
+  padding: 120px 0px 60px 0px;
   font-size: 40px;
   font-family: $family-mono;
   color: $danger;

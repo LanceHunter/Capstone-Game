@@ -2,7 +2,7 @@
   <div class="login">
     <router-view></router-view>
     <h1>Login</h1>
-    <button type="button" v-on:click="loginToggle">Login toggle</button>
+    <!-- <button type="button" v-on:click="loginToggle">Login toggle</button> -->
 
     <div class="message-body">
       <div class="is-small has-text-danger" v-if="repeate">

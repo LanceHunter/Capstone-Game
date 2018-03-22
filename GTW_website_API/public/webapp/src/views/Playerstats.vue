@@ -3,238 +3,97 @@
     <router-view></router-view>
     <h1>My Statistics</h1>
 
-    <!-- <div class='message-body circle'> -->
-      <!-- wins / total games -->
-      <!-- <h5>Win/Loss Percentages</h5> -->
-      <!-- <svg id='circlechart' width='500' height='250'></svg> -->
-      <!-- <div id='circlechart' width='500' height='250'></div> -->
-    <!-- </div> -->
-
-
-    <div class='message-body line'>
+    <div class='message-body'>
       <!-- wins & losses -->
       <h5>Wins-Losses</h5>
-      <svg id='linechart' width='500' height='250'></svg>
+      <svg id='chart' width='1000' height='500'></svg>
     </div>
-
-    <!-- <div class='message-body bar'> -->
-      <!-- Score, hit points, shots, R&D  versus Averages for all players-->
-      <!-- <h5>Offensive Strategy</h5> -->
-      <!-- <svg id='barchart' width='500' height='250'></svg> -->
-    <!-- </div> -->
-
-    <!-- <line-chart :data='{'2017-05-13': 2, '2017-05-14': 5}'></line-chart> -->
 
   </div>
 </template>
 
 
 <script>
+import stats from '../common/stats.service';
+
 const d3 = require('d3');
 
-// Circle Chart
-// function InitCircleChart() {
-//   const dataset = [{
-//     label: 'Wins',
-//     'test-score': 90,
-//   },
-//   {
-//     label: 'Losses',
-//     'test-score': 75,
-//   },
-//   ];
-//
-//   const width = 205;
-//   const height = 205;
-//   const innerRadius = 185;
-//
-//   const drawArc = d3.arc()
-//     .innerRadius(innerRadius / 2)
-//     .outerRadius(width / 2)
-//     .startAngle(0);
-//
-//   const vis = d3.select('#circlechart').selectAll('svg')
-//     .data(dataset)
-//     .enter()
-//     .append('svg')
-//     .attr('class', 'svgCircle')
-//     .attr('width', width)
-//     .attr('height', height)
-//     .append('g')
-//     .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')'); // eslint-disable-line
-//
-//   vis.append('circle')
-//     .attr('fill', '#ffffff')
-//     .attr('stroke', '#dfe5e6')
-//     .attr('stroke-width', 1)
-//     .attr('r', width / 2);
-//
-//   d3.selectAll('.svgCircle')
-//     .append('text')
-//     .text(function sa(d) { // eslint-disable-line
-//       return d.label;
-//     })
-//     .style('stroke', 'black')
-//     .attr('dy', '1em');
-//
-//   vis.append('path')
-//     .attr('fill', 'blueviolet')
-//     .attr('class', 'arc')
-//     .each(function ae(d) { // eslint-disable-line
-//       d.endAngle = 0;
-//     })
-//     .attr('d', drawArc)
-//     .transition()
-//     .duration(1200)
-//     .ease(d3.easeLinear)
-//     .call(arcTween);
-//
-//
-//   vis.append('text')
-//     .text(0)
-//     .attr('class', 'perc')
-//     .attr('text-anchor', 'middle')
-//     .attr('font-size', '36px')
-//     .attr('y', +10)
-//     .transition()
-//     .duration(1200)
-//     .tween('.percentage', function tw(d) {
-//       const i = d3.interpolate(this.textContent, d['test-score']),
-//         prec = (d.value + '').split('.'),
-//         round = (prec.length > 1) ? 10 ** prec[1].length : 1;
-//       return function rf(t) {
-//         this.textContent = Math.round(i(t) * round) / round + '%'; // eslint-disable-line
-//       };
-//     });
-//
-//   function arcTween(transition) {
-//     transition.attrTween('d', function ta(d) {
-//       // .curve(d3.curveBasis);
-//       const interpolate = d3.interpolate(0, 360 * (d['test-score'] / 100) * Math.PI / 180);
-//       // let interpolate = d3.curve(0, 360 * (d['test-score'] / 100) * Math.PI / 180);
-//       return function (t) {
-//         d.endAngle = interpolate(t);
-//         return drawArc(d);
-//       };
-//     });
-//   }
-// }
 
+function InitChart(stats) {
+  // Set the dimensions of the canvas / graph
+  const margin = { top: 30, right: 20, bottom: 30, left: 50 },
+    width = 900 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
 
-// Line Chart Graph
-function InitLineChart() {
-  const data = [{
-    sale: '202',
-    year: '2000',
-  }, {
-    sale: '215',
-    year: '2002',
-  }, {
-    sale: '179',
-    year: '2004',
-  }, {
-    sale: '199',
-    year: '2006',
-  }, {
-    sale: '134',
-    year: '2008',
-  }, {
-    sale: '176',
-    year: '2010',
-  }];
+  // Parse the date / time
+  const parseDate = d3.timeParse('%B %d, %Y');
 
-  const data2 = [{
-    sale: '152',
-    year: '2000',
-  }, {
-    sale: '189',
-    year: '2002',
-  }, {
-    sale: '179',
-    year: '2004',
-  }, {
-    sale: '199',
-    year: '2006',
-  }, {
-    sale: '134',
-    year: '2008',
-  }, {
-    sale: '176',
-    year: '2010',
-  }];
+  // Set the ranges
+  const x = d3.scaleTime().range([0, width]);
+  const y = d3.scaleLinear().range([height, 0]);
 
-  const vis = d3.select('#linechart').append('svg'), // eslint-disable-line
-    WIDTH = 100,
-    HEIGHT = 500,
-    MARGINS = {
-      top: 20,
-      right: 20,
-      bottom: 20,
-      left: 50,
-    },
-
-    xScale = d3.scaleLinear()
-      .range([MARGINS.left, WIDTH - MARGINS.right])
-      .domain([2000, 2010]),
-
-    yScale = d3.scaleLinear()
-      .range([HEIGHT - MARGINS.top, MARGINS.bottom])
-      .domain([134, 215]),
-
-    xAxis = d3.axisBottom()
-      .scale(xScale),
-
-    yAxis = d3.axisLeft()
-      .scale(yScale);
-
-  vis.append('svg:g')
-    .attr('class', 'x axis')
-    .attr('transform', 'translate(0,' + (HEIGHT - MARGINS.bottom) + ')') // eslint-disable-line
-    // .attr('stroke', 'white')
-    .call(xAxis);
-
-  vis.append('svg:g')
-    .attr('class', 'y axis')
-    .attr('transform',
-          'translate(' + (MARGINS.left) + ',0)') // eslint-disable-line
-    // .attr('stroke', 'white')
-    .call(yAxis);
-
-  const lineGen = d3.line()
-    .x(function lgx(d) { // eslint-disable-line
-      return xScale(d.year); // eslint-disable-line
+  // Define the line
+  const statsline = d3.line()
+    .x(function (d) {
+      return x(d.date);
     })
-    .y(function lgy(d) { // eslint-disable-line
-      return yScale(d.sale); // eslint-disable-line
+    .y(function (d) {
+      return y(d.score);
+    });
+
+  // Adds the svg canvas
+  const svg = d3.select('#chart').append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+    .append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+  console.log('Ln 51: these are the stats: ', stats);
+
+  stats.forEach(function (d) {
+    console.log('Ln 54: this is d: ', d);
+    console.log('Ln 55: date: ', d.end_time);
+    d.date = new Date(d.end_time);
+    console.log('Ln 57: parsed date: ', d.date);
+    d.score = +d.score;
+  });
+
+  // Scale the range of the data
+  x.domain(d3.extent(stats, function (d) {
+    return d.date;
+  }));
+  y.domain([0, d3.max(stats, function (d) {
+    return d.score;
+  })]);
+
+  // Nest the entries by symbol
+  const statsNest = d3.nest()
+    .key(function (d) {
+      return d.symbol;
     })
-    .curve(d3.curveBasis);
+    .entries(stats);
 
-  vis.append('svg:path')
-    .attr('d', lineGen(data))
-    .attr('stroke', 'orange')
-    .attr('stroke-width', 2)
-    .attr('fill', 'none');
+  // Loop through each symbol / key
+  statsNest.forEach(function (d) {
+    console.log('Ln 78: another d: ', d);
+    console.log('Ln 81: d.values: ', d.values);
+    svg.append('path')
+      .attr('class', 'line')
+      .attr('d', statsline(d.values));
+  });
 
-  vis.append('svg:path')
-    .attr('d', lineGen(data2))
-    .attr('stroke', 'red')
-    .attr('stroke-width', 2)
-    .attr('fill', 'none');
+  // Add the X Axis
+  svg.append('g')
+    .attr('class', 'axis')
+    .attr('transform', 'translate(0,' + height + ')')
+    .call(d3.axisBottom(x));
+
+  // Add the Y Axis
+  svg.append('g')
+    .attr('class', 'axis')
+    .call(d3.axisLeft(y));
 }
 
-// $(document).ready(function char() { // eslint-disable-line
-//   InitCircleChart(); // eslint-disable-line
-// });
-
-$(document).ready(function char() { // eslint-disable-line
-  InitLineChart(); // eslint-disable-line
-});
-
-// $(document).ready(function char() {
-//   InitBarChart();
-// });
-
-import stats from '../common/stats.service';
 
 export default {
   name: 'Playerstats',
@@ -248,6 +107,7 @@ export default {
       stats.user(username)
         .then((stats) => {
           this.stats = stats;
+          InitChart(stats);
           console.log('set stats to:', this.stats);
         });
     },
@@ -273,10 +133,7 @@ export default {
 }
 
 h1 {
-  /* font-size: 30px;
-  color: $primary;
-  margin-bottom: 50px; */
-  padding: 120px 0px 40px 0px;
+  padding: 120px 0px 60px 0px;
   font-size: 40px;
   font-family: $family-mono;
   color: $danger;
@@ -287,37 +144,33 @@ h5 {
 }
 
 .message-body {
-  width: 35%;
+  width: 65%;
+  height: 60%;
   margin: auto;
   background-color: darkgray;
   opacity: 0.8;
-  // background-color:rgba(0, 0, 0, 0.8);
-  /* border: 1px solid black; */
+  /* background-color:rgba(0, 0, 0, 0.8); */
   border-radius: 5px;
   margin: 0px 10px 20px 0px;
   display: inline-grid;
 }
 
-.message-body.circle {
-  height: 266px;
+body {
+  font: 12px Arial;
 }
 
-/* circle graph */
-.circleLabel {
-  z-index:999;
-  background-color:red;
-  float: left;
-  display: block;
-  height: 30px;
-  width: 100px;
-  clear: left;
-  margin: 0 15px 15px 0;
+path {
+  stroke: steelblue;
+  stroke-width: 2;
+  fill: none;
 }
 
-
-/* path.domain, line {
-  stroke: white;
-} */
+.axis path, .axis line {
+  fill: none;
+  stroke: grey;
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
 
 #app {
   text-align: center;
