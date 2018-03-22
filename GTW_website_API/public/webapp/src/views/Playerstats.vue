@@ -9,6 +9,7 @@
       <!-- <svg id='circlechart' width='500' height='250'></svg> -->
       <div id='circlechart' width='500' height='250'></div>
     </div>
+    
 
     <div class='message-body line'>
       <!-- wins & losses -->
