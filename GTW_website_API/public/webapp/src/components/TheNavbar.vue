@@ -38,6 +38,8 @@
 
 
 <script>
+import auth from '../common/auth.service';
+
 // Javascript for navbar
 document.addEventListener('DOMContentLoaded', function jsnav() { // eslint-disable-line
   // Get all "navbar-burger" elements
@@ -58,8 +60,6 @@ document.addEventListener('DOMContentLoaded', function jsnav() { // eslint-disab
   }
 });
 
-import auth from '../common/auth.service';
-
 export default {
   name: 'TheNavbar',
   data() {
@@ -70,14 +70,14 @@ export default {
   methods: {
     logout() {
       auth.logout();
-    }
+    },
   },
   watch: {
-    '$route' (to, from) {
+    '$route'(to, from) {
       if (to.path === '/') {
         this.username = auth.getUser();
       }
-    }
+    },
   },
 };
 </script>

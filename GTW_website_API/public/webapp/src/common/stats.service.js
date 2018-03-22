@@ -1,5 +1,4 @@
 import axios from 'axios';
-import auth from './auth.service';
 
 // const salt = bcrypt.genSatlSync(10);
 const baseURL = 'http://localhost:3000/api/stats';

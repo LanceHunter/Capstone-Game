@@ -260,7 +260,7 @@
 <script>
 export default {
   name: 'Home',
-  beforeMount(){
+  beforeMount() {
     $(document).ready(function jqtabs() { // eslint-disable-line
       $('#tab_header ul li.item').on('click', function jqtabscl() { // eslint-disable-line
         const number = $(this).data('option'); // eslint-disable-line

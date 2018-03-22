@@ -19,11 +19,11 @@ import stats from '../common/stats.service';
 const d3 = require('d3');
 
 
-function InitChart(stats) {
+function InitChart(data) {
   // Set the dimensions of the canvas / graph
-  const margin = { top: 30, right: 20, bottom: 30, left: 50 },
-    width = 900 - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom;
+  const margin = { top: 30, right: 20, bottom: 30, left: 50 };
+  const width = 900 - margin.left - margin.right;
+  const height = 400 - margin.top - margin.bottom;
 
   // Parse the date / time
   const parseDate = d3.timeParse('%B %d, %Y');
@@ -34,24 +34,22 @@ function InitChart(stats) {
 
   // Define the line
   const statsline = d3.line()
-    .x(function (d) {
+    .x((d) => {
       console.log('Ln 38: date on x axis: ', d.date);
       return x(d.date);
     })
-    .y(function (d) {
-      return y(d.score);
-    });
+    .y(d => y(d.score));
 
   // Adds the svg canvas
   const svg = d3.select('#chart').append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom)
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
     .append('g')
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    .attr('transform', `translate(${margin.left},${margin.top})`);
 
-  console.log('Ln 52: these are the stats: ', stats);
+  console.log('Ln 52: these are the data: ', data);
 
-  stats.forEach(function (d) {
+  data.forEach((d) => {
     console.log('Ln 55: this is d: ', d);
     console.log('Ln 56: date: ', d.end_time);
     d.date = new Date(d.end_time);
@@ -60,22 +58,16 @@ function InitChart(stats) {
   });
 
   // Scale the range of the data
-  x.domain(d3.extent(stats, function (d) {
-    return d.date;
-  }));
-  y.domain([0, d3.max(stats, function (d) {
-    return d.score;
-  })]);
+  x.domain(d3.extent(data, d => d.date));
+  y.domain([0, d3.max(data, d => d.score)]);
 
   // Nest the entries by symbol
   const statsNest = d3.nest()
-    .key(function (d) {
-      return d.symbol;
-    })
-    .entries(stats);
+    .key(d => d.symbol)
+    .entries(data);
 
   // Loop through each symbol / key
-  statsNest.forEach(function (d) {
+  statsNest.forEach((d) => {
     console.log('Ln 79: another d: ', d);
     console.log('Ln 80: d.values: ', d.values);
     svg.append('path')
@@ -86,7 +78,7 @@ function InitChart(stats) {
   // Add the X Axis
   svg.append('g')
     .attr('class', 'axis')
-    .attr('transform', 'translate(0,' + height + ')')
+    .attr('transform', `translate(0,${height})`)
     .call(d3.axisBottom(x));
 
   // Add the Y Axis
@@ -106,9 +98,9 @@ export default {
   methods: {
     getStats(username) {
       stats.user(username)
-        .then((stats) => {
-          this.stats = stats;
-          InitChart(stats);
+        .then((data) => {
+          this.stats = data;
+          InitChart(data);
           console.log('set stats to:', this.stats);
         });
     },
