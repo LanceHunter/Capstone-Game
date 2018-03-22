@@ -24,18 +24,20 @@ const bomberCost = 50;
 
 ///////// The "overwhelming" win function. To handle a win caused by overwhelming force.
 
-async function overwhelming(winner, enemies) {
+async function overwhelming(winner, enemyPlayerArr, gameRef) {
   let gameObj;
+
   await gameRef.once('value', (snap) => {
     gameObj = snap.val();
   }); // grabbing info from Firebase for final point tally.
 
   let playerContinents = Object.keys(gameObj.players[winner].continents);
+  let continentArr = Object.keys(gameObj.continents);
 
-  gameRef.update({gameOver : {type: 'overwhelmed', winner: player}});
+  gameRef.update({gameOver : {type: 'overwhelming', winner: winner}});
   let enemyTableInfo = await knex.select('*').from('users').whereIn('username', enemyPlayerArr);
   let playerTableInfo = await knex.select('*').from('users').whereIn('username', winner);
-  let gameIDforDB = await knex('games').returning('id').insert({outcome : 'overwhelmed'});
+  let gameIDforDB = await knex('games').returning('id').insert({outcome : 'overwhelming'});
 
   // Here is where we map the enemy player info to write to player DB.
   let enemiesDatabaseWrite = enemyTableInfo.map((entry) => {
@@ -463,7 +465,7 @@ router.put('/declarebomber', async (ctx) => {
 
   // If player won by overwhelming force, call that function.
   if (overwhelmingForce) {
-    overwhelming(playerID, enemyPlayerArr);
+    overwhelming(playerID, enemyPlayerArr, gameRef);
   }
 
 }); // End of the "declarebomber" route.
@@ -518,7 +520,7 @@ router.put('/declareicbm', async (ctx) => {
 
   // If player won by overwhelming force, call that function.
   if (overwhelmingForce) {
-    overwhelming(playerID, enemyPlayerArr);
+    overwhelming(playerID, enemyPlayerArr, gameRef);
   }
 
 }); // End of the "declareicbms" route.
@@ -573,7 +575,7 @@ router.put('/declaresub', async (ctx) => {
 
   // If player won by overwhelming force, call that function.
   if (overwhelmingForce) {
-    overwhelming(playerID, enemyPlayerArr);
+    overwhelming(playerID, enemyPlayerArr, gameRef);
   }
 
 }); // End of the "declaresubs" route.
