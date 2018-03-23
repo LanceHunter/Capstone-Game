@@ -19,13 +19,11 @@ class SubIcon {
   constructor(x, y, ocean, playerID) {
     this.sprite = phaser.add.sprite(x, y, 'submarine');
     this.sprite.anchor.set(0, 1);
-    this.sprite.inputEnabled = true;
-    this.launches = [];
-    this.sprite.tint = colors[playerIDs.indexOf(playerID)];
-
     this.playerID = playerID;
     this.ocean = ocean;
+    this.launches = [];
 
+    // some listeners
     this.sprite.events.onInputDown.add(() => {
       this.launches.push(new SubLaunch(this.playerID, {x: this.sprite.centerX, y: this.sprite.centerY}, this.ocean));
     }, this);
@@ -33,6 +31,22 @@ class SubIcon {
     this.sprite.events.onInputUp.add(() => {
       this.launches[this.launches.length - 1].launch({x: 10, y: 10});
     }, this);
+
+    this.update();
+  }
+
+  update() {
+    // if the sub's player can be in that ocean
+    if (game.oceans[this.ocean].subs[this.playerID]) {
+      this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
+      this.sprite.inputEnabled = true;
+      // if they are out of ammo
+      if (game.oceans[this.ocean].subs[this.playerID].declared + game.oceans[this.ocean].subs[this.playerID].declared <= 0) {
+        this.sprite.alpha = 0.2;
+      }
+    } else {
+      this.sprite.alpha = 0;
+    }
   }
 }
 
@@ -72,24 +86,21 @@ class SubLaunch {
     // grab our attributes
     this.playerID = playerID;
     this.origin = {x: origin.x, y: origin.y};
+    this.ocean = ocean;
 
     // set up the origin indicator, doesn't move
-    this.originIndicator = phaser.add.sprite(this.origin.x, this.origin.y, 'circle');
-    this.originIndicator.tint = colors[playerIDs.indexOf(playerID)];
-    this.originIndicator.anchor.set(0.5);
+    if (game.oceans[this.ocean].subs[this.playerID].declared + game.oceans[this.ocean].subs[this.playerID].declared > 0) {
+      this.originIndicator = phaser.add.sprite(this.origin.x, this.origin.y, 'circle');
+      this.originIndicator.tint = colors[playerIDs.indexOf(playerID)];
+      this.originIndicator.anchor.set(0.5);
 
-    // set up the target indicator, follows the mouse/pointer
-    this.targetIndicator = phaser.add.sprite(origin.x, origin.y, 'circle');
-    this.targetIndicator.position = phaser.input.mousePointer.position;
-    this.targetIndicator.tint = colors[playerIDs.indexOf(playerID)];
-    this.targetIndicator.anchor.set(0.5);
+      // set up the target indicator, follows the mouse/pointer
+      this.targetIndicator = phaser.add.sprite(origin.x, origin.y, 'circle');
+      this.targetIndicator.position = phaser.input.mousePointer.position;
+      this.targetIndicator.tint = colors[playerIDs.indexOf(playerID)];
+      this.targetIndicator.anchor.set(0.5);
 
-    // this is fake, it will be determined by the origin
-    this.ocean = game.oceans[0];
-
-    // make sure they have inventory
-    if (game.players[playerID]) {
-      // some fake stuff for testing
+      // some fake stuff for animations that don't exist yet
       this.enrouteCount = 0;
       this.explodingCount = 0;
 
@@ -131,6 +142,7 @@ class SubLaunch {
     this.originIndicator.destroy();
 
     this.targetIndicator.position = {x: phaser.input.mousePointer.position.x, y: phaser.input.mousePointer.position.y};
+
     // set up the countdown indicator
     // this.countdownIndicator = phaser.add.sprite(origin.x, origin.y, 'circle');
     // this.countdownIndicator.tint = player.color;
