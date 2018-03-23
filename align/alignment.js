@@ -97,7 +97,7 @@ function showLasers(ctx) {
     if(laser) {
       console.log('printing', displayColors[index], laser);
       ctx.fillStyle = displayColors[index];
-      ctx.fillRect(laser.x, laser.yh, 10, 10);
+      ctx.fillRect(laser.x, laser.y, 10, 10);
     }
   })
   ctx.stroke();
