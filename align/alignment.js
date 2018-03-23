@@ -2,6 +2,17 @@
 let boardWidth = window.innerWidth * .8;
 let boardHeight = window.innerHeight * .8;
 
+// set variables for tracking program
+let minDistSq = Math.pow(30, 2);
+let maxTime = 1000;
+let redTargetColor = "#dcaaaa";
+let greenTargetColor = "#7ebe86";
+let blueTargetColor = "#7373e6";
+let displayColors = ["#440000", "#004400", "#000044"];
+
+// create the global lasers object used by the game as pointers
+const lasers = [null, null, null];
+
 /*
   Creates a translator object which maps coordinates from the camera to coortinates on the display. Initialize with two coordinates from the camera along with where they should be mapped to on the display.
 */
@@ -12,13 +23,13 @@ function Translator(cameraA, cameraB, displayA, displayB) {
   this.offsetY = (displayA[1] / this.stretchY) - cameraA[1] || 0;
 
   this.coordinates = function(coordinates) {
-    let x = coordinates[0];
-    let y = coordinates[1];
+    let x = coordinates.x;
+    let y = coordinates.y;
 
     x = (x + this.offsetX) * this.stretchX;
     y = (y + this.offsetY) * this.stretchY;
 
-    return [x, y];
+    return {x, y};
   }
 
   this.width = function(width) {
@@ -29,26 +40,8 @@ function Translator(cameraA, cameraB, displayA, displayB) {
     return height * this.stretchY;
   }
 }
-/*
-  Creates a target object to keep track of the last seen location of a target.
-*/
-function Target() {
-  this.cords = null;
-  this.isSet = false;
-  this.updated = new Date();
 
-  this.setPosition =function(cords) {
-    currentDate = new Date();
-    if (cords) {
-      this.cords = cords;
-      this.updated = currentDate;
-    } else if (currentDate - this.updated > 500) {
-      this.cords = null;
-    }
-  }
-}
-
-// helper function so laser target can be in hex
+// helper function so laser halo color can be in hex
 function hexToRGB(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
@@ -58,77 +51,134 @@ function hexToRGB(hex) {
     } : null;
 }
 
-// test of the pointer functionality, should be repaced with running the actual game
-function testPointer(ctx, translator, translated) {
 
 
-  ctx.beginPath();
-  ctx.strokeStyle = "#00F";
-  ctx.rect(translated[0], translated[1], translated[2], translated[3]);
+/*
+  Creates a target object to keep track of the last seen location of a target.
+*/
+function Pointer(color) {
+  this.center = null;
+  this.halo = null;
+  this.haloColor = hexToRGB(color);
+  this.updated = new Date();
+
+  this.range = function(r,g,b) {
+    return (
+      r < this.haloColor.r * 1.1 && r > this.haloColor.r * .9 &&
+      g < this.haloColor.g * 1.1 && g > this.haloColor.g * .9 &&
+      b < this.haloColor.b * 1.1 && b > this.haloColor.b * .9
+    );
+  }
+
+  this.setPosition = function(center) {
+    currentDate = new Date();
+    if (center) {
+      this.center = center;
+      this.updated = currentDate;
+    } else if (currentDate - this.updated > maxTime) {
+      this.halo = null;
+      this.center = null;
+    }
+  }
+}
+
+// finds the distance between tracking rect and a pointer object
+function distanceSquared(rect, pointer) {
+  let haloDistSq = pointer.halo ? Math.pow(rect.center.x - pointer.halo.x, 2) + Math.pow(rect.center.y - pointer.halo.y, 2) : Infinity;
+  let centerDistSq = pointer.center ? Math.pow(rect.center.x - pointer.center.x, 2) + Math.pow(rect.center.y - pointer.center.y, 2) : Infinity;
+
+  return Math.min(haloDistSq, centerDistSq);
+}
+
+function showLasers(ctx) {
+  ctx.clearRect(0,0, window.innerWidth, window.innerHeight);
+  ctx.beginPath()
+  lasers.forEach((laser, index) => {
+    if(laser) {
+      console.log('printing', displayColors[index], laser);
+      ctx.fillStyle = displayColors[index];
+      ctx.fillRect(laser.x, laser.yh, 10, 10);
+    }
+  })
   ctx.stroke();
+  setTimeout(function() {
+    showLasers(ctx);
+  }, 20);
+}
 
-  // set up laser pointer tracker
-  let greenLaserColor = hexToRGB("#7ebe86");
-  let greenTarget = new Target();
-  console.log('green:', greenLaserColor);
-  let greenTracer = "#044";
-  tracking.ColorTracker.registerColor('green', (r, g, b) => {
+/*
+  this function uses the translator object set up in align to map the locations of the players laser pointers
+  onto the game board. It does this by keepign track of three 'pointer' objects that have a location for their
+  center ('which is white regardless of which laser pointer is used') and thier halo ('which is set at the top of this file as a target color'). It uses the last seen location of each pointer and it's halo to determin which white dot coresponds to which color laser pointer. It then writes that pointer location data to the global 'lasers' array for use in the game function.
+*/
+function trackLasers(translator) {
+  // set up the pointer objects
+  let redPointer = new Pointer(redTargetColor);
+  tracking.ColorTracker.registerColor('red', (r,g,b) => redPointer.range(r,g,b));
+  let greenPointer = new Pointer(greenTargetColor);
+  tracking.ColorTracker.registerColor('green', (r,g,b) => greenPointer.range(r,g,b));
+  let bluePointer = new Pointer(blueTargetColor);
+  tracking.ColorTracker.registerColor('blue', (r,g,b) => bluePointer.range(r,g,b));
+  let whiteTarget = hexToRGB("#dddddd");
+  tracking.ColorTracker.registerColor('white', function(r,g,b) {
     return (
-      r < greenLaserColor.r * 1.1 && r > greenLaserColor.r * .9 &&
-      g < greenLaserColor.g * 1.1 && g > greenLaserColor.g * .9 &&
-      b < greenLaserColor.b * 1.1 && b > greenLaserColor.b * .9
+      r < whiteTarget.r * 1.1 && r > whiteTarget.r * .9 &&
+      g < whiteTarget.g * 1.1 && g > whiteTarget.g * .9 &&
+      b < whiteTarget.b * 1.1 && b > whiteTarget.b * .9
     );
-  });
-  let redLaserColor = hexToRGB("#dcaaaa");
-  let redTarget = new Target();
-  console.log('red:', redLaserColor);
-  let redTracer = "#404";
-  tracking.ColorTracker.registerColor('red', (r, g, b) => {
-    return (
-      r < redLaserColor.r * 1.1 && r > redLaserColor.r * .9 &&
-      g < redLaserColor.g * 1.1 && g > redLaserColor.g * .9 &&
-      b < redLaserColor.b * 1.1 && b > redLaserColor.b * .9
-    );
-  });
-  let tracker = new tracking.ColorTracker(['green', 'red']);
+  })
+
+  let tracker = new tracking.ColorTracker(['green', 'red', 'blue', 'white']);
   let trackerTask = tracking.track('#video', tracker, { camera: true });
 
   tracker.on('track', function(event) {
-    console.log(event.data.length);
-    if (event.data.length > 0) {
-      event.data.forEach((rect) => {
-        let [x, y] = translator.coordinates([rect.x - rect.width / 2, rect.y - rect.height / 2]);
+    event.data.forEach((rect) => {
+      rect.center = translator.coordinates({x: rect.x - rect.width / 2, y: rect.y - rect.height / 2});
 
-        switch (rect.color) {
-          case 'green' :
-            greenTarget.setPosition([x, y]);
-            redTarget.setPosition();
-            break;
-          case 'red' :
-            redTarget.setPosition([x, y]);
-            greenTarget.setPosition();
-            break;
-        };
-      })
-    } else {
-      redTarget.setPosition();
-      greenTarget.setPosition();
-    }
+      switch (rect.color) {
+        case 'red' :
+          redPointer.halo = rect.center;
+          break;
+        case 'green' :
+          greenPointer.halo = rect.center;
+          break;
+        case 'blue' :
+          bluePointer.halo = rect.center;
+          break;
+        case 'white' :
+          let candidates = [
+            {
+              pointer: redPointer,
+              distSq: distanceSquared(rect, redPointer),
+            },
+            {
+              pointer: greenPointer,
+              distSq: distanceSquared(rect, greenPointer),
+            },
+            {
+              pointer: bluePointer,
+              distSq: distanceSquared(rect, bluePointer),
+            },
+          ];
+          let nearest = candidates.reduce((closest, pointer) => {
+            return closest.distSq < pointer.distSq ? closest : pointer;
+          });
 
-    ctx.clearRect(0,0, window.innerWidth, window.innerHeight);
-    ctx.beginPath()
+          if (nearest.distSq < minDistSq) {
+            nearest.pointer.setPosition(rect.center);
+          };
+          break;
+      };
+    });
 
-    if (redTarget.cords) {
-      ctx.fillStyle = redTracer;
-      ctx.fillRect(...redTarget.cords, 10, 10);
-    }
-    if (greenTarget.cords) {
-      ctx.fillStyle = greenTracer;
-      ctx.fillRect(...greenTarget.cords, 10, 10);
-    }
+    redPointer.setPosition();
+    greenPointer.setPosition();
+    bluePointer.setPosition();
 
-    ctx.rect(translated[0], translated[1], translated[2], translated[3]);
-    ctx.stroke();
+    lasers[0] = redPointer.center;
+    lasers[1] = greenPointer.center;
+    lasers[2] = bluePointer.center;
+    console.log('lasers:', lasers);
   });
 }
 
@@ -201,18 +251,20 @@ function align(boardWidth, boardHeight) {
       ctx.stroke();
 
       // draw board as translated from camera
-      let [translatedX, translatedY] = translator.coordinates([rect.x, rect.y]);
+      let translated = translator.coordinates(rect);
       let translatedWidth = translator.width(rect.width);
       let translatedHeight = translator.height(rect.height);
       ctx.beginPath()
       ctx.strokeStyle = translatedColor;
-      ctx.rect(translatedX, translatedY, translatedWidth, translatedHeight);
+      ctx.rect(translated.x, translated.y, translatedWidth, translatedHeight);
       ctx.stroke();
 
       setTimeout(function() {
         if (!gameRunning) {
           gameRunning = true;
-          testPointer(ctx, translator, [boardX, boardY, boardWidth, boardHeight]);
+          console.log('started the game');
+          trackLasers(translator);
+          showLasers(ctx);
         }
         trackerTask.stop();
       }, 0);
