@@ -2,21 +2,47 @@ body {
   padding: 0px;
   margin: 0px;
   font-family: 'Press Start 2P', cursive;
+  color: #dddddd;
 }
 
 h1 {
   color: #e22245;
-  margin-left: 20px;
   font-size: 36px;
+}
+
+h3 {
+  color: #dddddd;
+  font-size: 24px;
+}
+
+.game-header {
+  padding: 20px;
+  width: 65%;
+  margin: auto;
+  z-index: 3;
+  border: 2px solid white;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  height: 100%;
+  margin-top: 30px;
+}
+
+.total-forces {
+  padding: 20px;
+  margin: auto;
+  z-index: 3;
+  border: 2px solid white;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  height: 100%;
+  margin-top: 30px;
 }
 
 .hudcontainer {
   width: 1920px;
-  height: 36%;
+  height: 25%;
   position: absolute;
   z-index: 1;
-  /* background-color: rgba(0, 0, 0, 0.3); */
-  /* border: 1px solid white; */
 }
 
 .newsholder {
@@ -27,18 +53,7 @@ h1 {
   /* background-color: rgba(0, 0, 0, 0.3); */
 }
 
-/* .gamenews {
-  height: 93%;
-  width: 23%;
-  margin: auto;
-  z-index: 3;
-  border: 1px solid white;
-  color: white;
-} */
-
 .playernews {
-  height: 92%;
-  width: 28%;
   margin: auto;
   z-index: 3;
   border: 2px solid white;

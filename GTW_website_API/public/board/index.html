@@ -8,16 +8,17 @@
   </head>
   <body>
     <div class="hudcontainer">
-      <h1>Global Thermalnuclear Warfare</h1>
       <div id="hud" class="newsholder">
-        <div class="playernews" v-for="player in players" v-bind:key="player.username">
-          <h5>Player Name: {{ player.name }}</h5>
-          <ul>
-            <li>ICBMs: {{ player.icbms }}</li>
-            <li>Bombers: {{ player.bombers }}</li>
-            <li>Nuclear Subs: {{ player.subs }}</li>
-            <li v-if="war">Hit Points: {{ player.hp }}</li>
-          </ul>
+        <div class="game-header">
+          <h1>Global Thermonuclear Warfare</h1>
+          <h3 v-bind="year">Year: {{year}}</h3>
+          <h3 v-bind="gameID">Game ID: {{gameID}}</h3>
+        </div>
+        <div class="total-forces">
+          <h1>Total Forces:</h1>
+          <h3 v-for="player in players" v-bind="player">
+            <span style="color:{{player.color}}">{{ player.name }}: {{ player.totalDeclaredForces }}
+          </h3>
         </div>
         <!-- <div class="ticker-holder">
           <div class="ticker">

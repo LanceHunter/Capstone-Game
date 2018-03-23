@@ -3,6 +3,7 @@ let hud = new Vue({
   data: {
     players: null,
     war: false,
-    year: 1950,
+    year: null,
+    gameID: null
   }
 })
