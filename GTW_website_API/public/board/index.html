@@ -4,32 +4,30 @@
     <meta charset="utf-8">
     <title>Phaser Tests</title>
     <link rel='stylesheet' type="text/css" href='../stylesheets/style.css'/>
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
   </head>
   <body>
     <div class="hudcontainer">
-      <div class="newsholder">
-        <div id="hud">
-          <div v-for="player in players" v-bind:key="player.username">
-            <div class="playernews">
-              <h5>Player Name: {{ player.username }}</h5>
-              <ul>
-                <li>ICBMs: {{ player.icbms }}</li>
-                <li>Bombers: {{ player.bombers }}</li>
-                <li>Nuclear Subs: {{ player.subs }}</li>
-                <li v-if="war">Hit Points: {{ player.hp }}</li>
-              </ul>
-            </div>
+      <h1>Global Thermalnuclear Warfare</h1>
+      <div id="hud" class="newsholder">
+        <div class="playernews" v-for="player in players" v-bind:key="player.username">
+          <h5>Player Name: {{ player.name }}</h5>
+          <ul>
+            <li>ICBMs: {{ player.icbms }}</li>
+            <li>Bombers: {{ player.bombers }}</li>
+            <li>Nuclear Subs: {{ player.subs }}</li>
+            <li v-if="war">Hit Points: {{ player.hp }}</li>
+          </ul>
+        </div>
+        <!-- <div class="ticker-holder">
+          <div class="ticker">
+            <div class="tickeritem">Year: 1950</div>
+            <div class="tickeritem">Subs deployed to Atlantic Ocean... </div>
+            <div class="tickeritem">ICBMs declared in South America...</div>
+            <div class="tickeritem">More spy messages...</div>
           </div>
-        </div>
+        </div> -->
       </div>
-      <!-- <div class="ticker-holder">
-        <div class="ticker">
-          <div class="tickeritem">Year: 1950</div>
-          <div class="tickeritem">Subs deployed to Atlantic Ocean... </div>
-          <div class="tickeritem">ICBMs declared in South America...</div>
-          <div class="tickeritem">More spy messages...</div>
-        </div>
-      </div> -->
     </div>
     <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
     <script>
