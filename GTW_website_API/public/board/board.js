@@ -4,12 +4,14 @@ Global Thermonuclear Warfare Gameboard
 
 // globals
 let game, firebaseRef, playerIDs, playerIndices;
-let colors = [0x05f140, 0xe22245, 0x5cc8ff];
+let colors = [0xe22245, 0x05f140, 0x5cc8ff];
 
-let subIcons, bomberIcons, capitalIcons, missileIcons;
+let subIcons = [], bomberIcons = [], capitalIcons = [], missileIcons = [];
 let width = 1920;
 let height = width * (9 / 16);
 let phaser;
+let pointersPositions = [null, null, null];
+let playerPointers = [];
 
 /*
 firebase setup
@@ -61,9 +63,11 @@ function onGameInit(data) {
 callback for game changes
 */
 function onGameChange(data) {
-  console.log('onGameChange');
   game = data.val();
-  console.log('game object:', game)
+  subIcons.forEach(subIcon => subIcon.update());
+  bomberIcons.forEach(bomberIcon => bomberIcon.update());
+  missileIcons.forEach(missileIcon => missileIcon.update());
+  capitalIcons.forEach(capitalIcon => capitalIcon.update());
 }
 
 testGame('game8928');
@@ -85,6 +89,7 @@ function preload() {
   phaser.load.image('capital', '/board/assets/capital.png');
   phaser.load.image('circle', '/board/assets/circle.png');
   phaser.load.image('ring', '/board/assets/ring.png');
+  phaser.load.bitmapFont('closeness', '/board/assets/fonts/closeness.png', '/board/assets/fonts/closeness.fnt');
 }
 
 /*
@@ -95,7 +100,6 @@ function create() {
   create and scale the map sprite
   */
   let map = phaser.add.sprite(0, 0, 'map');
-
   /*
   sub icons
   */

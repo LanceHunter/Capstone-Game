@@ -13,8 +13,6 @@ class ICBMLaunch {
 }
 */
 
-// globals
-
 class SubIcon {
   constructor(x, y, ocean, playerID) {
     this.sprite = phaser.add.sprite(x, y, 'submarine');
@@ -22,6 +20,7 @@ class SubIcon {
     this.playerID = playerID;
     this.ocean = ocean;
     this.launches = [];
+    this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
 
     // some listeners
     this.sprite.events.onInputDown.add(() => {
@@ -38,14 +37,35 @@ class SubIcon {
   update() {
     // if the sub's player can be in that ocean
     if (game.oceans[this.ocean].subs[this.playerID]) {
-      this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
-      this.sprite.inputEnabled = true;
-      // if they are out of ammo
-      if (game.oceans[this.ocean].subs[this.playerID].declared + game.oceans[this.ocean].subs[this.playerID].declared <= 0) {
-        this.sprite.alpha = 0.2;
+      //check for game state and update inventory accordingly
+      if (game.war) {
+        this.inventory.setText(game.oceans[this.ocean].subs[this.playerID].total);
+
+        // if they are out of ammo
+        if (game.oceans[this.ocean].subs[this.playerID].declared + game.oceans[this.ocean].subs[this.playerID].total <= 0) {
+          this.sprite.alpha = 0.2;
+          this.inventory.alpha = 0.2;
+        } else {
+          this.sprite.alpha = 1;
+          this.inventory.alpha = 1;
+        }
+      } else {
+        this.inventory.setText(game.oceans[this.ocean].subs[this.playerID].declared);
+        // if they are out of ammo
+        if (game.oceans[this.ocean].subs[this.playerID].declared <= 0) {
+          this.sprite.alpha = 0.2;
+          this.inventory.alpha = 0.2;
+        } else {
+          this.sprite.alpha = 1;
+          this.inventory.alpha = 1;
+        }
       }
+      this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
+      this.inventory.tint = colors[playerIDs.indexOf(this.playerID)];
+      this.sprite.inputEnabled = true;
     } else {
       this.sprite.alpha = 0;
+      this.inventory.alpha = 0;
     }
   }
 }
@@ -56,7 +76,30 @@ class CapitalIcon {
     this.sprite.anchor.set(0, 1);
     this.sprite.inputEnabled = true;
     this.continent = continent;
+    this.hitPoints = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
     this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
+    this.hitPoints.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
+
+    this.update();
+  }
+
+  update() {
+    if (game.war) {
+      this.sprite.inputEnabled = true;
+    }
+
+    this.hitPoints.setText(game.continents[this.continent].hp);
+    this.hitPoints.position.x = this.sprite.centerX - (this.hitPoints.width / 2);
+    // if they are out of hit points
+    if (game.continents[this.continent].hp <= 0) {
+      this.sprite.alpha = 0.2;
+      this.hitPoints.alpha = 0.2;
+    } else {
+      this.sprite.alpha = 1;
+      this.hitPoints.alpha = 1;
+    }
+    this.hitPoints.setText(game.continents[this.continent].hp);
+    this.hitPoints.position.x = this.sprite.centerX - (this.hitPoints.width / 2);
   }
 }
 
@@ -64,19 +107,110 @@ class BomberIcon {
   constructor(x, y, continent) {
     this.sprite = phaser.add.sprite(x, y, 'bomber');
     this.sprite.anchor.set(0, 1);
-    this.sprite.inputEnabled = true;
     this.continent = continent;
-    this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
+    this.playerID = Object.keys(game.continents[this.continent].player)[0];
+    this.continent = continent;
+    this.launches = [];
+    this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
+
+    // some listeners
+    this.sprite.events.onInputDown.add(() => {
+      this.launches.push(new SubLaunch(this.playerID, {x: this.sprite.centerX, y: this.sprite.centerY}, this.ocean));
+    }, this);
+
+    this.sprite.events.onInputUp.add(() => {
+      this.launches[this.launches.length - 1].launch({x: 10, y: 10});
+    }, this);
+
+    this.update();
+  }
+
+  update() {
+    //check for game state and update inventory accordingly
+    if (game.war) {
+      this.inventory.setText(game.continents[this.continent].forces.bombers.total);
+      this.inventory.position.x = this.sprite.centerX - (this.inventory.width / 2);
+      this.sprite.inputEnabled = true;
+      // if they are out of ammo
+      if (game.continents[this.continent].forces.bombers.total <= 0) {
+        this.sprite.alpha = 0.2;
+        this.inventory.alpha = 0.2;
+      } else {
+        this.sprite.alpha = 1;
+        this.inventory.alpha = 1;
+      }
+    } else {
+      this.inventory.setText(game.continents[this.continent].forces.bombers.declared);
+      this.inventory.position.x = this.sprite.centerX - (this.inventory.width / 2);
+      // if they are haven't declared anything
+      if (game.continents[this.continent].forces.bombers.declared <= 0) {
+        this.sprite.alpha = 0.2;
+        this.inventory.alpha = 0.2;
+      } else {
+        this.sprite.alpha = 1;
+        this.inventory.alpha = 1;
+      }
+    }
+
+    this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
+    this.inventory.tint = colors[playerIDs.indexOf(this.playerID)];
   }
 }
 
 class MissileIcon {
   constructor(x, y, continent) {
+    this.continent = continent
+    this.playerID = Object.keys(game.continents[this.continent].player)[0];
     this.sprite = phaser.add.sprite(x, y, 'missile');
     this.sprite.anchor.set(0, 1);
-    this.sprite.inputEnabled = true;
+    this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
     this.continent = continent;
-    this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
+    this.launches = [];
+    this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
+    this.inventory.tint = colors[playerIDs.indexOf(this.playerID)];
+
+    // some listeners
+    this.sprite.events.onInputDown.add(() => {
+      this.launches.push(new SubLaunch(this.playerID, {x: this.sprite.centerX, y: this.sprite.centerY}, this.ocean));
+    }, this);
+
+    this.sprite.events.onInputUp.add(() => {
+      this.launches[this.launches.length - 1].launch({x: 10, y: 10});
+    }, this);
+
+    this.update();
+  }
+
+  update() {
+    //check for game state and update inventory accordingly
+    if (game.war) {
+      this.inventory.setText(game.continents[this.continent].forces.icbms.total);
+      this.inventory.position.x = this.sprite.centerX - (this.inventory.width / 2);
+      this.sprite.inputEnabled = true;
+
+      // if they are out of ammo
+      if (game.continents[this.continent].forces.icbms.total <= 0) {
+        this.sprite.alpha = 0.2;
+        this.inventory.alpha = 0.2;
+      } else {
+        this.sprite.alpha = 1;
+        this.inventory.alpha = 1;
+      }
+    } else {
+      this.inventory.setText(game.continents[this.continent].forces.icbms.declared);
+      this.inventory.position.x = this.sprite.centerX - (this.inventory.width / 2);
+
+      // if they are out of ammo
+      if (game.continents[this.continent].forces.icbms.declared <= 0) {
+        this.sprite.alpha = 0.2;
+        this.inventory.alpha = 0.2;
+      } else {
+        this.sprite.alpha = 1;
+        this.inventory.alpha = 1;
+      }
+    }
+
+
   }
 }
 
