@@ -18,6 +18,9 @@
           <a v-if="!username" class="navbar-item" href="/login">
             Login
           </a>
+          <a v-if="username" class="navbar-item" href="/board">
+            Launch game
+          </a>
           <a v-if="username" class="navbar-item" href="/leaderboard">
             Leaderboard
           </a>

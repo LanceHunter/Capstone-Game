@@ -5,7 +5,7 @@
 
     <div class='message-body'>
       <!-- wins & losses -->
-      <h5>Wins-Losses</h5>
+      <!-- <h5>Wins-Losses</h5> -->
       <svg id='chart' width='1000' height='500'></svg>
     </div>
 
