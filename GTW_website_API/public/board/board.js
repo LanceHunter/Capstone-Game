@@ -1,62 +1,82 @@
-// we need a game object
-let game;
+/*
+Global Thermonuclear Warfare Gameboard
+*/
+
+// globals
+let game, firebaseRef, playerIDs, playerIndices;
+let colors = [0xe22245, 0x05f140, 0x5cc8ff];
+
+let subIcons = [], bomberIcons = [], capitalIcons = [], missileIcons = [];
+let width = 1920;
+let height = width * (9 / 16);
+let phaser;
+let pointersPositions = [null, null, null];
+let playerPointers = [];
 
 /*
 firebase setup
 */
 const database = firebase.database();
 
-
 /*
 set up the firebase bind
-*/
-// a global fbGame
-let fbGameRef;
-
 $.post('/api/pregame/setup', function(data) {
-  console.log('hit /api/pregame/setup');
-  let gameID = data.gameID;
-  fbGameRef = database.ref('gameInstance').child(gameID);
+  console.log('/api/pregame/setup:', data);
+  gameID = data.gameID;
+  fbGame = database.ref('gameInstance').child(gameID);
+  console.log('gameID', gameID);
 
   console.log('setting firebase listener');
-  fbGameRef.once('value', onGameInit);
+  fbGame.once('value', onGameInit);
 });
+*/
 
 /*
-the callback for the once('value') function
+test game
+*/
+function testGame(gameID) {
+  firebaseRef = database.ref('gameInstance').child(gameID);
+  firebaseRef.once('value', onGameInit);
+}
+
+/*
+callback for game init
 */
 function onGameInit(data) {
-  console.log('game init');
   game = data.val();
-  makeTestGame();
-  fbGameRef.on('value', onGameUpdate);
-  console.log(game);
-}
+  console.log('game object onInit:', game)
 
-function makeTestGame() {
-  console.log('make test');
-}
+  // set up the player lookup structures
+  playerIDs = Object.keys(game.players);
+  playerIndices = {};
+  for (let i = 0; i < playerIDs.length; i++) {
+    playerIndices[game.players[playerIDs[i]]] = i;
+  }
 
+  phaser = new Phaser.Game(width, height, Phaser.AUTO, '', {preload: preload, create: create, update: update});
+
+  // our firebase value listener
+  firebaseRef.on('value', onGameChange);
+}
 
 /*
-the callback for the on('value') function
+callback for game changes
 */
-function onGameUpdate(data) {
-  console.log('game update');
+function onGameChange(data) {
   game = data.val();
+  subIcons.forEach(subIcon => subIcon.update());
+  bomberIcons.forEach(bomberIcon => bomberIcon.update());
+  missileIcons.forEach(missileIcon => missileIcon.update());
+  capitalIcons.forEach(capitalIcon => capitalIcon.update());
 }
 
-/*
-give the game object a convincing wartime state*.
-/*
+testGame('game8928');
 
+/*
 phaser setup
 written for phaser-ce 2.10.1
 */
-// a few things that get our canvas and phaser instance ready
-const width = 1920;
-const height = width * (9 / 16);
-const phaser = new Phaser.Game(width, height, Phaser.AUTO, '', {preload: preload, create: create, update: update});
+
 
 /*
 load textures
@@ -69,6 +89,7 @@ function preload() {
   phaser.load.image('capital', '/board/assets/capital.png');
   phaser.load.image('circle', '/board/assets/circle.png');
   phaser.load.image('ring', '/board/assets/ring.png');
+  phaser.load.bitmapFont('closeness', '/board/assets/fonts/closeness.png', '/board/assets/fonts/closeness.fnt');
 }
 
 /*
@@ -79,24 +100,24 @@ function create() {
   create and scale the map sprite
   */
   let map = phaser.add.sprite(0, 0, 'map');
-
   /*
-  add icons
+  sub icons
   */
-  // Pacific
-  subIcons.push(new SubIcon(130, (1080 - 310), 'pacific'));
-  subIcons.push(new SubIcon(175, (1080 - 215), 'pacific'));
-  subIcons.push(new SubIcon(220, (1080 - 120), 'pacific'));
+  subIcons = [
+    new SubIcon(130, (1080 - 310), 'pacific', playerIDs[0]),
+    new SubIcon(175, (1080 - 215), 'pacific', playerIDs[1]),
+    new SubIcon(220, (1080 - 120), 'pacific', playerIDs[2]),
+    new SubIcon(625, (1080 - 435), 'atlantic', playerIDs[0]),
+    new SubIcon(690, (1080 - 330), 'atlantic', playerIDs[1]),
+    new SubIcon(755, (1080 - 225), 'atlantic', playerIDs[2]),
+    new SubIcon(1250, (1080 - 265), 'indian', playerIDs[0]),
+    new SubIcon(1250, (1080 - 180), 'indian', playerIDs[1]),
+    new SubIcon(1250, (1080 - 95), 'indian', playerIDs[2]),
+  ];
 
-  // Atlantic
-  subIcons.push(new SubIcon(625, (1080 - 435), 'atlantic'));
-  subIcons.push(new SubIcon(690, (1080 - 330), 'atlantic'));
-  subIcons.push(new SubIcon(755, (1080 - 225), 'atlantic'));
-
-  // Indian
-  subIcons.push(new SubIcon(1250, (1080 - 265), 'indian'));
-  subIcons.push(new SubIcon(1250, (1080 - 180), 'indian'));
-  subIcons.push(new SubIcon(1250, (1080 - 95), 'indian'));
+  bomberIcons = [];
+  capitalIcons = [];
+  missileIcons = [];
 
   // North America
   bomberIcons.push(new BomberIcon(260, (1080 - 500), 'northAmerica'));
