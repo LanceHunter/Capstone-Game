@@ -2,60 +2,18 @@
 Global Thermonuclear Warfare Gameboard
 */
 
-// globals
-let game, firebaseRef, playerIDs, playerIndices;
-let colors = [0xe22245, 0x05f140, 0x5cc8ff];
-let subIcons = [], bomberIcons = [], capitalIcons = [], missileIcons = [];
-let width = 1920;
-let height = width * (9 / 16);
-let phaser;
-let pointersPositions = [null, null, null];
-let playerPointers = [];
 
 /*
 firebase setup
 */
-const database = firebase.database();
 
 
-/*
-set up the firebase bind
-$.post('/api/pregame/setup', function(data) {
-  console.log('/api/pregame/setup:', data);
-  gameID = data.gameID;
-  fbGame = database.ref('gameInstance').child(gameID);
-  console.log('gameID', gameID);
-
-  console.log('setting firebase listener');
-  fbGame.once('value', onGameInit);
-});
-*/
-
-/*
-test game
-*/
-function testGame(gameID) {
-  firebaseRef = database.ref('gameInstance').child(gameID);
-  firebaseRef.once('value', onGameInit);
-}
 
 /*
 callback for game init
 */
 function onGameInit(data) {
   game = data.val();
-  console.log('game object onInit:', game)
-
-  // set up the player lookup structures
-  playerIDs = Object.keys(game.players);
-  playerIndices = {};
-  for (let i = 0; i < playerIDs.length; i++) {
-    playerIndices[game.players[playerIDs[i]]] = i;
-  }
-
-  phaser = new Phaser.Game(width, height, Phaser.AUTO, '', {preload: preload, create: create, update: update});
-
-  // our firebase value listener
   firebaseRef.on('value', onGameChange);
 }
 
@@ -92,13 +50,13 @@ load textures
 */
 function preload() {
   phaser.load.image('map', '/board/assets/map.png');
+  phaser.load.image('capital', '/board/assets/capital.png');
+  phaser.load.bitmapFont('closeness', '/board/assets/fonts/closeness.png', '/board/assets/fonts/closeness.fnt');
   phaser.load.image('missile', '/board/assets/missile.png');
   phaser.load.image('submarine', '/board/assets/submarine.png');
   phaser.load.image('bomber', '/board/assets/bomber.png');
-  phaser.load.image('capital', '/board/assets/capital.png');
   phaser.load.image('circle', '/board/assets/circle.png');
   phaser.load.image('ring', '/board/assets/ring.png');
-  phaser.load.bitmapFont('closeness', '/board/assets/fonts/closeness.png', '/board/assets/fonts/closeness.fnt');
 }
 
 /*
@@ -113,12 +71,10 @@ function create() {
     let canvasLeft = $('canvas').offset().left;
     $('.hudcontainer').css('left', canvasLeft);
   });
-  
-  /*
-  create and scale the map sprite
-  */
+
   let map = phaser.add.sprite(0, 0, 'map');
   let canvasLeft = $('canvas').offset().left;
+  $('.hudcontainter').css('left', canvasLeft);
 
   /*
   sub icons

@@ -76,11 +76,12 @@ class CapitalIcon {
     this.sprite.anchor.set(0, 1);
     this.sprite.inputEnabled = true;
     this.continent = continent;
-    this.hitPoints = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
-    this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
-    this.hitPoints.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
-
-    this.update();
+    
+      this.hitPoints = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
+      this.hitPoints.position.x = this.sprite.centerX - (this.hitPoints.width / 2);
+      this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
+      this.hitPoints.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
+      this.update();
   }
 
   update() {
