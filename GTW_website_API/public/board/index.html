@@ -6,6 +6,12 @@
     <link rel='stylesheet' type="text/css" href='../stylesheets/style.css'/>
   </head>
   <body>
+    <!-- alignment and laser tracking elements -->
+    <div id="tracking-container" class="tracking-container">
+      <canvas id="alignment-canvas"></canvas>
+      <video id="tracking-video" preload autoplay loop muted></video>
+    </div>
+    <!-- heads up display elements -->
     <div class="hudcontainer">
       <div class="newsholder">
         <div id="hud">
@@ -49,8 +55,10 @@
       integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
       crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-    <script src="/board/hud.js"></script>
+    <script src="/board/vendor/tracking.js"></script>
     <script src="/board/vendor/phaser.js"></script>
+    <script src="/board/alignment.js"></script>
+    <script src="/board/hud.js"></script>
     <script src="/board/board.js"></script>
     <script src="/board/gameObjects.js"></script>
   </body>

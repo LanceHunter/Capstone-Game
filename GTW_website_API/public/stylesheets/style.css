@@ -1,3 +1,40 @@
+/* ======================
+laser tracking
+======================== */
+
+*, html {
+  border: 0;
+  margin: 0px;
+}
+
+.tracking-container {
+ position: fixed;
+ width: 100%;
+ height: 100%;
+ overflow: hidden;
+ max-width: 100%;
+}
+
+alignment-canvas {
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+  z-index:999;
+}
+
+tracking-video {
+  visibility: hidden;
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+}
+
+/* ======================
+heads up display
+======================== */
+
 body {
   padding: 0px;
   margin: 0px;
