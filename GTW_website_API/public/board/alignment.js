@@ -1,5 +1,5 @@
 // set variables for tracking program
-let minDistSq = Math.pow(30, 2);
+let minDistSq = Math.pow(30, 2); 
 let maxTime = 1000;
 let redTargetColor = "#dcaaaa";
 let greenTargetColor = "#7ebe86";
