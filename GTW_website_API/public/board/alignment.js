@@ -13,6 +13,55 @@ let displayColors = ["#440000", "#004400", "#000044"];
 // create the global lasers object used by the game as pointers
 const lasers = [null, null, null];
 
+// start the phaser game
+function startGame() {
+  let c = document.getElementById("alignment-canvas");
+  c.width = window.innerWidth;
+  c.height = window.innerHeight;
+  let ctx = c.getContext("2d");
+  showLasers(ctx);
+}
+
+// fake game function for showing laser locations
+function showLasers(ctx) {
+  ctx.clearRect(0,0, window.innerWidth, window.innerHeight);
+  ctx.beginPath()
+  lasers.forEach((laser, index) => {
+    if(laser) {
+      console.log('printing', displayColors[index], laser);
+      ctx.fillStyle = displayColors[index];
+      ctx.fillRect(laser.x, laser.y, 10, 10);
+    }
+  })
+  ctx.stroke();
+  setTimeout(function() {
+    showLasers(ctx);
+  }, 20);
+}
+
+/*
+  Creates a new game instance and shows the join game modal.
+*/
+async function joinGame() {
+  // create a game instance
+  const database = firebase.database();
+  await data = $.post('/api/pregame/setup');
+  const gameID = data.gameID;
+  const gameRef = database.ref('gameInstance').child(gameID);
+  gameRef.on('value', function(snapshot) {
+    players = snapshot.val().players;
+  });
+
+  // display join game modal
+  const modal = document.getElementById("alignment-canvas");
+  modal.classList.add("is-active");
+
+
+  // update modal as players join
+
+  // start game on button press
+}
+
 /*
   Creates a translator object which maps coordinates from the camera to coortinates on the display. Initialize with two coordinates from the camera along with where they should be mapped to on the display.
 */
@@ -51,10 +100,8 @@ function hexToRGB(hex) {
     } : null;
 }
 
-
-
 /*
-  Creates a target object to keep track of the last seen location of a target.
+  Creates a pointer object to keep track of the last seen location of a laser pointer.
 */
 function Pointer(color) {
   this.center = null;
@@ -88,22 +135,6 @@ function distanceSquared(rect, pointer) {
   let centerDistSq = pointer.center ? Math.pow(rect.center.x - pointer.center.x, 2) + Math.pow(rect.center.y - pointer.center.y, 2) : Infinity;
 
   return Math.min(haloDistSq, centerDistSq);
-}
-
-function showLasers(ctx) {
-  ctx.clearRect(0,0, window.innerWidth, window.innerHeight);
-  ctx.beginPath()
-  lasers.forEach((laser, index) => {
-    if(laser) {
-      console.log('printing', displayColors[index], laser);
-      ctx.fillStyle = displayColors[index];
-      ctx.fillRect(laser.x, laser.y, 10, 10);
-    }
-  })
-  ctx.stroke();
-  setTimeout(function() {
-    showLasers(ctx);
-  }, 20);
 }
 
 /*
@@ -196,7 +227,7 @@ function align(boardWidth, boardHeight) {
   let gameRunning = false;
 
   // set up canvas
-  let c = document.getElementById("canvas");
+  let c = document.getElementById("alignment-canvas");
   c.width = window.innerWidth;
   c.height = window.innerHeight;
   let ctx = c.getContext("2d");
@@ -213,7 +244,7 @@ function align(boardWidth, boardHeight) {
 
   // reset rough alighnment settings, finish alignment
   function finishRoughAlign() {
-    document.getElementById("video").style.visibility = "hidden";
+    document.getElementById("tracking-video").style.visibility = "hidden";
     window.removeEventListener("keypress", finishRoughAlign);
     // print board on the display
     ctx.fillStyle = targetColor;
@@ -222,7 +253,7 @@ function align(boardWidth, boardHeight) {
   }
 
   // set rough alignment settings, point camera at display
-  document.getElementById("video").style.visibility = "visible";
+  document.getElementById("tracking-video").style.visibility = "visible";
   window.addEventListener("keypress", finishRoughAlign);
 
   // create the translator on board detection

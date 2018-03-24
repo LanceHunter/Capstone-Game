@@ -15,7 +15,7 @@ laser tracking
  max-width: 100%;
 }
 
-alignment-canvas {
+.alignment-canvas {
   position: absolute;
   width: 100%;
   height: 100vh;
@@ -23,7 +23,7 @@ alignment-canvas {
   z-index:999;
 }
 
-tracking-video {
+.tracking-video {
   visibility: hidden;
   position: absolute;
   width: 100%;
