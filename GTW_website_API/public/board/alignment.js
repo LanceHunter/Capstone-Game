@@ -1,44 +1,18 @@
-// set board dimentions
-let boardWidth = window.innerWidth * .8;
-let boardHeight = window.innerHeight * .8;
-
 // set variables for tracking program
 let minDistSq = Math.pow(30, 2);
 let maxTime = 1000;
 let redTargetColor = "#dcaaaa";
 let greenTargetColor = "#7ebe86";
 let blueTargetColor = "#7373e6";
-let displayColors = ["#440000", "#004400", "#000044"];
+let boardMinBrightness = 10;
+let boardMaxBrightness = 100;
 
 // create the global lasers object used by the game as pointers
 const lasers = [null, null, null];
 
 // start the phaser game
-function startGame() {
-  console.log('started game');
-  let c = document.getElementById("alignment-canvas");
-  c.width = window.innerWidth;
-  c.height = window.innerHeight;
-  c.style.display = "initial";
-  let ctx = c.getContext("2d");
-  showLasers(ctx);
-}
-
-// fake game function for showing laser locations
-function showLasers(ctx) {
-  ctx.clearRect(0,0, window.innerWidth, window.innerHeight);
-  ctx.beginPath()
-  lasers.forEach((laser, index) => {
-    if(laser) {
-      // console.log('printing', displayColors[index], laser);
-      ctx.fillStyle = displayColors[index];
-      ctx.fillRect(laser.x, laser.y, 10, 10);
-    }
-  })
-  ctx.stroke();
-  setTimeout(function() {
-    showLasers(ctx);
-  }, 20);
+function startGame(gameID) {
+  console.log('starting game:', gameID);
 }
 
 /*
@@ -76,12 +50,12 @@ async function joinGame() {
   // start game on button press
   const beginGameButton = document.getElementById("beginGameButton");
   beginGameButton.addEventListener('click', function() {
-    console.log('tried to start game');
-    // if (usernames.length > 1) {
+    if (usernames.length > 1) {
       gameRef.off();
-      document.getElementById("joinGameModal").remove()
-      startGame();
-    // }
+      document.getElementById("joinGameModal").remove();
+      await $.post('/api/pregame/startgame');
+      startGame(gameID);
+    }
   });
 }
 
@@ -115,12 +89,12 @@ function Translator(cameraA, cameraB, displayA, displayB) {
 
 // helper function so laser halo color can be in hex
 function hexToRGB(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-    } : null;
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+  } : null;
 }
 
 /*
@@ -232,7 +206,6 @@ function trackLasers(translator) {
     lasers[0] = redPointer.center;
     lasers[1] = greenPointer.center;
     lasers[2] = bluePointer.center;
-    // console.log('lasers:', lasers);
   });
 }
 
@@ -241,90 +214,55 @@ function trackLasers(translator) {
 */
 function align(boardWidth, boardHeight) {
   // set up board and colors
-  let boardX = (window.innerWidth - boardWidth) / 2;
-  let boardY = (window.innerHeight - boardHeight) / 2;
-  let targetColor = "#FFF";
-  let cameraColor = "#F00";
-  let translatedColor = "#00F";
-  let finishedRoughAlign = true;
+  let state = 'rough align';
+  let finishedRoughAlign = false;
   let gameRunning = false;
-
-  // set up canvas
-  let c = document.getElementById("alignment-canvas");
-  c.width = window.innerWidth;
-  c.height = window.innerHeight;
-  let ctx = c.getContext("2d");
-  ctx.fillStyle = targetColor;
-  ctx.fillRect(boardX, boardY, boardWidth, boardHeight);
-  finishedRoughAlign = false;
-
-  // set tracker to detect the board
-  tracking.ColorTracker.registerColor('board', (r, g, b) => {
-    return (r > 90 && g > 90 && b > 90);
-  });
-  let tracker = new tracking.ColorTracker(['board']);
-  let trackerTask = tracking.track('#tracking-video', tracker, { camera: true });
-
-  // reset rough alighnment settings, finish alignment
-  function finishRoughAlign() {
-    document.getElementById("tracking-video").style.visibility = "hidden";
-    window.removeEventListener("keypress", finishRoughAlign);
-    // print board on the display
-    ctx.fillStyle = targetColor;
-    ctx.fillRect(boardX, boardY, boardWidth, boardHeight);
-    finishedRoughAlign = true;
-  }
 
   // set rough alignment settings, point camera at display
   document.getElementById("tracking-video").style.visibility = "visible";
   window.addEventListener("keypress", finishRoughAlign);
 
+  // reset rough alighnment settings, finish alignment
+  function finishRoughAlign() {
+    document.getElementById("tracking-video").style.visibility = "hidden";
+    window.removeEventListener("keypress", finishRoughAlign);
+    state = 'precise align';
+  }
+
+  // set tracker to detect the board
+  tracking.ColorTracker.registerColor('board', (r, g, b) => {
+    return (
+      boardMinBrightness < r && r < boardMaxBrightness &&
+      boardMinBrightness < g && g < boardMaxBrightness &&
+      boardMinBrightness < b && b < boardMaxBrightness
+    );
+  });
+  let boardTracker = new tracking.ColorTracker(['board']);
+  let boardTrackerTask = tracking.track('#tracking-video', boardTracker, { camera: true });
+
   // create the translator on board detection
-  tracker.on('track', function(event) {
+  boardTracker.on('track', function(event) {
     if (finishedRoughAlign && event.data.length > 0) {
       let rect = event.data[0];
 
       // create coordinate pairs for camera and display
-      let cameraA = [rect.x, rect.y];
-      let cameraB = [rect.x + rect.width, rect.y + rect.height];
-      let displayA = [boardX, boardY];
-      let displayB = [boardX + boardWidth, boardY + boardHeight];
+      let cameraA = {x: rect.x, y: rect.y};
+      let cameraB = {x: rect.x + rect.width, y: rect.y + rect.height};
+      let boardA = {x: 0, y: 0};
+      let boardB = {x: 1920, y: 1080};
       // create translator object
-      let translator = new Translator(cameraA, cameraB, displayA, displayB);
-
-      // clear canvas
-      ctx.clearRect(0,0, c.width, c.height);
-
-      // draw board
-      // ctx.fillRect(boardX, boardY, boardWidth, boardHeight);
-
-      // draw board as originally detected by camera
-      // ctx.beginPath()
-      // ctx.strokeStyle = cameraColor;
-      // ctx.rect(rect.x, rect.y, rect.width, rect.height);
-      // ctx.stroke();
-
-      // draw board as translated from camera
-      // let translated = translator.coordinates(rect);
-      // let translatedWidth = translator.width(rect.width);
-      // let translatedHeight = translator.height(rect.height);
-      // ctx.beginPath()
-      // ctx.strokeStyle = translatedColor;
-      // ctx.rect(translated.x, translated.y, translatedWidth, translatedHeight);
-      // ctx.stroke();
+      let translator = new Translator(cameraA, cameraB, boardA, boardB);
 
       setTimeout(function() {
         if (!gameRunning) {
           gameRunning = true;
-          console.log('launching join game');
-          c.style.display = "none";
           trackLasers(translator);
           joinGame();
         }
-        trackerTask.stop();
+        boardTrackerTask.stop();
       }, 0);
     }
   });
 }
 
-align(boardWidth, boardHeight);
+align();
