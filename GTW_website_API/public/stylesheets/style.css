@@ -1,3 +1,48 @@
+/* ======================
+laser tracking
+======================== */
+
+*, html {
+  border: 0;
+  margin: 0px;
+}
+
+.tracking-container {
+ position: fixed;
+ width: 100%;
+ height: 100%;
+ overflow: hidden;
+ max-width: 100%;
+ z-index:-999;
+ pointer-events: none;
+}
+
+.alignment-canvas {
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+  z-index:999;
+}
+
+.tracking-video {
+  visibility: hidden;
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+  z-index:-999;
+  pointer-events: none;
+}
+
+.joinGameModal {
+  visibility: hidden;
+}
+
+/* ======================
+heads up display
+======================== */
+
 body {
   padding: 0px;
   margin: 0px;
@@ -16,7 +61,7 @@ h3 {
 }
 
 canvas {
-  margin: auto;
+  margin: 50px auto;
 }
 
 .game-header {
@@ -43,11 +88,12 @@ canvas {
 }
 
 .hudcontainer {
+  visibility: hidden;
   width: 1920px;
   height: 25%;
   position: absolute;
-  margin: auto;
   z-index: 1;
+  display: none;
 }
 
 .newsholder {

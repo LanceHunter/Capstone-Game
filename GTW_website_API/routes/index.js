@@ -81,11 +81,12 @@ router.post('/register', async ctx => {
 
     const new_user = await knex('users')
       .insert({
-        // email: ctx.request.body.email,
         hashed_password: bcrypt.hashSync(ctx.request.body.password, saltRounds),
-        // profile_photo: ctx.request.body.profile_photo,
-        // full_name: ctx.request.body.full_name,
         username: ctx.request.body.username,
+        wins: 0,
+        losses: 0,
+        average_score: 0,
+        high_score: 0,
       })
       .returning('*');
 

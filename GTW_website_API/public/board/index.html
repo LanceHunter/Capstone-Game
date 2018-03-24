@@ -7,6 +7,26 @@
     <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
   </head>
   <body>
+    <!-- alignment and laser tracking elements -->
+    <div class="tracking-container">
+      <canvas id="alignment-canvas" class="alignment-canvas"></canvas>
+      <video id="tracking-video" class="tracking-video" preload autoplay loop muted></video>
+    </div>
+    <!-- join game modal -->
+    <div id="joinGameModal" class="joinGameModal">
+      <div class="instructions">
+      </div>
+      <div class="gameIdLabel">
+        Game ID: {{ gameID }}
+      </div>
+      <ul v-for="username in usernames">
+        <li>{{ username }}</li>
+      </ul>
+      <button id="beginGameButton" class="beginGameButton" type="button">
+        Begin game
+      </button>
+    </div>
+    <!-- heads up display elements -->
     <div class="hudcontainer">
       <div id="hud" class="newsholder">
         <div class="game-header">
@@ -48,10 +68,17 @@
       integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
       crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="/board/vendor/tracking.js"></script>
     <script src="/board/vendor/phaser.js"></script>
-    
+    <script src="/board/alignment.js"></script>
     <script src="/board/hud.js"></script>
+    <script src="/board/continent.js"></script>
+    <script src="/board/boardInit.js"></script>
+  <!--
+    <script src="/board/peace.js"></script>
+    <script src="/board/war.js"></script>
     <script src="/board/board.js"></script>
+  -->
     <script src="/board/gameObjects.js"></script>
   </body>
 </html>
