@@ -32,28 +32,10 @@ firebaseRef.once('value', data => {
   phaser = new Phaser.Game(width, height, Phaser.AUTO);
 
   phaser.state.add('ContinentSelect', continent);
-  phaser.state.add('Alignment', align);
+  phaser.state.add('Alignment', alignState);
   // phaser.state.add('Peace', peace);
   // phaser.state.add('War', war);
 
   // and we launch our ContinentSelect state
   phaser.state.start('Alignment');
 });
-
-
-
-/*
-phaser setup
-*/
-
-let align = {
-  preload: function() {
-    this.game.load.image('map', '/board/assets/map.png');
-  },
-  create: function() {
-    this.game.add.sprite(0, 0, 'map');
-  },
-  update: function() {
-
-  }
-}

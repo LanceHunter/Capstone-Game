@@ -1,18 +1,34 @@
 // set variables for tracking program
-let minDistSq = Math.pow(30, 2); 
+let minDistSq = Math.pow(30, 2);
 let maxTime = 1000;
 let redTargetColor = "#dcaaaa";
 let greenTargetColor = "#7ebe86";
 let blueTargetColor = "#7373e6";
-let boardMinBrightness = 10;
-let boardMaxBrightness = 100;
+let boardMinBrightness = 0;
+let boardMaxBrightness = 90;
 
 // create the global lasers object used by the game as pointers
 const lasers = [null, null, null];
 
 // start the phaser game
 function startGame(gameID) {
-  console.log('starting game:', gameID);
+  console.log('started game:', gameID);
+}
+
+/*
+phaser setup
+*/
+
+let alignState = {
+  preload: function() {
+    this.game.load.image('map', '/board/assets/map.png');
+  },
+  create: function() {
+    this.game.add.sprite(0, 0, 'map');
+  },
+  update: function() {
+
+  }
 }
 
 /*
@@ -28,6 +44,7 @@ const joinGameModal = new Vue({
 })
 
 async function joinGame() {
+  console.log('lauched join game');
   // create a game instance
   const database = firebase.database();
   const data = await $.post('/api/pregame/setup');
@@ -49,11 +66,11 @@ async function joinGame() {
 
   // start game on button press
   const beginGameButton = document.getElementById("beginGameButton");
-  beginGameButton.addEventListener('click', function() {
+  beginGameButton.addEventListener('click', async function() {
     if (usernames.length > 1) {
       gameRef.off();
       document.getElementById("joinGameModal").remove();
-      await $.post('/api/pregame/startgame');
+      // await $.post('/api/pregame/startgame', {gameID: gameID});
       startGame(gameID);
     }
   });
@@ -140,6 +157,7 @@ function distanceSquared(rect, pointer) {
   center ('which is white regardless of which laser pointer is used') and thier halo ('which is set at the top of this file as a target color'). It uses the last seen location of each pointer and it's halo to determin which white dot coresponds to which color laser pointer. It then writes that pointer location data to the global 'lasers' array for use in the game function.
 */
 function trackLasers(translator) {
+  console.log('tracking lasers');
   // set up the pointer objects
   let redPointer = new Pointer(redTargetColor);
   tracking.ColorTracker.registerColor('red', (r,g,b) => redPointer.range(r,g,b));
@@ -213,10 +231,9 @@ function trackLasers(translator) {
   Creates a board on the display with given width and height, detects that rectangle with the camera, and then creates a translator object that maps coordinates from the camera to coordinates on the display. Pass the translator object to the next function that needs it in the setTimeout function at the bottom (right now that is set to testPointer).
 */
 function align(boardWidth, boardHeight) {
+  console.log('starting alignment');
   // set up board and colors
-  let state = 'rough align';
-  let finishedRoughAlign = false;
-  let gameRunning = false;
+  let state = 'rough';
 
   // set rough alignment settings, point camera at display
   document.getElementById("tracking-video").style.visibility = "visible";
@@ -226,7 +243,7 @@ function align(boardWidth, boardHeight) {
   function finishRoughAlign() {
     document.getElementById("tracking-video").style.visibility = "hidden";
     window.removeEventListener("keypress", finishRoughAlign);
-    state = 'precise align';
+    state = 'precise';
   }
 
   // set tracker to detect the board
@@ -242,7 +259,7 @@ function align(boardWidth, boardHeight) {
 
   // create the translator on board detection
   boardTracker.on('track', function(event) {
-    if (finishedRoughAlign && event.data.length > 0) {
+    if (state === 'precise' && event.data.length > 0) {
       let rect = event.data[0];
 
       // create coordinate pairs for camera and display
@@ -254,8 +271,9 @@ function align(boardWidth, boardHeight) {
       let translator = new Translator(cameraA, cameraB, boardA, boardB);
 
       setTimeout(function() {
-        if (!gameRunning) {
-          gameRunning = true;
+        if (state === 'precise') {
+          console.log('finishied alignment');
+          state = 'finished';
           trackLasers(translator);
           joinGame();
         }
