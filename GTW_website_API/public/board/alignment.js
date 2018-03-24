@@ -1,11 +1,13 @@
 // set variables for tracking program
-let minDistSq = Math.pow(30, 2);
-let maxTime = 1000;
-let redTargetColor = "#dcaaaa";
-let greenTargetColor = "#7ebe86";
-let blueTargetColor = "#7373e6";
-let boardMinBrightness = 0;
-let boardMaxBrightness = 90;
+const minDistSq = Math.pow(30, 2);
+const maxTime = 1000;
+const redTargetColor = "#dcaaaa";
+const greenTargetColor = "#7ebe86";
+const blueTargetColor = "#7373e6";
+const boardMinBrightness = 100;
+const boardMaxBrightness = 260;
+const boardWidth = window.innerWidth * .8;
+const boardHeight = boardWidth * (9 / 16);
 
 // create the global lasers object used by the game as pointers
 const lasers = [null, null, null];
@@ -28,12 +30,12 @@ let alignState = {
     this.game.add.sprite(0, 0, 'map');
 
     this.red = this.game.add.sprite(0, 0, 'circle');
-    this.green = this.game.add.sprite(0, 0, 'circle');
-    this.blue = this.game.add.sprite(0, 0, 'circle');
+    this.green = this.game.add.sprite(boardWidth - 10, boardHeight - 10, 'circle');
+    this.blue = this.game.add.sprite(boardWidth, boardHeight, 'circle');
 
-    this.red.tint = 0xdcaaa;
-    this.green.tint = 0x7ebe86;
-    this.blue.tint = 0x7373e6;
+    this.red.tint = 0x550000;
+    this.green.tint = 0x005500;
+    this.blue.tint = 0x000055;
 
     this.red.scale.set(0.2);
     this.green.scale.set(0.2);
@@ -104,10 +106,10 @@ async function joinGame() {
   Creates a translator object which maps coordinates from the camera to coortinates on the display. Initialize with two coordinates from the camera along with where they should be mapped to on the display.
 */
 function Translator(cameraA, cameraB, displayA, displayB) {
-  this.stretchX = Math.abs(displayB[0] - displayA[0]) / Math.abs(cameraB[0] - cameraA[0]) || 0;
-  this.stretchY = Math.abs(displayB[1] - displayA[1]) / Math.abs(cameraB[1] - cameraA[1]) || 0;
-  this.offsetX = (displayA[0] / this.stretchX) - cameraA[0] || 0;
-  this.offsetY = (displayA[1] / this.stretchY) - cameraA[1] || 0;
+  this.stretchX = Math.abs(displayB.x - displayA.x) / Math.abs(cameraB.x - cameraA.x) || 0;
+  this.stretchY = Math.abs(displayB.y - displayA.y) / Math.abs(cameraB.y - cameraA.y) || 0;
+  this.offsetX = (displayA.x / this.stretchX) - cameraA.x || 0;
+  this.offsetY = (displayA.y / this.stretchY) - cameraA.y || 0;
 
   this.coordinates = function(coordinates) {
     let x = coordinates.x;
@@ -199,9 +201,12 @@ function trackLasers(translator) {
   })
 
   let tracker = new tracking.ColorTracker(['green', 'red', 'blue', 'white']);
-  let trackerTask = tracking.track('#tracking-video', tracker, { camera: true });
+  let trackerTask = tracking.track('#trackingVideo', tracker, { camera: true });
 
   tracker.on('track', function(event) {
+    console.log('red:', lasers[0]);
+    console.log('gree:', lasers[2]);
+    console.log('blue:', lasers[3]);
     event.data.forEach((rect) => {
       rect.center = translator.coordinates({x: rect.x - rect.width / 2, y: rect.y - rect.height / 2});
 
@@ -256,16 +261,25 @@ function trackLasers(translator) {
 */
 function align(boardWidth, boardHeight) {
   console.log('starting alignment');
-  // set up board and colors
+  // set up board
   let state = 'rough';
+  let c = document.getElementById("alignmentCanvas");
+  c.width = window.innerWidth;
+  c.height = window.innerHeight;
+  let ctx = c.getContext("2d");
+  ctx.beginPath()
+  ctx.fillStyle = "#FFF";
+  console.log('drawing rect');
+  ctx.fillRect((c.width - boardWidth) / 2, (c.height - boardHeight) / 2, boardWidth, boardHeight);
+  ctx.stroke();
 
   // set rough alignment settings, point camera at display
-  document.getElementById("tracking-video").style.visibility = "visible";
+  document.getElementById("trackingVideo").style.visibility = "visible";
   window.addEventListener("keypress", finishRoughAlign);
 
   // reset rough alighnment settings, finish alignment
   function finishRoughAlign() {
-    document.getElementById("tracking-video").style.visibility = "hidden";
+    document.getElementById("trackingVideo").style.visibility = "hidden";
     window.removeEventListener("keypress", finishRoughAlign);
     state = 'precise';
   }
@@ -279,7 +293,7 @@ function align(boardWidth, boardHeight) {
     );
   });
   let boardTracker = new tracking.ColorTracker(['board']);
-  let boardTrackerTask = tracking.track('#tracking-video', boardTracker, { camera: true });
+  let boardTrackerTask = tracking.track('#trackingVideo', boardTracker, { camera: true });
 
   // create the translator on board detection
   boardTracker.on('track', function(event) {
@@ -290,16 +304,21 @@ function align(boardWidth, boardHeight) {
       let cameraA = {x: rect.x, y: rect.y};
       let cameraB = {x: rect.x + rect.width, y: rect.y + rect.height};
       let boardA = {x: 0, y: 0};
-      let boardB = {x: 1920, y: 1080};
+      let boardB = {x: boardWidth, y: boardHeight};
       // create translator object
       let translator = new Translator(cameraA, cameraB, boardA, boardB);
 
       setTimeout(function() {
         if (state === 'precise') {
+          ctx.clearRect(0, 0, c.width, c.height);
+          // ctx.beginPath()
+          // ctx.strokeStyle = "#F00";
+          // ctx.rect(rect.x, rect.y, rect.width, rect.height);
+          // ctx.stroke();
           console.log('finishied alignment');
           state = 'finished';
           trackLasers(translator);
-          joinGame();
+          //joinGame();
         }
         boardTrackerTask.stop();
       }, 0);
@@ -307,4 +326,4 @@ function align(boardWidth, boardHeight) {
   });
 }
 
-align();
+align(boardWidth, boardHeight);

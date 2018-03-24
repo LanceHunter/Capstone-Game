@@ -4,7 +4,7 @@ some globals
 let game, firebaseRef, playerIDs, playerIndices;
 let colors = [0xe22245, 0x05f140, 0x5cc8ff];
 let subIcons = [], bomberIcons = [], capitalIcons = [], missileIcons = [];
-let width = 1920;
+let width = boardWidth; //1920;
 let height = width * (9 / 16);
 let pointersPositions = [null, null, null];
 let playerPointers = [];
@@ -29,7 +29,7 @@ firebaseRef.once('value', data => {
   for (let i = 0; i < playerIDs.length; i++) {
     playerIndices[game.players[playerIDs[i]]] = i;
   }
-  phaser = new Phaser.Game(width, height, Phaser.AUTO);
+  phaser = new Phaser.Game(width, height, Phaser.AUTO, phaserContainer);
 
   phaser.state.add('ContinentSelect', continent);
   phaser.state.add('Alignment', alignState);

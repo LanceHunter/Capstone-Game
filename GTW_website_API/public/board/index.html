@@ -8,9 +8,10 @@
   </head>
   <body>
     <!-- alignment and laser tracking elements -->
-    <div class="tracking-container">
-      <canvas id="alignment-canvas" class="alignment-canvas"></canvas>
-      <video id="tracking-video" class="tracking-video" preload autoplay loop muted></video>
+    <div class="fullscreenContainer">
+      <div id="phaserContainer" class="phaserContainer"></div>
+      <canvas id="alignmentCanvas" class="alignmentCanvas"></canvas>
+      <video id="trackingVideo" class="trackingVideo" preload autoplay loop muted></video>
     </div>
     <!-- join game modal -->
     <div id="joinGameModal" class="joinGameModal">
@@ -27,7 +28,7 @@
       </button>
     </div>
     <!-- heads up display elements -->
-    <div class="hudcontainer">
+    <!-- <div class="hudcontainer">
       <div id="hud" class="newsholder">
         <div class="game-header">
           <h1>Global Thermonuclear Warfare</h1>
@@ -40,16 +41,16 @@
             <span style="color:{{player.color}}">{{ player.name }}: {{ player.totalDeclaredForces }}
           </h3>
         </div>
-        <!-- <div class="ticker-holder">
+        <div class="ticker-holder">
           <div class="ticker">
             <div class="tickeritem">Year: 1950</div>
             <div class="tickeritem">Subs deployed to Atlantic Ocean... </div>
             <div class="tickeritem">ICBMs declared in South America...</div>
             <div class="tickeritem">More spy messages...</div>
           </div>
-        </div> -->
+        </div>
       </div>
-    </div>
+    </div> -->
     <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
     <script>
       // Initialize Firebase

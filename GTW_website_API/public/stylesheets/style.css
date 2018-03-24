@@ -1,4 +1,19 @@
 /* ======================
+phaser
+======================== */
+
+.phaserContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  pointer-events: none;
+  object-fit: cover;
+}
+
+/* ======================
 laser tracking
 ======================== */
 
@@ -7,7 +22,11 @@ laser tracking
   margin: 0px;
 }
 
-.tracking-container {
+html {
+  background-color: black;
+}
+
+.fullscreenContainer {
  position: fixed;
  width: 100%;
  height: 100%;
@@ -17,21 +36,21 @@ laser tracking
  pointer-events: none;
 }
 
-.alignment-canvas {
+.alignmentCanvas {
   position: absolute;
   width: 100%;
   height: 100vh;
   object-fit: cover;
-  z-index:999;
+  z-index:990;
 }
 
-.tracking-video {
+.trackingVideo {
   visibility: hidden;
   position: absolute;
-  width: 100%;
-  height: 100vh;
+  width: 50%;
+  height: 50vh;
   object-fit: cover;
-  z-index:-999;
+  z-index:999;
   pointer-events: none;
 }
 
@@ -43,7 +62,7 @@ laser tracking
 heads up display
 ======================== */
 
-body {
+/* body {
   padding: 0px;
   margin: 0px;
   font-family: 'Press Start 2P', cursive;
@@ -180,4 +199,4 @@ ticker
   padding: 0 3rem;
   font-size: 2rem;
   color: red;
-}
+} */
