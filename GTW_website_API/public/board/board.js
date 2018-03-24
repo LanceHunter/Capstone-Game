@@ -5,7 +5,6 @@ Global Thermonuclear Warfare Gameboard
 // globals
 let game, firebaseRef, playerIDs, playerIndices;
 let colors = [0xe22245, 0x05f140, 0x5cc8ff];
-
 let subIcons = [], bomberIcons = [], capitalIcons = [], missileIcons = [];
 let width = 1920;
 let height = width * (9 / 16);
@@ -17,6 +16,7 @@ let playerPointers = [];
 firebase setup
 */
 const database = firebase.database();
+
 
 /*
 set up the firebase bind
@@ -106,9 +106,20 @@ create game objects
 */
 function create() {
   /*
+  just a little jquery fix for placing the hudcontainer
+  */
+  $('.hudcontainer').css('left', canvasLeft);
+  $('window').resize(() => {
+    let canvasLeft = $('canvas').offset().left;
+    $('.hudcontainer').css('left', canvasLeft);
+  });
+  
+  /*
   create and scale the map sprite
   */
   let map = phaser.add.sprite(0, 0, 'map');
+  let canvasLeft = $('canvas').offset().left;
+
   /*
   sub icons
   */

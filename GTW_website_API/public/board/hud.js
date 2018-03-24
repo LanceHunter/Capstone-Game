@@ -6,4 +6,7 @@ let hud = new Vue({
     year: null,
     gameID: null
   }
-})
+});
+
+let canvasLeft = $('canvas').offset().left;
+$('.hudcontainer').css('left', canvasLeft);
