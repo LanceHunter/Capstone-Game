@@ -16,7 +16,7 @@ h3 {
 }
 
 canvas {
-  margin: auto;
+  margin: 50px auto;
 }
 
 .game-header {
@@ -46,8 +46,8 @@ canvas {
   width: 1920px;
   height: 25%;
   position: absolute;
-  margin: auto;
   z-index: 1;
+  display: none;
 }
 
 .newsholder {
