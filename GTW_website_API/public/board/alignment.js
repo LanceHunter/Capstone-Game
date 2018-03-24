@@ -42,24 +42,41 @@ function showLasers(ctx) {
 /*
   Creates a new game instance and shows the join game modal.
 */
+
+const joinGameModal = new Vue({
+  el: '#hud',
+  data: {
+    gameID: null,
+    usernames: [],
+  }
+})
+
 async function joinGame() {
   // create a game instance
   const database = firebase.database();
   await data = $.post('/api/pregame/setup');
   const gameID = data.gameID;
-  const gameRef = database.ref('gameInstance').child(gameID);
+  joinGameModal.gameID = gameID;
+  const gameRef = database.ref('gameInstance').child(data.gameID);
+  let usernames = [];
   gameRef.on('value', function(snapshot) {
-    players = snapshot.val().players;
+    usernames = Object.keys(snapshot.val().players) || [];
+    joinGameModal.usernames = usernames;
   });
 
   // display join game modal
-  const modal = document.getElementById("alignment-canvas");
-  modal.classList.add("is-active");
-
-
-  // update modal as players join
+  const modal = document.getElementById("joinGameModal");
+  modal.style.visibility = "visible";
 
   // start game on button press
+  const beginGameButton = document.getElementById("beginGameButton");
+  beginGameButton.addEventListener('click', function() {
+    if (usernames.length > 1) {
+      gameRef.off();
+      joinGameModal.remove();
+      startGame();
+    }
+  });
 }
 
 /*

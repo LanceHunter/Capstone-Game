@@ -31,6 +31,10 @@ laser tracking
   object-fit: cover;
 }
 
+.join-game-modal {
+  visibility: hidden;
+}
+
 /* ======================
 heads up display
 ======================== */

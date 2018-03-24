@@ -11,6 +11,8 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "debug": "^2.6.3",
+    "dotenv": "^5.0.1",
+    "firebase-admin": "^5.11.0",
     "knex": "^0.14.4",
     "koa": "^2.2.0",
     "koa-bodyparser": "^3.2.0",

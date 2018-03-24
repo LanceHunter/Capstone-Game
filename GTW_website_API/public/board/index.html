@@ -12,12 +12,19 @@
       <video id="tracking-video" class="tracking-video" preload autoplay loop muted></video>
     </div>
     <!-- join game modal -->
-    <div id="join-game-modal" class="modal">
-      <div class="modal-background"></div>
-      <div class="modal-content">
-        <!-- Any other Bulma elements you want -->
+
+    <div id="joinGameModal" class="joinGameModal">
+      <div class="instructions">
       </div>
-      <button class="modal-close is-large" aria-label="close"></button>
+      <div class="gameIdLabel">
+        Game ID: {{ gameID }}
+      </div>
+      <ul v-for="username in usernames">
+        <li>{{ username }}</li>
+      </ul>
+      <button id="beginGameButton" class="beginGameButton">
+        Begin game
+      </button>
     </div>
     <!-- heads up display elements -->
     <div class="hudcontainer">
