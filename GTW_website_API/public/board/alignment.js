@@ -22,12 +22,36 @@ phaser setup
 let alignState = {
   preload: function() {
     this.game.load.image('map', '/board/assets/map.png');
+    this.game.load.image('circle', '/board/assets/circle.png');
   },
   create: function() {
     this.game.add.sprite(0, 0, 'map');
+
+    this.red = this.game.add.sprite(0, 0, 'circle');
+    this.green = this.game.add.sprite(0, 0, 'circle');
+    this.blue = this.game.add.sprite(0, 0, 'circle');
+
+    this.red.tint = 0xdcaaa;
+    this.green.tint = 0x7ebe86;
+    this.blue.tint = 0x7373e6;
+
+    this.red.scale.set(0.2);
+    this.green.scale.set(0.2);
+    this.blue.scale.set(0.2);
   },
   update: function() {
-
+    if (lasers[0]) {
+      this.red.position.x = lasers[0].x;
+      this.red.position.y = lasers[0].y;
+    }
+    if (lasers[1]) {
+      this.green.position.x = lasers[1].x;
+      this.green.position.y = lasers[1].y;
+    }
+    if (lasers[2]) {
+      this.blue.position.x = lasers[2].x;
+      this.blue.position.y = lasers[2].y;
+    }
   }
 }
 
