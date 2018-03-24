@@ -7,6 +7,3 @@ let hud = new Vue({
     gameID: null
   }
 });
-
-let canvasLeft = $('canvas').offset().left;
-$('.hudcontainer').css('left', canvasLeft);
