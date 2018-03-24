@@ -12,7 +12,6 @@
       <video id="tracking-video" class="tracking-video" preload autoplay loop muted></video>
     </div>
     <!-- join game modal -->
-
     <div id="joinGameModal" class="joinGameModal">
       <div class="instructions">
       </div>
@@ -22,7 +21,7 @@
       <ul v-for="username in usernames">
         <li>{{ username }}</li>
       </ul>
-      <button id="beginGameButton" class="beginGameButton">
+      <button id="beginGameButton" class="beginGameButton" type="button">
         Begin game
       </button>
     </div>
@@ -74,7 +73,7 @@
     <script src="/board/vendor/phaser.js"></script>
     <script src="/board/alignment.js"></script>
     <script src="/board/hud.js"></script>
-    <script src="/board/board.js"></script>
-    <script src="/board/gameObjects.js"></script>
+    <!-- <script src="/board/board.js"></script>
+    <script src="/board/gameObjects.js"></script> -->
   </body>
 </html>

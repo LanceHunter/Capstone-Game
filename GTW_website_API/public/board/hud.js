@@ -1,7 +1,7 @@
 let hud = new Vue({
   el: '#hud',
   data: {
-    players: null,
+    players: [],
     war: false,
     year: 1950,
   }

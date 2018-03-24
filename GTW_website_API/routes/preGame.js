@@ -3,6 +3,7 @@
 // Firebase setup.
 const admin = require("firebase-admin");
 const serviceAccount = require('../../../private/gtwthegame-firebase-adminsdk-xemv3-858ad1023b.json');
+const fs = require('fs');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -17,7 +18,6 @@ const router = require('koa-router')();
 
 router.prefix('/api/pregame');
 
-console.log('checking setup');
 router.post('/setup', async (ctx) => {
   console.log('in setup');
   // Will need some form of verification to make sure we've got a valid board.
@@ -243,8 +243,8 @@ router.put('/joingame', async (ctx) => {
 
   await gameRef.once('value', (snap) => {
     if (snap.val()) {
-      playersRef.once('value', (playersSnap) => {
-        if (playersSnap.numChildren() < 6) {
+      if (snap.val().players) { // checking to see if there's a 'players' node yet.
+        if (Object.keys(snap.val().players).length < 3) {
           let playerObj = {};
           playerObj[playerID] = {
             totalDeclaredForces : 0,
@@ -260,14 +260,33 @@ router.put('/joingame', async (ctx) => {
             spyMessage : '',
           };
           playersRef.update(playerObj); // End of the playersRef update.
+          console.log('Setting ctx-status');
           ctx.status = 200;
-        } else { // If the game is already has 6 players.
+        } else { // If the game is already has 3 players.
           ctx.status = 400;
           ctx.body = {
             message: 'Game is already full!',
           };
         } // End of conditional checking the number of players.
-      }); // End of the firebase snap checking player values.
+      } else { // if there is no player node
+        let playerObj = {};
+        playerObj[playerID] = {
+          totalDeclaredForces : 0,
+          continents : true,
+          oceans : true,
+          rnd : {
+            speed : 0,
+            damage : 0
+          },
+          currentBudget : 0,
+          yearComplete : false,
+          shotsFired : 0,
+          spyMessage : '',
+        };
+        playersRef.update(playerObj); // End of the playersRef update.
+        console.log('Setting ctx-status');
+        ctx.status = 200;
+      } // end of conditional checking if there is a player node.
     } else { // If game ID is not valid.
       ctx.status = 400;
       ctx.body = {
@@ -385,7 +404,42 @@ router.post('/beginpeace', async (ctx) => {
       }
     }
   });
+}); // end of the "beginpeace" route.
+
+
+/// Here is a "seed" route, that's gonna grab a game and save the object to a file for use. DELETE THIS BEFORE DEPLOYING.
+router.post('/makeseed', async (ctx) => {
+  let gameObjJSON;
+  let gameID = ctx.request.body.gameID;
+  let fileName = ctx.request.body.fileName;
+  let gameRef = ref.child(gameID);
+  // Grab the game data.
+  await gameRef.once('value', (snap) => {
+    gameObjJSON = JSON.stringify(snap.val());
+  });
+  // Write it to a file.
+  await fs.writeFile(`${fileName}`, gameObjJSON);
+  // Tell ctx that it worked. (Not gonna do a lot of error-checking here because this is mostly for me.)
+  ctx.status = 200;
 });
+
+/// The other "seed" route, that's gonna pass a seed game object into Firebase for testing purposes. DELETE THIS BEFORE DEPLOYING.
+router.post('/runseed', async (ctx) => {
+  console.log('This is here.');
+  let fileName = ctx.request.body.fileName;
+  let seedGameName = ctx.request.body.seedGameName;
+  let gameObj;
+  console.log('fileName - ', fileName);
+  console.log('seedGameName - ', seedGameName);
+  await fs.readFile(`./${fileName}`, (err, data) => {
+    gameObj = JSON.parse(data);
+    ref.child(seedGameName).update(gameObj);
+  });
+
+  // Tell ctx that it worked. (Not gonna do a lot of error-checking here because this is mostly for me.)
+  ctx.status = 200;
+});
+
 
 
 module.exports = router;

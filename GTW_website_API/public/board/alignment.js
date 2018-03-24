@@ -15,9 +15,11 @@ const lasers = [null, null, null];
 
 // start the phaser game
 function startGame() {
+  console.log('started game');
   let c = document.getElementById("alignment-canvas");
   c.width = window.innerWidth;
   c.height = window.innerHeight;
+  c.style.display = "initial";
   let ctx = c.getContext("2d");
   showLasers(ctx);
 }
@@ -28,7 +30,7 @@ function showLasers(ctx) {
   ctx.beginPath()
   lasers.forEach((laser, index) => {
     if(laser) {
-      console.log('printing', displayColors[index], laser);
+      // console.log('printing', displayColors[index], laser);
       ctx.fillStyle = displayColors[index];
       ctx.fillRect(laser.x, laser.y, 10, 10);
     }
@@ -44,7 +46,7 @@ function showLasers(ctx) {
 */
 
 const joinGameModal = new Vue({
-  el: '#hud',
+  el: '#joinGameModal',
   data: {
     gameID: null,
     usernames: [],
@@ -54,14 +56,17 @@ const joinGameModal = new Vue({
 async function joinGame() {
   // create a game instance
   const database = firebase.database();
-  await data = $.post('/api/pregame/setup');
+  const data = await $.post('/api/pregame/setup');
   const gameID = data.gameID;
   joinGameModal.gameID = gameID;
   const gameRef = database.ref('gameInstance').child(data.gameID);
   let usernames = [];
   gameRef.on('value', function(snapshot) {
-    usernames = Object.keys(snapshot.val().players) || [];
-    joinGameModal.usernames = usernames;
+    let gameObj = snapshot.val();
+    if (gameObj.players) {
+      usernames = Object.keys(gameObj.players);
+      joinGameModal.usernames = usernames;
+    }
   });
 
   // display join game modal
@@ -71,11 +76,12 @@ async function joinGame() {
   // start game on button press
   const beginGameButton = document.getElementById("beginGameButton");
   beginGameButton.addEventListener('click', function() {
-    if (usernames.length > 1) {
+    console.log('tried to start game');
+    // if (usernames.length > 1) {
       gameRef.off();
-      joinGameModal.remove();
+      document.getElementById("joinGameModal").remove()
       startGame();
-    }
+    // }
   });
 }
 
@@ -177,7 +183,7 @@ function trackLasers(translator) {
   })
 
   let tracker = new tracking.ColorTracker(['green', 'red', 'blue', 'white']);
-  let trackerTask = tracking.track('#video', tracker, { camera: true });
+  let trackerTask = tracking.track('#tracking-video', tracker, { camera: true });
 
   tracker.on('track', function(event) {
     event.data.forEach((rect) => {
@@ -226,7 +232,7 @@ function trackLasers(translator) {
     lasers[0] = redPointer.center;
     lasers[1] = greenPointer.center;
     lasers[2] = bluePointer.center;
-    console.log('lasers:', lasers);
+    // console.log('lasers:', lasers);
   });
 }
 
@@ -257,7 +263,7 @@ function align(boardWidth, boardHeight) {
     return (r > 90 && g > 90 && b > 90);
   });
   let tracker = new tracking.ColorTracker(['board']);
-  let trackerTask = tracking.track('#video', tracker, { camera: true });
+  let trackerTask = tracking.track('#tracking-video', tracker, { camera: true });
 
   // reset rough alighnment settings, finish alignment
   function finishRoughAlign() {
@@ -293,26 +299,27 @@ function align(boardWidth, boardHeight) {
       // ctx.fillRect(boardX, boardY, boardWidth, boardHeight);
 
       // draw board as originally detected by camera
-      ctx.beginPath()
-      ctx.strokeStyle = cameraColor;
-      ctx.rect(rect.x, rect.y, rect.width, rect.height);
-      ctx.stroke();
+      // ctx.beginPath()
+      // ctx.strokeStyle = cameraColor;
+      // ctx.rect(rect.x, rect.y, rect.width, rect.height);
+      // ctx.stroke();
 
       // draw board as translated from camera
-      let translated = translator.coordinates(rect);
-      let translatedWidth = translator.width(rect.width);
-      let translatedHeight = translator.height(rect.height);
-      ctx.beginPath()
-      ctx.strokeStyle = translatedColor;
-      ctx.rect(translated.x, translated.y, translatedWidth, translatedHeight);
-      ctx.stroke();
+      // let translated = translator.coordinates(rect);
+      // let translatedWidth = translator.width(rect.width);
+      // let translatedHeight = translator.height(rect.height);
+      // ctx.beginPath()
+      // ctx.strokeStyle = translatedColor;
+      // ctx.rect(translated.x, translated.y, translatedWidth, translatedHeight);
+      // ctx.stroke();
 
       setTimeout(function() {
         if (!gameRunning) {
           gameRunning = true;
-          console.log('started the game');
+          console.log('launching join game');
+          c.style.display = "none";
           trackLasers(translator);
-          showLasers(ctx);
+          joinGame();
         }
         trackerTask.stop();
       }, 0);
