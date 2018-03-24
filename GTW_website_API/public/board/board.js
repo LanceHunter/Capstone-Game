@@ -108,12 +108,8 @@ function create() {
   /*
   just a little jquery fix for placing the hudcontainer
   */
-  $('.hudcontainer').css('left', canvasLeft);
-  $('window').resize(() => {
-    let canvasLeft = $('canvas').offset().left;
-    $('.hudcontainer').css('left', canvasLeft);
-  });
-  
+  $('.hudcontainer').css('left', $('canvas').offset().left);
+
   /*
   create and scale the map sprite
   */
