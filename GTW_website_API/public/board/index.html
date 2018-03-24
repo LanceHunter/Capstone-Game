@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Phaser Tests</title>
     <link rel='stylesheet' type="text/css" href='../stylesheets/style.css'/>
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
   </head>
   <body>
     <!-- alignment and laser tracking elements -->
@@ -27,29 +28,27 @@
     </div>
     <!-- heads up display elements -->
     <div class="hudcontainer">
-      <div class="newsholder">
-        <div id="hud">
-          <div v-for="player in players" v-bind:key="player.username">
-            <div class="playernews">
-              <h5>Player Name: {{ player.username }}</h5>
-              <ul>
-                <li>ICBMs: {{ player.icbms }}</li>
-                <li>Bombers: {{ player.bombers }}</li>
-                <li>Nuclear Subs: {{ player.subs }}</li>
-                <li v-if="war">Hit Points: {{ player.hp }}</li>
-              </ul>
-            </div>
+      <div id="hud" class="newsholder">
+        <div class="game-header">
+          <h1>Global Thermonuclear Warfare</h1>
+          <h3 v-bind="year">Year: {{year}}</h3>
+          <h3 v-bind="gameID">Game ID: {{gameID}}</h3>
+        </div>
+        <div class="total-forces">
+          <h1>Total Forces:</h1>
+          <h3 v-for="player in players" v-bind="player">
+            <span style="color:{{player.color}}">{{ player.name }}: {{ player.totalDeclaredForces }}
+          </h3>
+        </div>
+        <!-- <div class="ticker-holder">
+          <div class="ticker">
+            <div class="tickeritem">Year: 1950</div>
+            <div class="tickeritem">Subs deployed to Atlantic Ocean... </div>
+            <div class="tickeritem">ICBMs declared in South America...</div>
+            <div class="tickeritem">More spy messages...</div>
           </div>
-        </div>
+        </div> -->
       </div>
-      <!-- <div class="ticker-holder">
-        <div class="ticker">
-          <div class="tickeritem">Year: 1950</div>
-          <div class="tickeritem">Subs deployed to Atlantic Ocean... </div>
-          <div class="tickeritem">ICBMs declared in South America...</div>
-          <div class="tickeritem">More spy messages...</div>
-        </div>
-      </div> -->
     </div>
     <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
     <script>
@@ -73,7 +72,13 @@
     <script src="/board/vendor/phaser.js"></script>
     <script src="/board/alignment.js"></script>
     <script src="/board/hud.js"></script>
-    <!-- <script src="/board/board.js"></script>
-    <script src="/board/gameObjects.js"></script> -->
+    <script src="/board/continent.js"></script>
+    <script src="/board/boardInit.js"></script>
+  <!--
+    <script src="/board/peace.js"></script>
+    <script src="/board/war.js"></script>
+    <script src="/board/board.js"></script>
+  -->
+    <script src="/board/gameObjects.js"></script>
   </body>
 </html>
