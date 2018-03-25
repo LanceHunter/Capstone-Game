@@ -19,14 +19,14 @@ import stats from '../common/stats.service';
 const d3 = require('d3');
 
 
-function InitChart(stats) {
+function drawPlayerChart(stats) {
   // Set the dimensions of the canvas / graph
-  const margin = { top: 30, right: 20, bottom: 30, left: 50 },
+  const margin = {top: 30, right: 20, bottom: 70, left: 50},
     width = 900 - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom;
+    height = 500 - margin.top - margin.bottom;
 
   // Parse the date / time
-  const parseDate = d3.timeParse('%B %d, %Y');
+  const parseDate = d3.timeParse('%B %b, %Y');
 
   // Set the ranges
   const x = d3.scaleTime().range([0, width]);
@@ -39,60 +39,94 @@ function InitChart(stats) {
       return x(d.date);
     })
     .y(function (d) {
-      return y(d.score);
+      return y(d.price);
     });
 
   // Adds the svg canvas
-  const svg = d3.select('#chart').append('svg')
+  const svg = d3.select('#chart')
+    .append('svg')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom)
     .append('g')
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+      .attr('transform',
+            'translate(' + margin.left + ',' + margin.top + ')');
 
-  console.log('Ln 52: these are the stats: ', stats);
+  console.log('Ln 54: these are the stats: ', stats);
 
-  stats.forEach(function (d) {
-    console.log('Ln 55: this is d: ', d);
-    console.log('Ln 56: date: ', d.end_time);
-    d.date = new Date(d.end_time);
-    console.log('Ln 58: parsed date: ', d.date);
-    d.score = +d.score;
-  });
+  // Get the data
+  // d3.csv('stats.csv', function(error, data) {
+    stats.forEach(function (d) {
+      console.log('Ln 59: this is d: ', d);
+      console.log('Ln 60: date: ', d.end_time);
+  		d.date = new Date(d.end_time);
+      console.log('Ln 62: parsed date: ', d.date);
+  		d.score = +d.score;
+    });
 
-  // Scale the range of the data
-  x.domain(d3.extent(stats, function (d) {
-    return d.date;
-  }));
-  y.domain([0, d3.max(stats, function (d) {
-    return d.score;
-  })]);
+    // Scale the range of the data
+    x.domain(d3.extent(stats, function (d) {
+      return d.date;
+    }));
+    y.domain([0, d3.max(stats, function (d) {
+      return d.score;
+    })]);
 
-  // Nest the entries by symbol
-  const statsNest = d3.nest()
-    .key(function (d) {
-      return d.symbol;
-    })
-    .entries(stats);
+    // Nest the entries by symbol
+    const dataNest = d3.nest()
+      .key(function(d) {
+        return d.symbol;
+      })
+      .entries(stats);
 
-  // Loop through each symbol / key
-  statsNest.forEach(function (d) {
-    console.log('Ln 79: another d: ', d);
-    console.log('Ln 80: d.values: ', d.values);
-    svg.append('path')
-      .attr('class', 'line')
-      .attr('d', statsline(d.values));
-  });
+    // set the color scale
+    const color = d3.scaleOrdinal(d3.schemeCategory10);
 
-  // Add the X Axis
-  svg.append('g')
-    .attr('class', 'axis')
-    .attr('transform', 'translate(0,' + height + ')')
-    .call(d3.axisBottom(x));
+    // spacing for the legend
+    const legendSpace = width/dataNest.length;
 
-  // Add the Y Axis
-  svg.append('g')
-    .attr('class', 'axis')
-    .call(d3.axisLeft(y));
+    // Loop through each symbol / key
+    dataNest.forEach(function(d,i) {
+      console.log('Ln 89: another d: ', d);
+      console.log('Ln 90: d.values: ', d.values);
+      svg.append('path')
+        .attr('class', 'line')
+        .style('stroke', function() { // Add the colors dynamically
+          return d.color = color(d.key); })
+        // .attr('id', 'tag'+d.key.replace(/\s+/g, '')) // assign ID
+        .attr('d', statsline(d.values));
+
+      // Add the Legend
+      svg.append('text')
+        .attr('x', (legendSpace/2)+i*legendSpace)  // space legend
+        .attr('y', height + (margin.bottom/2)+ 5)
+        .attr('class', 'legend')    // style the legend
+        .style('fill', function fl() { // Add the colours dynamically
+          return d.color = color(d.key); })
+        .on('click', function cl(){
+          // Determine if current line is visible
+          var active   = d.active ? false : true,
+          newOpacity = active ? 0 : 1;
+          // Hide or show the elements based on the ID
+          d3.select('#tag'+d.key.replace(/\s+/g, ''))
+            .transition().duration(100)
+            .style('opacity', newOpacity);
+          // Update whether or not the elements are active
+          d.active = active;
+          })
+        .text(d.key);
+    });
+
+    // Add the X Axis
+    svg.append('g')
+      .attr('class', 'axis')
+      .attr('transform', 'translate(0,' + height + ')')
+      .call(d3.axisBottom(x));
+
+    // Add the Y Axis
+    svg.append('g')
+      .attr('class', 'axis')
+      .call(d3.axisLeft(y));
+  // });
 }
 
 
@@ -108,7 +142,7 @@ export default {
       stats.user(username)
         .then((stats) => {
           this.stats = stats;
-          InitChart(stats);
+          drawPlayerChart(stats);
           console.log('set stats to:', this.stats);
         });
     },
@@ -116,6 +150,12 @@ export default {
   beforeMount() {
     this.getStats(this.$route.params.username);
   },
+
+  // beforeMount() {
+  //   $(document).ready(function drawPChart() {
+  //     drawPlayerChart();
+  //   });
+  // },
 };
 </script>
 
@@ -148,7 +188,8 @@ h5 {
   width: 65%;
   height: 60%;
   margin: auto;
-  background-color: darkgray;
+  /* background-color: darkgray; */
+  background-color: white;
   opacity: 0.8;
   /* background-color:rgba(0, 0, 0, 0.8); */
   border-radius: 5px;
@@ -171,6 +212,12 @@ path {
   stroke: grey;
   stroke-width: 1;
   shape-rendering: crispEdges;
+}
+
+.legend {
+  font-size: 16px;
+  font-weight: bold;
+  text-anchor: middle;
 }
 
 #app {

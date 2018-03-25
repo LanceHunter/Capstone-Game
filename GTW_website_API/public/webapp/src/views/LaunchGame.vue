@@ -14,7 +14,9 @@
       </a> -->
 
       <canvas id='scene'></canvas>
-      <a href="/board"><input id="copy" type="text" value="Launch Game" /></a>
+      <a href="/board">
+        <input id="copy" type="text" value="Launch Game" />
+      </a>
 
       <!-- <a href='/board' class='button is-medium is-danger'>
         <span>Launch Game</span>
@@ -36,7 +38,7 @@ function drawTitle() {
   let mouse = {x:0,y:0};
   let radius = 1;
 
-  let colors = ['white', '#5CC8FF', '#1A181B', '#E22245'];
+  let colors = ['#780116', 'white', '#C20114', '#5CC8FF', '#780116', 'grey', '#E22245'];
 
   let copy = document.querySelector('#copy');
 
@@ -160,7 +162,7 @@ function drawTitle() {
 export default {
   name: 'LaunchGame',
   beforeMount(){
-    $(document).ready(function jqtabs() {
+    $(document).ready(function drawTitleBoard() {
       drawTitle();
     });
   }
@@ -182,12 +184,12 @@ export default {
   margin-bottom: -8px;
 }
 
-// h1 {
-//   padding: 120px 0px 60px 0px;
-//   font-size: 40px;
-//   font-family: $family-mono;
-//   color: $danger;
-// }
+/* h1 {
+  padding: 120px 0px 60px 0px;
+  font-size: 40px;
+  font-family: $family-mono;
+  color: $danger;
+} */
 
 a.button.is-medium.is-danger {
   margin-top: 430px;
@@ -221,6 +223,8 @@ input{
 	text-align: center;
 	border: 1px solid white;
 	background: rgba(255,255,255,0.2);
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 
