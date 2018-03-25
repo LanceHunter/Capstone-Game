@@ -34,7 +34,11 @@
           <td> {{ player.wins }} - {{ player.losses }} </td>
           <td> {{ player.high_score }} </td>
           <td> {{ player.average_score }} </td>
-          <td><a v-bind:href="'/stats/' + player.username"><i class="fas fa-tachometer-alt"></i></a></td>
+          <td>
+            <a v-bind:href="'/stats/' + player.username">
+              <i class="fas fa-tachometer-alt"></i>
+            </a>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -184,7 +188,7 @@ export default {
   data() {
     return {
       leaders: null,
-    }
+    };
   },
   methods: {
     getLeaders(order) {
@@ -198,7 +202,7 @@ export default {
         });
     },
   },
-  beforeMount(){
+  beforeMount() {
     this.getLeaders('percentage');
   },
 };

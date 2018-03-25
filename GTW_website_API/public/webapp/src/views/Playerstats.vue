@@ -34,7 +34,7 @@ function drawPlayerChart(stats) {
 
   // Define the line
   const statsline = d3.line()
-    .x(function (d) {
+    .x((d) => {
       console.log('Ln 38: date on x axis: ', d.date);
       return x(d.date);
     })
