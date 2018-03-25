@@ -8,14 +8,11 @@ const boardMinBrightness = 50;
 const boardMaxBrightness = 260;
 const boardWidth = 1920;
 const boardHeight = boardWidth * (9 / 16);
+let gameID = 'game5416';
+let game;
 
 // create the global lasers object used by the game as pointers
 const lasers = [null, null, null];
-
-// start the phaser game
-function startGame(gameID) {
-  console.log('started game:', gameID);
-}
 
 /*
 phaser setup
@@ -73,16 +70,16 @@ async function joinGame() {
   console.log('lauched join game');
   // create a game instance
   const database = firebase.database();
-  const data = await $.post('/api/pregame/setup');
-  const gameID = data.gameID;
+  // const data = await $.post('/api/pregame/setup');
+  // gameID = data.gameID;
   console.log('gameID:', gameID);
   joinGameModal.gameID = gameID;
-  const gameRef = database.ref('gameInstance').child(data.gameID);
+  const gameRef = database.ref('gameInstance').child(gameID);
   let usernames = [];
   gameRef.on('value', function(snapshot) {
-    let gameObj = snapshot.val();
-    if (gameObj.players) {
-      usernames = Object.keys(gameObj.players);
+    game = snapshot.val();
+    if (game.players) {
+      usernames = Object.keys(game.players);
       joinGameModal.usernames = usernames;
     }
   });
@@ -99,7 +96,7 @@ async function joinGame() {
       gameRef.off();
       document.getElementById("joinGameModal").remove();
       await $.post('/api/pregame/startgame', {gameID: gameID});
-      startGame(gameID);
+      startGame(gameRef);
     }
   });
 }

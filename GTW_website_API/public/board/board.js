@@ -8,15 +8,6 @@ firebase setup
 */
 
 
-
-/*
-callback for game init
-*/
-function onGameInit(data) {
-  game = data.val();
-  firebaseRef.on('value', onGameChange);
-}
-
 /*
 callback for game changes
 */
