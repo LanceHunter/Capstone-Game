@@ -1,7 +1,7 @@
 /*
 some globals
 */
-let game, firebaseRef, playerIDs, playerIndices;
+let playerIDs;
 let colors = [0xe22245, 0x05f140, 0x5cc8ff];
 let subIcons = [], bomberIcons = [], capitalIcons = [], missileIcons = [];
 let width = boardWidth; //1920;
@@ -15,20 +15,17 @@ firebase setup
 */
 const database = firebase.database();
 
+
 /*
 testing db
 */
-firebaseRef = database.ref('gameInstance').child('game8928');
+firebaseRef = database.ref('gameInstance').child(gameID);
 
 // get our initial game object and launch
 firebaseRef.once('value', data => {
   game = data.val();
   // set up the player lookup structures
   playerIDs = Object.keys(game.players);
-  playerIndices = {};
-  for (let i = 0; i < playerIDs.length; i++) {
-    playerIndices[game.players[playerIDs[i]]] = i;
-  }
   phaser = new Phaser.Game(width, height, Phaser.AUTO, phaserContainer);
 
   phaser.state.add('ContinentSelect', continent);

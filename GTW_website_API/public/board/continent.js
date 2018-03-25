@@ -16,5 +16,6 @@ let continent = {
     capitalIcons.push(new CapitalIcon(955, (1080 - 365), 'africa'));
   },
   update: function() {
+    
   }
 }
