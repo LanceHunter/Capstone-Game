@@ -8,24 +8,24 @@
   </head>
   <body>
     <!-- alignment and laser tracking elements -->
-    <div class="fullscreenContainer">
-      <div id="phaserContainer" class="phaserContainer"></div>
+    <div id="phaserContainer" class="fullscreenContainer">
+      <div id="joinGameModal" class="joinGameModal">
+        <div class="instructions">
+          Join game with your phone app.
+        </div>
+        <div class="gameIdLabel">
+          Game ID: {{ gameID }}
+        </div>
+        Users:
+        <ul>
+          <li v-for="username in usernames">{{ username }}</li>
+        </ul>
+        <button id="beginGameButton" class="beginGameButton" type="button">
+          Begin game
+        </button>
+      </div>
       <canvas id="alignmentCanvas" class="alignmentCanvas"></canvas>
       <video id="trackingVideo" class="trackingVideo" preload autoplay loop muted></video>
-    </div>
-    <!-- join game modal -->
-    <div id="joinGameModal" class="joinGameModal">
-      <div class="instructions">
-      </div>
-      <div class="gameIdLabel">
-        Game ID: {{ gameID }}
-      </div>
-      <ul v-for="username in usernames">
-        <li>{{ username }}</li>
-      </ul>
-      <button id="beginGameButton" class="beginGameButton" type="button">
-        Begin game
-      </button>
     </div>
     <!-- heads up display elements -->
     <!-- <div class="hudcontainer">

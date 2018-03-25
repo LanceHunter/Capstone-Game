@@ -4,9 +4,9 @@ const maxTime = 1000;
 const redTargetColor = "#dcaaaa";
 const greenTargetColor = "#7ebe86";
 const blueTargetColor = "#7373e6";
-const boardMinBrightness = 100;
+const boardMinBrightness = 50;
 const boardMaxBrightness = 260;
-const boardWidth = window.innerWidth * .8;
+const boardWidth = 1920;
 const boardHeight = boardWidth * (9 / 16);
 
 // create the global lasers object used by the game as pointers
@@ -75,6 +75,7 @@ async function joinGame() {
   const database = firebase.database();
   const data = await $.post('/api/pregame/setup');
   const gameID = data.gameID;
+  console.log('gameID:', gameID);
   joinGameModal.gameID = gameID;
   const gameRef = database.ref('gameInstance').child(data.gameID);
   let usernames = [];
@@ -93,10 +94,11 @@ async function joinGame() {
   // start game on button press
   const beginGameButton = document.getElementById("beginGameButton");
   beginGameButton.addEventListener('click', async function() {
+    console.log('clicked button');
     if (usernames.length > 1) {
       gameRef.off();
       document.getElementById("joinGameModal").remove();
-      // await $.post('/api/pregame/startgame', {gameID: gameID});
+      await $.post('/api/pregame/startgame', {gameID: gameID});
       startGame(gameID);
     }
   });
@@ -151,9 +153,9 @@ function Pointer(color) {
 
   this.range = function(r,g,b) {
     return (
-      r < this.haloColor.r * 1.1 && r > this.haloColor.r * .9 &&
-      g < this.haloColor.g * 1.1 && g > this.haloColor.g * .9 &&
-      b < this.haloColor.b * 1.1 && b > this.haloColor.b * .9
+      r < this.haloColor.r * 1.2 && r > this.haloColor.r * .8 &&
+      g < this.haloColor.g * 1.2 && g > this.haloColor.g * .8 &&
+      b < this.haloColor.b * 1.2 && b > this.haloColor.b * .8
     );
   }
 
@@ -204,9 +206,9 @@ function trackLasers(translator) {
   let trackerTask = tracking.track('#trackingVideo', tracker, { camera: true });
 
   tracker.on('track', function(event) {
-    console.log('red:', lasers[0]);
-    console.log('gree:', lasers[2]);
-    console.log('blue:', lasers[3]);
+    // console.log('red:', lasers[0]);
+    // console.log('gree:', lasers[2]);
+    // console.log('blue:', lasers[3]);
     event.data.forEach((rect) => {
       rect.center = translator.coordinates({x: rect.x - rect.width / 2, y: rect.y - rect.height / 2});
 
@@ -318,7 +320,7 @@ function align(boardWidth, boardHeight) {
           console.log('finishied alignment');
           state = 'finished';
           trackLasers(translator);
-          //joinGame();
+          joinGame();
         }
         boardTrackerTask.stop();
       }, 0);
