@@ -9,6 +9,29 @@
   <body>
     <!-- alignment and laser tracking elements -->
     <div id="phaserContainer" class="fullscreenContainer">
+      <div id="hud" class="hudcontainer">
+        <div class="newsholder">
+          <div class="game-header">
+            <h1>Global Thermonuclear Warfare</h1>
+            <h3 v-bind="year">Year: {{year}}</h3>
+            <h3 v-bind="gameID">Game ID: {{gameID}}</h3>
+          </div>
+          <div class="total-forces">
+            <h1>Total Forces:</h1>
+            <h3 v-for="player in players" v-bind="player">
+              <span style="color:{{player.color}}">{{ player.name }}: {{ player.totalDeclaredForces }}
+            </h3>
+          </div>
+          <!-- <div class="ticker-holder">
+            <div class="ticker">
+              <div class="tickeritem">Year: 1950</div>
+              <div class="tickeritem">Subs deployed to Atlantic Ocean... </div>
+              <div class="tickeritem">ICBMs declared in South America...</div>
+              <div class="tickeritem">More spy messages...</div>
+            </div>
+          </div> -->
+        </div>
+      </div>
       <div id="joinGameModal" class="joinGameModal">
         <div class="instructions">
           Join game with your phone app.
@@ -27,30 +50,6 @@
       <canvas id="alignmentCanvas" class="alignmentCanvas"></canvas>
       <video id="trackingVideo" class="trackingVideo" preload autoplay loop muted></video>
     </div>
-    <!-- heads up display elements -->
-    <!-- <div class="hudcontainer">
-      <div id="hud" class="newsholder">
-        <div class="game-header">
-          <h1>Global Thermonuclear Warfare</h1>
-          <h3 v-bind="year">Year: {{year}}</h3>
-          <h3 v-bind="gameID">Game ID: {{gameID}}</h3>
-        </div>
-        <div class="total-forces">
-          <h1>Total Forces:</h1>
-          <h3 v-for="player in players" v-bind="player">
-            <span style="color:{{player.color}}">{{ player.name }}: {{ player.totalDeclaredForces }}
-          </h3>
-        </div>
-        <div class="ticker-holder">
-          <div class="ticker">
-            <div class="tickeritem">Year: 1950</div>
-            <div class="tickeritem">Subs deployed to Atlantic Ocean... </div>
-            <div class="tickeritem">ICBMs declared in South America...</div>
-            <div class="tickeritem">More spy messages...</div>
-          </div>
-        </div>
-      </div>
-    </div> -->
     <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
     <script>
       // Initialize Firebase
@@ -70,6 +69,7 @@
       crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src="/board/vendor/tracking.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser-ce/2.10.3/phaser.js"></script> -->
     <script src="/board/vendor/phaser.js"></script>
     <script src="/board/alignment.js"></script>
     <script src="/board/hud.js"></script>
