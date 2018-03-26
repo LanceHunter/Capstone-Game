@@ -15,52 +15,24 @@ let continent = {
     capitalIcons.push(new CapitalIcon(1635, (1080 - 180), 'australia'));
     capitalIcons.push(new CapitalIcon(955, (1080 - 365), 'africa'));
 
-    this.red = {
-      sprite: this.game.add.sprite(0, 0, 'circle'),
-      intersection: null,
+    let pointers = [];
+    for (let i = 0; i < playerIDs.length; i++) {
+      pointers.push(new PlayerPointer(i, this))
     }
-    this.green = {
-      sprite: this.game.add.sprite(0, 0, 'circle'),
-      intersection: null,
-    }
-    this.blue = {
-      sprite: this.game.add.sprite(0, 0, 'circle'),
-      intersection: null,
-    }
-
-    trackers = [
-      this.red,
-      this.green,
-      this.blue,
-    ];
-
-    trackers.forEach((tracker) => {
-      tracker.sprite.tint = 0x550000;
-      // tracker.alpha = 0;
-      tracker.sprite.scale.set(0.2);
-    })
   },
   update: function() {
-    let intersections = [null, null, null]
-    trackers.forEach((tracker, index) => {
-      tracker.sprite.position = lasers[index] || {x: 0,y: 0};
 
-      if (tracker.intersection) {
-        if(!tracker.intersection.checkOverlap()) {
-          tracker.intersection = null;
-        };
-      } else {
-        capitalIcons.forEach((capital) => {
-          if (!game.continents[capital.continent].player && tracker.sprite.overlap(capital.sprite)) {
-            console.log('checked overlap!');
-            let data = {
-              gameID: gameID,
-              playerID: playerIDs[index],
-              continent: capital.continent,
-            }
-
-            tracker.intersection = new Intersection(tracker.sprite, capital.sprite, this.assignPlayer, data);
-          }
+    pointers.forEach((pointer) => {
+      pointer.setPosition();
+      if (!pointer.intersecting()) {
+        capitalIcons.some((capital) => {
+          let data = {
+            gameID: gameID,
+            playerID: playerIDs[pointer.playerIndex],
+            continent: capital.continent,
+          };
+          return !game.continents[capital.continent].player &&
+                  pointer.checkIntersection(capital.sprite, this.assignContinent, data);
         })
       }
     })
@@ -69,7 +41,8 @@ let continent = {
       console.log('changing state to peacetime');
     }
   },
-  assignPlayer: function(data) {
+
+  assignContinent: function(data) {
     $.post('/api/pregame/continentselect', data);
   }
 }

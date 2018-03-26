@@ -363,18 +363,54 @@ function update() {
   });
 }
 
+class PlayerPointer {
+  constructor(index, state) {
+    this.playerIndex = index;
+    this.sprite = state.game.add.sprite(0, 0, 'circle');
+    this.sprite.tint = colors[0];
+    // this.sprite.alpha = 0;
+    this.sprite.scale.set(0.2);
+    this.intersection = null;
+  }
+
+  setPosition() {
+    this.sprite.position = lasers[this.playerIndex] || {x: 0,y: 0};
+  }
+
+  intersecting() {
+    if (this.intersection) {
+      if (!this.intersection.checkOverlap()) {
+        this.intersection = null;
+        return false;
+      }
+
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  checkIntersection(targetSprite, action, data) {
+    if (this.sprite.overlap(targetSprite)) {
+      this.intersection = new Intersection(this.sprite, targetSprite, action, data);
+      return true;
+    }
+
+    return false;
+  }
+}
+
 class Intersection {
-  constructor(playerPointer, target, action, data) {
-    this.playerPointer = playerPointer;
-    this.target = target;
+  constructor(playerSprite, targetSprite, action, data) {
+    this.playerSprite = playerSprite;
+    this.targetSprite = targetSprite;
     this.action = action;
     this.data = data;
     this.count = 0;
   }
 
   checkOverlap() {
-    console.log('in intersect check');
-    if (this.playerPointer.overlap(this.target)) {
+    if (this.playerSprite.overlap(this.targetSprite)) {
       this.count++;
       if (this.count > 60) {
         this.action(this.data);
