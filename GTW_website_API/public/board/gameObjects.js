@@ -105,6 +105,14 @@ class CapitalIcon {
     this.hitPoints.setText(game.continents[this.continent].hp);
     this.hitPoints.position.x = this.sprite.centerX - (this.hitPoints.width / 2);
 
+    console.log('*** setting sprite tint ***');
+    console.log('contintet', this.continent);
+    console.log('player owned', game.continents[this.continent].player);
+    console.log('player name', Object.keys(game.continents[this.continent].player)[0]);
+    console.log('player id', playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0]));
+    console.log('color', colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])]);
+
+
     this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
   }
 }
@@ -355,15 +363,6 @@ function update() {
   });
 }
 
-class PlayerPointer {
-  consructor(state) {
-    this.sprite = state.game.add.sprite(0, 0, 'circle');
-    this.sprite.alpha = 0;
-    this.sprite.scale.set(0.2);
-    this.interstction = null;
-  }
-}
-
 class Intersection {
   constructor(playerPointer, target, action, data) {
     this.playerPointer = playerPointer;
@@ -374,13 +373,17 @@ class Intersection {
   }
 
   checkOverlap() {
-    if (this.playerPointer.sprite.overlap(this.target.sprite)) {
+    console.log('in intersect check');
+    if (this.playerPointer.overlap(this.target)) {
       this.count++;
       if (this.count > 60) {
         this.action(this.data);
+        return false;
       };
+
+      return true;
     } else {
-      this.count = 0;
+      return false;
     }
   }
 }

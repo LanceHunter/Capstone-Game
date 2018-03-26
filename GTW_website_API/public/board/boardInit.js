@@ -2,7 +2,7 @@
 some globals
 */
 let playerIDs;
-let colors = [0xe22245, 0x05f140, 0x5cc8ff];
+let colors = [0x550000, 0x005500, 0x000055];
 let subIcons = [], bomberIcons = [], capitalIcons = [], missileIcons = [];
 let width = boardWidth;
 let height = width * (9 / 16);
