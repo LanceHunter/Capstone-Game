@@ -247,7 +247,7 @@ router.put('/joingame', async (ctx) => {
   }); // end of the firebase once check.
 
 
-  if (gameObj) {
+  if (gameObj && !gameObj.gameStarted) {
     if (gameObj.players) { // checking to see if there's a 'players' node yet.
       if (Object.keys(gameObj.players).length < 3) {
         let playerObj = {};
