@@ -299,8 +299,6 @@ router.put('/joingame', async (ctx) => {
     };
   }// End of conditional checking that game ID is valid.
 
-
-
 }); // end of the '/joingame' route.
 
 router.post('/startgame', async (ctx) => {
