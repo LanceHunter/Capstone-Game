@@ -362,7 +362,7 @@ class PlayerPointer {
   constructor(index, state) {
     this.playerIndex = index;
     this.sprite = state.game.add.sprite(0, 0, 'circle');
-    this.sprite.tint = colors[0];
+    this.sprite.tint = colors[index];
     // this.sprite.alpha = 0;
     this.sprite.scale.set(0.2);
     this.intersection = null;

@@ -16,6 +16,7 @@ let continent = {
     capitalIcons.push(new CapitalIcon(1635, (1080 - 180), 'australia'));
     capitalIcons.push(new CapitalIcon(955, (1080 - 365), 'africa'));
 
+    pointers = [];
     for (let i = 0; i < playerIDs.length; i++) {
       pointers.push(new PlayerPointer(i, this))
     }

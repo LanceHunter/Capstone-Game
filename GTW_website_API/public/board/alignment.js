@@ -8,7 +8,7 @@ const boardMinBrightness = 50;
 const boardMaxBrightness = 260;
 const boardWidth = 1920;
 const boardHeight = boardWidth * (9 / 16);
-let gameID = 'game5500';
+let gameID;
 let game;
 
 // create the global lasers object used by the game as pointers
@@ -30,8 +30,8 @@ async function joinGame() {
   console.log('lauched join game');
   // create a game instance
   const database = firebase.database();
-  // const data = await $.post('/api/pregame/setup');
-  // gameID = data.gameID;
+  const data = await $.post('/api/pregame/setup');
+  gameID = data.gameID;
   console.log('gameID:', gameID);
   joinGameModal.gameID = gameID;
   const gameRef = database.ref('gameInstance').child(gameID);
