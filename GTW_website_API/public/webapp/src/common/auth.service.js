@@ -14,7 +14,7 @@ const AuthService = {
         password,
       })
         .then((response) => {
-          localStorage.setItem('username', 'username');
+          localStorage.setItem('username', username);
           resolve(response);
         })
         .catch((error) => {
@@ -35,7 +35,7 @@ const AuthService = {
         .catch((error) => {
           reject(error);
         });
-    })
+    });
   },
 
   logout() {
