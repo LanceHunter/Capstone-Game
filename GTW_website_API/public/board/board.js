@@ -8,25 +8,7 @@ firebase setup
 */
 
 
-/*
-callback for game changes
-*/
-function onGameChange(data) {
-  game = data.val();
-  // board score stuff
-  subIcons.forEach(subIcon => subIcon.update());
-  bomberIcons.forEach(bomberIcon => bomberIcon.update());
-  missileIcons.forEach(missileIcon => missileIcon.update());
-  capitalIcons.forEach(capitalIcon => capitalIcon.update());
 
-  // vue hud data updates
-  hud.players = game.players;
-  for (let name in hud.players) {
-    hud.players[name].name = name;
-  }
-  hud.war = game.war;
-  hud.year = game.year;
-}
 
 testGame('game8928');
 

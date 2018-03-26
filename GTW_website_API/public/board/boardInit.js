@@ -1,7 +1,7 @@
 /*
 some globals
 */
-let playerIDs, playerIndices;
+let playerIDs;
 let colors = [0xe22245, 0x05f140, 0x5cc8ff];
 let subIcons = [], bomberIcons = [], capitalIcons = [], missileIcons = [];
 let width = boardWidth;
@@ -24,6 +24,26 @@ function startGame(gameRef) {
 
   document.getElementById('hud').style.visibility = 'visible';
   gameRef.on('value', onGameChange);
+}
+
+/*
+callback for game changes
+*/
+function onGameChange(data) {
+  game = data.val();
+  // board score stuff
+  subIcons.forEach(subIcon => subIcon.update());
+  bomberIcons.forEach(bomberIcon => bomberIcon.update());
+  missileIcons.forEach(missileIcon => missileIcon.update());
+  capitalIcons.forEach(capitalIcon => capitalIcon.update());
+
+  // vue hud data updates
+  hud.players = game.players;
+  for (let name in hud.players) {
+    hud.players[name].name = name;
+  }
+  hud.war = game.war;
+  hud.year = game.year;
 }
 
 /*

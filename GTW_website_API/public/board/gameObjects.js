@@ -76,15 +76,18 @@ class CapitalIcon {
     this.sprite.anchor.set(0, 1);
     this.sprite.inputEnabled = true;
     this.continent = continent;
-    
-      this.hitPoints = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
-      this.hitPoints.position.x = this.sprite.centerX - (this.hitPoints.width / 2);
-      this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
-      this.hitPoints.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
-      this.update();
+
+    this.hitPoints = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
+    this.hitPoints.position.x = this.sprite.centerX - (this.hitPoints.width / 2);
+    this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
+    this.hitPoints.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
+    this.update();
+
+    this.playerID = null;
   }
 
   update() {
+    console.log('icon updated');
     if (game.war) {
       this.sprite.inputEnabled = true;
     }
@@ -101,6 +104,8 @@ class CapitalIcon {
     }
     this.hitPoints.setText(game.continents[this.continent].hp);
     this.hitPoints.position.x = this.sprite.centerX - (this.hitPoints.width / 2);
+
+    this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
   }
 }
 
@@ -210,8 +215,6 @@ class MissileIcon {
         this.inventory.alpha = 1;
       }
     }
-
-
   }
 }
 
@@ -350,4 +353,34 @@ function update() {
       }
     });
   });
+}
+
+class PlayerPointer {
+  consructor(state) {
+    this.sprite = state.game.add.sprite(0, 0, 'circle');
+    this.sprite.alpha = 0;
+    this.sprite.scale.set(0.2);
+    this.interstction = null;
+  }
+}
+
+class Intersection {
+  constructor(playerPointer, target, action, data) {
+    this.playerPointer = playerPointer;
+    this.target = target;
+    this.action = action;
+    this.data = data;
+    this.count = 0;
+  }
+
+  checkOverlap() {
+    if (this.playerPointer.sprite.overlap(this.target.sprite)) {
+      this.count++;
+      if (this.count > 60) {
+        this.action(this.data);
+      };
+    } else {
+      this.count = 0;
+    }
+  }
 }
