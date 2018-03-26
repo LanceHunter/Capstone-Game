@@ -17,8 +17,8 @@ function startGame(gameRef) {
   phaser = new Phaser.Game(width, height, Phaser.AUTO, phaserContainer);
 
   phaser.state.add('ContinentSelect', continent);
-  // phaser.state.add('Peace', peace);
-  // phaser.state.add('War', war);
+  phaser.state.add('Peace', peace);
+  phaser.state.add('War', war);
 
   // and we launch our ContinentSelect state
   phaser.state.start('ContinentSelect');

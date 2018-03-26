@@ -1,3 +1,4 @@
+let pointers = [];
 let continent = {
   preload: function() {
     this.game.load.image('map', '/board/assets/map.png');
@@ -15,7 +16,6 @@ let continent = {
     capitalIcons.push(new CapitalIcon(1635, (1080 - 180), 'australia'));
     capitalIcons.push(new CapitalIcon(955, (1080 - 365), 'africa'));
 
-    let pointers = [];
     for (let i = 0; i < playerIDs.length; i++) {
       pointers.push(new PlayerPointer(i, this))
     }
@@ -35,10 +35,12 @@ let continent = {
                   pointer.checkIntersection(capital.sprite, this.assignContinent, data);
         })
       }
-    })
+    });
 
     if (capitalIcons.every(capital => game.continents[capital.continent].player)) {
-      console.log('changing state to peacetime');
+      $.post('/api/pregame/beginpeace', {gameID: gameID}).then(() => {
+        phaser.state.start('Peace');
+      });
     }
   },
 

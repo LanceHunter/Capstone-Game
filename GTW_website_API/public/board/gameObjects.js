@@ -226,7 +226,7 @@ class MissileIcon {
   }
 }
 
-class SubLaunch {
+class Launch {
   // these will be created whenever a players's sub-deploy thing is activated
   constructor(playerID, origin, ocean) {
     // grab our attributes
@@ -235,16 +235,11 @@ class SubLaunch {
     this.ocean = ocean;
 
     // set up the origin indicator, doesn't move
-    if (game.oceans[this.ocean].subs[this.playerID].declared + game.oceans[this.ocean].subs[this.playerID].declared > 0) {
+    if (game.oceans[this.ocean].subs[this.playerID].total > 0) {
       this.originIndicator = phaser.add.sprite(this.origin.x, this.origin.y, 'circle');
       this.originIndicator.tint = colors[playerIDs.indexOf(playerID)];
       this.originIndicator.anchor.set(0.5);
 
-      // set up the target indicator, follows the mouse/pointer
-      this.targetIndicator = phaser.add.sprite(origin.x, origin.y, 'circle');
-      this.targetIndicator.position = phaser.input.mousePointer.position;
-      this.targetIndicator.tint = colors[playerIDs.indexOf(playerID)];
-      this.targetIndicator.anchor.set(0.5);
 
       // some fake stuff for animations that don't exist yet
       this.enrouteCount = 0;
@@ -271,23 +266,23 @@ class SubLaunch {
     this[this.state]();
   }
 
-  // when user is still dragging from origin to destination
+  // a weapon has been selected, launch is pending
   aiming() {
     let theta = (this.frame / 15)
     this.originIndicator.scale.set((Math.sin(theta) + 2) / 5);
     this.originIndicator.alpha = (Math.sin(theta + Math.PI) + 2) / 3;
-
-    this.targetIndicator.scale.set((Math.sin(theta) + 2) / 5);
-    this.targetIndicator.alpha = (Math.sin(theta + Math.PI) + 2) / 3;
   }
 
-  // when user releases drag on a destination
-  launch(destination) {
+  // when user paints a destination
+  launch(capital) {
     // check if the destination is valid first
-    this.state = 'countdown';
-    this.originIndicator.destroy();
+    if (capital.playerID != this.playerID && game.continents[continent].hp > 0) {
+      this.targetIndicator = phaser.add.sprite(capital.sprite.position.x, capital.sprite.position.y, 'circle');
+      this.targetIndicator.tint = colors[playerIDs.indexOf(playerID)];
+      this.targetIndicator.anchor.set(0.5);
+    }
 
-    this.targetIndicator.position = {x: phaser.input.mousePointer.position.x, y: phaser.input.mousePointer.position.y};
+    this.state = 'countdown';
 
     // set up the countdown indicator
     // this.countdownIndicator = phaser.add.sprite(origin.x, origin.y, 'circle');

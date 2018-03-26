@@ -1,6 +1,5 @@
 let war = {
   preload: function() {
-
   },
   create: function() {
 

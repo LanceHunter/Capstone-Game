@@ -10,7 +10,7 @@ let peace = {
     this.game.load.image('ring', '/board/assets/ring.png');
   },
   create: function() {
-    phaser.add.sprite(0, 0, 'map');
+    this.game.add.sprite(0, 0, 'map');
 
     /*
     sub icons
