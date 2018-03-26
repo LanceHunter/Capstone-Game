@@ -8,51 +8,11 @@ const boardMinBrightness = 50;
 const boardMaxBrightness = 260;
 const boardWidth = 1920;
 const boardHeight = boardWidth * (9 / 16);
-let gameID = 'game5416';
+let gameID = 'game5531';
 let game;
 
 // create the global lasers object used by the game as pointers
 const lasers = [null, null, null];
-
-/*
-phaser setup
-*/
-
-let alignState = {
-  preload: function() {
-    this.game.load.image('map', '/board/assets/map.png');
-    this.game.load.image('circle', '/board/assets/circle.png');
-  },
-  create: function() {
-    this.game.add.sprite(0, 0, 'map');
-
-    this.red = this.game.add.sprite(0, 0, 'circle');
-    this.green = this.game.add.sprite(boardWidth - 10, boardHeight - 10, 'circle');
-    this.blue = this.game.add.sprite(boardWidth, boardHeight, 'circle');
-
-    this.red.tint = 0x550000;
-    this.green.tint = 0x005500;
-    this.blue.tint = 0x000055;
-
-    this.red.scale.set(0.2);
-    this.green.scale.set(0.2);
-    this.blue.scale.set(0.2);
-  },
-  update: function() {
-    if (lasers[0]) {
-      this.red.position.x = lasers[0].x;
-      this.red.position.y = lasers[0].y;
-    }
-    if (lasers[1]) {
-      this.green.position.x = lasers[1].x;
-      this.green.position.y = lasers[1].y;
-    }
-    if (lasers[2]) {
-      this.blue.position.x = lasers[2].x;
-      this.blue.position.y = lasers[2].y;
-    }
-  }
-}
 
 /*
   Creates a new game instance and shows the join game modal.
