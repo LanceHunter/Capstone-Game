@@ -240,35 +240,16 @@ router.put('/joingame', async (ctx) => {
   let playerID = ctx.request.body.playerID;
   let gameRef = ref.child(ctx.request.body.gameID);
   let playersRef = gameRef.child(`/players`);
+  let gameObj;
 
   await gameRef.once('value', (snap) => {
-    if (snap.val()) {
-      if (snap.val().players) { // checking to see if there's a 'players' node yet.
-        if (Object.keys(snap.val().players).length < 3) {
-          let playerObj = {};
-          playerObj[playerID] = {
-            totalDeclaredForces : 0,
-            continents : true,
-            oceans : true,
-            rnd : {
-              speed : 0,
-              damage : 0
-            },
-            currentBudget : 0,
-            yearComplete : false,
-            shotsFired : 0,
-            spyMessage : '',
-          };
-          playersRef.update(playerObj); // End of the playersRef update.
-          console.log('Setting ctx-status');
-          ctx.status = 200;
-        } else { // If the game is already has 3 players.
-          ctx.status = 400;
-          ctx.body = {
-            message: 'Game is already full!',
-          };
-        } // End of conditional checking the number of players.
-      } else { // if there is no player node
+    gameObj = snap.val();
+  }); // end of the firebase once check.
+
+
+  if (gameObj) {
+    if (gameObj.players) { // checking to see if there's a 'players' node yet.
+      if (Object.keys(gameObj.players).length < 3) {
         let playerObj = {};
         playerObj[playerID] = {
           totalDeclaredForces : 0,
@@ -286,14 +267,40 @@ router.put('/joingame', async (ctx) => {
         playersRef.update(playerObj); // End of the playersRef update.
         console.log('Setting ctx-status');
         ctx.status = 200;
-      } // end of conditional checking if there is a player node.
-    } else { // If game ID is not valid.
-      ctx.status = 400;
-      ctx.body = {
-        message: 'Invalid game ID, or game has not yet started.',
+      } else { // If the game is already has 3 players.
+        ctx.status = 400;
+        ctx.body = {
+          message: 'Game is already full!',
+        };
+      } // End of conditional checking the number of players.
+    } else { // if there is no player node
+      let playerObj = {};
+      playerObj[playerID] = {
+        totalDeclaredForces : 0,
+        continents : true,
+        oceans : true,
+        rnd : {
+          speed : 0,
+          damage : 0
+        },
+        currentBudget : 0,
+        yearComplete : false,
+        shotsFired : 0,
+        spyMessage : '',
       };
-    }// End of conditional checking that game ID is valid.
-  }); // end of the firebase once check.
+      await playersRef.update(playerObj); // End of the playersRef update.
+      console.log('Setting ctx-status');
+      ctx.status = 200;
+    } // end of conditional checking if there is a player node.
+  } else { // If game ID is not valid.
+    ctx.status = 400;
+    ctx.body = {
+      message: 'Invalid game ID, or game has not yet started.',
+    };
+  }// End of conditional checking that game ID is valid.
+
+
+
 }); // end of the '/joingame' route.
 
 router.post('/startgame', async (ctx) => {
