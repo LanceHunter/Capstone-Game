@@ -327,60 +327,68 @@ router.put('/deploybomber', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
-  let quantity = ctx.request.body.quantity;
+  let quantity = parseInt(ctx.request.body.quantity);
   let location = ctx.request.body.location;
+  let gameObj;
 
   await gameRef.once('value', (snap) => {
-    if (snap.val() && !snap.val().war) {
-      if (snap.val().players[playerID].currentBudget >= bomberCost * quantity && snap.val().players[playerID].continents[location]) {
-        let bombers = snap.val().continents[location].forces.bombers.total + quantity;
-        let currentBudget = snap.val().players[playerID].currentBudget - (bomberCost * quantity);
-        gameRef.child(`players/${playerID}`).update({currentBudget : currentBudget});
-        gameRef.child(`continents/${location}/forces/bombers`).update({total : bombers});
-        ctx.status = 200;
-      } else { // If the player doesn't have enough funds or is trying to put them on a continent they don't own.
-        ctx.status = 400;
-        ctx.body = {
-          message: 'Insufficient funds to deploy or invalid location.',
-        };
-      } // End of budget/location conditional.
-    } else { // If gameID isn't found.
+    gameObj = snap.val();
+  }); // end of single-grab of firebase data.
+
+  if (gameObj && !gameObj.war) {
+    if (gameObj.players[playerID].currentBudget >= bomberCost * quantity && gameObj.players[playerID].continents[location]) {
+      let bombers = gameObj.continents[location].forces.bombers.total + quantity;
+      let currentBudget = gameObj.players[playerID].currentBudget - (bomberCost * quantity);
+      gameRef.child(`players/${playerID}`).update({currentBudget : currentBudget});
+      gameRef.child(`continents/${location}/forces/bombers`).update({total : bombers});
+      ctx.status = 200;
+    } else { // If the player doesn't have enough funds or is trying to put them on a continent they don't own.
+      ctx.status = 400;
+      ctx.body = {
+        message: 'Insufficient funds to deploy or invalid location.',
+      };
+    } // End of budget/location conditional.
+  } else { // If gameID isn't found.
     ctx.status = 400;
     ctx.body = {
-      message: 'Invalid game ID entered or was were declared.',
+      message: 'Invalid game ID entered or war were declared.',
     };
-    } // end of coditional checking if game ID is valid.
-  }); // end of single-grab of firebase data.
+  } // end of coditional checking if game ID is valid.
+
 }); // end of "deploybomber" route
 
 router.put('/deployicbm', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
-  let quantity = ctx.request.body.quantity;
+  let quantity = parseInt(ctx.request.body.quantity);
   let location = ctx.request.body.location;
+  let gameObj;
 
   await gameRef.once('value', (snap) => {
-    if (snap.val() && !snap.val().war) {
-      if (snap.val().players[playerID].currentBudget >= icbmCost * quantity && snap.val().players[playerID].continents[location]) {
-        let icbms = snap.val().continents[location].forces.icbms.total + quantity;
-        let currentBudget = snap.val().players[playerID].currentBudget - (icbmCost * quantity);
-        gameRef.child(`players/${playerID}`).update({currentBudget : currentBudget});
-        gameRef.child(`continents/${location}/forces/icbms`).update({total : icbms});
-        ctx.status = 200;
-      } else { // If the player doesn't have enough funds or is trying to put them on a continent they don't own.
-        ctx.status = 400;
-        ctx.body = {
-          message: 'Insufficient funds to deploy or invalid location.',
-        };
-      } // End of budget/location conditional.
-    } else { // If gameID isn't found.
+    gameObj = snap.val();
+  }); // end of single-grab of firebase data.
+
+  if (gameObj && !gameObj.war) {
+    if (gameObj.players[playerID].currentBudget >= icbmCost * quantity && gameObj.players[playerID].continents[location]) {
+      let icbms = gameObj.continents[location].forces.icbms.total + quantity;
+      let currentBudget = gameObj.players[playerID].currentBudget - (icbmCost * quantity);
+      gameRef.child(`players/${playerID}`).update({currentBudget : currentBudget});
+      gameRef.child(`continents/${location}/forces/icbms`).update({total : icbms});
+      ctx.status = 200;
+    } else { // If the player doesn't have enough funds or is trying to put them on a continent they don't own.
       ctx.status = 400;
       ctx.body = {
-        message: 'Invalid game ID entered or war were declared.',
+        message: 'Insufficient funds to deploy or invalid location.',
       };
-    } // end of coditional checking if game ID is valid.
-  }); // end of single-grab of firebase data.
+    } // End of budget/location conditional.
+  } else { // If gameID isn't found.
+    ctx.status = 400;
+    ctx.body = {
+      message: 'Invalid game ID entered or war were declared.',
+    };
+  } // end of coditional checking if game ID is valid.
+
 }); // end of "deployicbm" route
 
 
@@ -388,37 +396,42 @@ router.put('/deploysub', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
-  let quantity = ctx.request.body.quantity;
+  let quantity = parseInt(ctx.request.body.quantity);
   let location = ctx.request.body.location;
+  let gameObj;
 
   await gameRef.once('value', (snap) => {
-    if (snap.val() && !snap.val().war) {
-      if (snap.val().players[playerID].currentBudget >= subCost * quantity && snap.val().players[playerID].oceans[location]) {
-        let subs = snap.val().oceans[location].subs[playerID].total + quantity;
-        let currentBudget = snap.val().players[playerID].currentBudget - (subCost * quantity);
-        gameRef.child(`players/${playerID}`).update({currentBudget : currentBudget});
-        gameRef.child(`oceans/${location}/subs/${playerID}`).update({total : subs});
-        ctx.status = 200;
-      } else { // If the player doesn't have enough funds or is trying to put them on a continent they don't own.
-        ctx.status = 400;
-        ctx.body = {
-          message: 'Insufficient funds to deploy or invalid location.',
-        };
-      } // End of budget/location conditional.
-    } else { // If gameID isn't found.
+    gameObj = snap.val();
+  }); // end of single-grab of firebase data.
+
+  if (gameObj && !gameObj.war) {
+    if (gameObj.players[playerID].currentBudget >= subCost * quantity && gameObj.players[playerID].oceans[location]) {
+      let subs = gameObj.oceans[location].subs[playerID].total + quantity;
+      let currentBudget = gameObj.players[playerID].currentBudget - (subCost * quantity);
+      gameRef.child(`players/${playerID}`).update({currentBudget : currentBudget});
+      gameRef.child(`oceans/${location}/subs/${playerID}`).update({total : subs});
+      ctx.status = 200;
+    } else { // If the player doesn't have enough funds or is trying to put them on a continent they don't own.
       ctx.status = 400;
       ctx.body = {
-        message: 'Invalid game ID entered or war were declared.',
+        message: 'Insufficient funds to deploy or invalid location.',
       };
-    } // end of coditional checking if game ID is valid.
-  }); // end of single-grab of firebase data.
+    } // End of budget/location conditional.
+  } else { // If gameID isn't found.
+    ctx.status = 400;
+    ctx.body = {
+      message: 'Invalid game ID entered or war were declared.',
+    };
+  } // end of coditional checking if game ID is valid.
 }); // end of "deploysub" route
+
+
 
 router.put('/declarebomber', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
-  let quantity = ctx.request.body.quantity;
+  let quantity = parseInt(ctx.request.body.quantity);
   let location = ctx.request.body.location;
   let gameObj;
   let overwhelmingForce = false;
@@ -473,7 +486,7 @@ router.put('/declareicbm', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
-  let quantity = ctx.request.body.quantity;
+  let quantity = parseInt(ctx.request.body.quantity);
   let location = ctx.request.body.location;
   let gameObj;
   let overwhelmingForce = false;
@@ -529,7 +542,7 @@ router.put('/declaresub', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
-  let quantity = ctx.request.body.quantity;
+  let quantity = parseInt(ctx.request.body.quantity);
   let location = ctx.request.body.location;
   let gameObj;
   let overwhelmingForce = false;
@@ -579,11 +592,13 @@ router.put('/declaresub', async (ctx) => {
 
 }); // End of the "declaresubs" route.
 
+
+
 router.put('/disarmbomber', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
-  let quantity = ctx.request.body.quantity;
+  let quantity = parseInt(ctx.request.body.quantity);
   let location = ctx.request.body.location;
 
   await gameRef.once('value', (snap) => {
@@ -620,7 +635,7 @@ router.put('/disarmicbm', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
-  let quantity = ctx.request.body.quantity;
+  let quantity = parseInt(ctx.request.body.quantity);
   let location = ctx.request.body.location;
 
   await gameRef.once('value', (snap) => {
@@ -656,7 +671,7 @@ router.put('/disarmsub', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
-  let quantity = ctx.request.body.quantity;
+  let quantity = parseInt(ctx.request.body.quantity);
   let location = ctx.request.body.location;
 
   await gameRef.once('value', (snap) => {
@@ -691,35 +706,40 @@ router.put('/spendrnd', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
   let playerID = ctx.request.body.playerID;
-  let quantity = ctx.request.body.quantity;
+  let quantity = parseInt(ctx.request.body.quantity);
   let type = ctx.request.body.type;
+  let gameObj;
 
   await gameRef.once('value', (snap) => {
-    if (snap.val() && snap.val().players[playerID].currentBudget >= quantity) {
-      let currentBudget = snap.val().players[playerID].currentBudget - quantity;
-      if (type === 'speed') {
-        let speedSpent = snap.val().players[playerID].rnd.speed + quantity;
-        gameRef.child(`players/${playerID}/rnd`).update({speed:speedSpent});
-        gameRef.child(`players/${playerID}`).update({currentBudget:currentBudget});
-        ctx.status = 200;
-      } else if (type === 'damage') {
-        let damageSpent = snap.val().players[playerID].rnd.damage + quantity;
-        gameRef.child(`players/${playerID}/rnd`).update({damage:damageSpent});
-        gameRef.child(`players/${playerID}`).update({currentBudget:currentBudget});
-        ctx.status = 200;
-      } else { // If type of spending is neither "speed" or "damage"
-      ctx.status = 400;
-      ctx.body = {
-        message: 'Invalid type of R&D spending provided.',
-      };
-      } // end of the type of spending conditional
-    } else { // If gameID is invalid or amount spent is more than current budget.
-      ctx.status = 400;
-      ctx.body = {
-        message: 'Not a valid gameID or amount spent is greater than remaining budget.',
-      };
-    } // end of the total budget and vali game ID conditional
+    gameObj = snap.val();
   }); // end of the grab of data from firebase
+
+  if (gameObj && gameObj.players[playerID].currentBudget >= quantity) {
+    let currentBudget = gameObj.players[playerID].currentBudget - quantity;
+    if (type === 'speed') {
+      let speedSpent = gameObj.players[playerID].rnd.speed + quantity;
+      gameRef.child(`players/${playerID}/rnd`).update({speed:speedSpent});
+      gameRef.child(`players/${playerID}`).update({currentBudget:currentBudget});
+      ctx.status = 200;
+    } else if (type === 'damage') {
+      let damageSpent = gameObj.players[playerID].rnd.damage + quantity;
+      gameRef.child(`players/${playerID}/rnd`).update({damage:damageSpent});
+      gameRef.child(`players/${playerID}`).update({currentBudget:currentBudget});
+      ctx.status = 200;
+    } else { // If type of spending is neither "speed" or "damage"
+    ctx.status = 400;
+    ctx.body = {
+      message: 'Invalid type of R&D spending provided.',
+    };
+    } // end of the type of spending conditional
+  } else { // If gameID is invalid or amount spent is more than current budget.
+    ctx.status = 400;
+    ctx.body = {
+      message: 'Not a valid gameID or amount spent is greater than remaining budget.',
+    };
+  } // end of the total budget and vali game ID conditional
+
+
 }); // end of the "spendrnd" route
 
 
