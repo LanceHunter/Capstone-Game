@@ -8,7 +8,7 @@ const boardMinBrightness = 50;
 const boardMaxBrightness = 260;
 const boardWidth = 1920;
 const boardHeight = boardWidth * (9 / 16);
-let gameID = 'game5531';
+let gameID = 'game5500';
 let game;
 
 // create the global lasers object used by the game as pointers
