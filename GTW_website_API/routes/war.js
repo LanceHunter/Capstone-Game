@@ -22,7 +22,7 @@ router.put('/shot', async (ctx) => {
   let gameRef = ref.child(gameID); // Referencing this game in the database.
   let targetID = ctx.request.body.targetID; // The target continent.
   let launchID = ctx.request.body.launchID; // The launching continent.
-  let shotType = ctx.request.body.shotType; // The type of shot ('icbm' or 'bomber')
+  let shotType = ctx.request.body.type; // The type of shot ('icbm' or 'bomber')
   let gameObj; // The variable that will hold gameobject data, put here to scope outside of the data grab.
   let gameOver = true; // Boolean checking if game is over.
   let rubbleLoss = true; // Boolean checking if game was a rubble loss.
