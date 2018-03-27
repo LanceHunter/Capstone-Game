@@ -26,10 +26,10 @@ callback for game changes
 function onGameChange(data) {
   game = data.val();
   // board score stuff
-  subIcons.forEach(subIcon => subIcon.update());
-  bomberIcons.forEach(bomberIcon => bomberIcon.update());
-  missileIcons.forEach(missileIcon => missileIcon.update());
-  capitalIcons.forEach(capitalIcon => capitalIcon.update());
+  subIcons.forEach(subIcon => subIcon.updateState());
+  bomberIcons.forEach(bomberIcon => bomberIcon.updateState());
+  missileIcons.forEach(missileIcon => missileIcon.updateState());
+  capitalIcons.forEach(capitalIcon => capitalIcon.updateState());
 
   // vue hud data updates
   hud.players = game.players;

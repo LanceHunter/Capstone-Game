@@ -70,6 +70,17 @@ let war = {
     missileIcons.push(new MissileIcon(1060, (1080 - 365), 'africa'));
   },
   update: function() {
+    // update icons
+    subIcons.forEach((sub) => {
+      sub.update();
+    });
+    missileIcons.forEach((missile) => {
+      missile.update();
+    });
+    bomberIcons.forEach((bomber) => {
+      bomber.update();
+    });
+
     // look at every pointer
     pointers.forEach((pointer) => {
       /* SHORT CIRCUIT
@@ -78,36 +89,39 @@ let war = {
       if (!pointer.intersecting()) {
         capitalIcons.some((capital) => {
           let data = {
-            pointer
+            pointer,
+            self: capital
           };
           return pointer.checkIntersection(capital.sprite, capital.select, data);
         });
       }
       if (!pointer.intersecting()) {
-        subIcons.some((capital) => {
+        subIcons.some((sub) => {
           let data = {
-            pointer
+            pointer,
+            self: sub
           };
-          return pointer.checkIntersection(capital.sprite, capital.select, data);
+          return pointer.checkIntersection(sub.sprite, sub.select, data);
         });
       }
       if (!pointer.intersecting()) {
-        missileIcons.some((capital) => {
+        missileIcons.some((missile) => {
           let data = {
-            pointer
+            pointer,
+            self: missile
           };
-          return pointer.checkIntersection(capital.sprite, capital.select, data);
+          return pointer.checkIntersection(missile.sprite, missile.select, data);
         });
       }
       if (!pointer.intersecting()) {
-        bomberIcons.some((capital) => {
+        bomberIcons.some((bomber) => {
           let data = {
-            pointer
+            pointer,
+            self: bomber
           };
-          return pointer.checkIntersection(capital.sprite, capital.select, data);
+          return pointer.checkIntersection(bomber.sprite, bomber.select, data);
         });
       }
     });
-
   }
 }

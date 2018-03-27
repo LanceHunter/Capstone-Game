@@ -1,40 +1,14 @@
-/*
-the other launch classes
-class BomberLaunch {
-  constructor(continent) {
-
-  }
-}
-
-class ICBMLaunch {
-  constructor(continent) {
-
-  }
-}
-*/
-
 class SubIcon {
   constructor(x, y, ocean, playerID) {
     this.sprite = phaser.add.sprite(x, y, 'submarine');
     this.sprite.anchor.set(0, 1);
     this.playerID = playerID;
     this.ocean = ocean;
-    this.launches = [];
     this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
-
-    // some listeners
-    this.sprite.events.onInputDown.add(() => {
-      this.launches.push(new Launch(this.playerID, {x: this.sprite.centerX, y: this.sprite.centerY}, this.ocean));
-    }, this);
-
-    this.sprite.events.onInputUp.add(() => {
-      this.launches[this.launches.length - 1].launch({x: 10, y: 10});
-    }, this);
-
-    this.update();
+    this.updateState();
   }
 
-  update() {
+  updateState() {
     // if the sub's player can be in that ocean
     if (game.oceans[this.ocean].subs[this.playerID]) {
       //check for game state and update inventory accordingly
@@ -69,8 +43,28 @@ class SubIcon {
     }
   }
 
-  select() {
-    console.log(continent, 'sub selected');
+  update() {
+    if (this.launch) {
+      this.launch.update();
+    }
+  }
+
+  select(data) {
+    let self = data.self;
+    let pointer = data.pointer;
+
+    // is it your sub?
+    if (self.playerID === pointer.playerID) {
+      if (game.oceans[self.ocean].subs[self.playerID].total > 0) {
+        if (!self.launch) {
+          self.launch = new Launch(self);
+        } else {
+          console.log('there is already a launch in progress');
+        }
+      } else {
+        console.log('no ammo');
+      }
+    }
   }
 }
 
@@ -85,13 +79,12 @@ class CapitalIcon {
     this.hitPoints.position.x = this.sprite.centerX - (this.hitPoints.width / 2);
     this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
     this.hitPoints.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
-    this.update();
+    this.updateState();
 
-    this.playerID = null;
+    this.playerID = Object.keys(game.continents[this.continent].player)[0];
   }
 
-  update() {
-    console.log('icon updated');
+  updateState() {
     if (game.war) {
       this.sprite.inputEnabled = true;
     }
@@ -109,19 +102,41 @@ class CapitalIcon {
     this.hitPoints.setText(game.continents[this.continent].hp);
     this.hitPoints.position.x = this.sprite.centerX - (this.hitPoints.width / 2);
 
-    console.log('*** setting sprite tint ***');
-    console.log('contintet', this.continent);
-    console.log('player owned', game.continents[this.continent].player);
-    console.log('player name', Object.keys(game.continents[this.continent].player)[0]);
-    console.log('player id', playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0]));
-    console.log('color', colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])]);
-
-
     this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
   }
 
-  select() {
-    console.log(continent, 'capital selected');
+  select(data) {
+    let self = data.self;
+    let pointer = data.pointer;
+    console.log(pointer.playerID, self.playerID);
+    if (pointer.playerID != self.playerID) {
+      console.log('not your capital');
+      if (game.continents[self.continent].hp > 0) {
+        console.log('capital has ' + game.continents[self.continent].hp + ' hp');
+        // check all the weapons for armed launch objects
+        subIcons.forEach((sub) => {
+          if (sub.playerID === pointer.playerID) {
+            if (sub.launch && sub.launch.state === 'armed') {
+              sub.launch.launch(self, pointer.playerID);
+            }
+          }
+        });
+        missileIcons.forEach((missile) => {
+          if (missile.playerID === pointer.playerID) {
+            if (missile.launch && missile.launch.state === 'armed') {
+              missile.launch.launch(self, pointer.playerID);
+            }
+          }
+        });
+        bomberIcons.forEach((bomber) => {
+          if (bomber.playerID === pointer.playerID) {
+            if (bomber.launch && bomber.launch.state === 'armed') {
+              bomber.launch.launch(self, pointer.playerID);
+            }
+          }
+        });
+      }
+    }
   }
 }
 
@@ -144,10 +159,10 @@ class BomberIcon {
       this.launches[this.launches.length - 1].launch({x: 10, y: 10});
     }, this);
 
-    this.update();
+    this.updateState();
   }
 
-  update() {
+  updateState() {
     //check for game state and update inventory accordingly
     if (game.war) {
       this.inventory.setText(game.continents[this.continent].forces.bombers.total);
@@ -178,8 +193,28 @@ class BomberIcon {
     this.inventory.tint = colors[playerIDs.indexOf(this.playerID)];
   }
 
-  select() {
-    console.log(continent, 'bomber selected');
+  update() {
+    if (this.launch) {
+      this.launch.update();
+    }
+  }
+
+  select(data) {
+    let self = data.self;
+    let pointer = data.pointer;
+
+    // is it your sub?
+    if (self.playerID === pointer.playerID) {
+      if (game.continents[self.continent].forces.bombers.total > 0) {
+        if (!self.launch) {
+          self.launch = new Launch(self);
+        } else {
+          console.log('there is already a launch in progress');
+        }
+      } else {
+        console.log('no ammo');
+      }
+    }
   }
 }
 
@@ -190,24 +225,21 @@ class MissileIcon {
     this.sprite = phaser.add.sprite(x, y, 'missile');
     this.sprite.anchor.set(0, 1);
     this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
-    this.continent = continent;
-    this.launches = [];
     this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
     this.inventory.tint = colors[playerIDs.indexOf(this.playerID)];
 
     // some listeners
     this.sprite.events.onInputDown.add(() => {
-      this.launches.push(new Launch(this.playerID, {x: this.sprite.centerX, y: this.sprite.centerY}, this.ocean));
     }, this);
 
     this.sprite.events.onInputUp.add(() => {
       this.launches[this.launches.length - 1].launch({x: 10, y: 10});
     }, this);
 
-    this.update();
+    this.updateState();
   }
 
-  update() {
+  updateState() {
     //check for game state and update inventory accordingly
     if (game.war) {
       this.inventory.setText(game.continents[this.continent].forces.icbms.total);
@@ -237,43 +269,55 @@ class MissileIcon {
     }
   }
 
-  select() {
-    console.log(continent, 'missile selected');
+  update() {
+    if (this.launch) {
+      this.launch.update();
+    }
+  }
+
+  select(data) {
+    let self = data.self;
+    let pointer = data.pointer;
+
+    // is it your sub?
+    if (self.playerID === pointer.playerID) {
+      if (game.continents[self.continent].forces.icbms.total > 0) {
+        if (!self.launch) {
+          self.launch = new Launch(self);
+        } else {
+          console.log('there is already a launch in progress');
+        }
+      } else {
+        console.log('no ammo');
+      }
+    }
   }
 }
 
 class Launch {
   // these will be created whenever a players's sub-deploy thing is activated
-  constructor(playerID, origin, ocean) {
-    // grab our attributes
-    this.playerID = playerID;
-    this.origin = {x: origin.x, y: origin.y};
-    this.ocean = ocean;
+  constructor(origin) {
+    this.origin = origin;
 
-    // set up the origin indicator, doesn't move
-    if (game.oceans[this.ocean].subs[this.playerID].total > 0) {
-      this.originIndicator = phaser.add.sprite(this.origin.x, this.origin.y, 'circle');
-      this.originIndicator.tint = colors[playerIDs.indexOf(playerID)];
-      this.originIndicator.anchor.set(0.5);
+    this.originIndicator = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'circle');
+    this.originIndicator.tint = colors[playerIDs.indexOf(origin.playerID)];
+    this.originIndicator.anchor.set(0.5);
+    this.originIndicator.scale.set(0.1);
 
 
-      // some fake stuff for animations that don't exist yet
-      this.enrouteCount = 0;
-      this.explodingCount = 0;
+    // some fake stuff for animations that don't exist yet
+    this.enrouteCount = 0;
+    this.explodingCount = 0;
 
-      // a gear for animations
-      this.frame = 0;
+    // a gear for animations
+    this.frame = 0;
 
-      // to keep track of the countdown timer
-      this.delay = 3;
-      this.count = 0;
+    // to keep track of the countdown timer
+    this.delay = 3;
+    this.count = 0;
 
-      // first we start aiming
-      this.state = 'aiming';
-    } else {
-      // or we don't have any subs
-      this.state = 'impossible';
-    }
+    // first we start aiming
+    this.state = 'armed';
   }
 
   // the method to call on every game loop iteration, calls a method depending on state
@@ -283,17 +327,17 @@ class Launch {
   }
 
   // a weapon has been selected, launch is pending
-  aiming() {
+  armed() {
     let theta = (this.frame / 15)
     this.originIndicator.scale.set((Math.sin(theta) + 2) / 5);
     this.originIndicator.alpha = (Math.sin(theta + Math.PI) + 2) / 3;
   }
 
   // when user paints a destination
-  launch(capital) {
+  launch(capital, playerID) {
     // check if the destination is valid first
-    if (capital.playerID != this.playerID && game.continents[continent].hp > 0) {
-      this.targetIndicator = phaser.add.sprite(capital.sprite.position.x, capital.sprite.position.y, 'circle');
+    if (capital.playerID != this.playerID && game.continents[capital.continent].hp > 0) {
+      this.targetIndicator = phaser.add.sprite(capital.sprite.centerX, capital.sprite.centerY, 'circle');
       this.targetIndicator.tint = colors[playerIDs.indexOf(playerID)];
       this.targetIndicator.anchor.set(0.5);
     }
@@ -356,6 +400,7 @@ class Launch {
 class PlayerPointer {
   constructor(index, state) {
     this.playerIndex = index;
+    this.playerID = playerIDs[index];
     this.sprite = state.game.add.sprite(state.game.width / 2, state.game.height / 2, 'circle');
     this.sprite.tint = colors[index];
     // this.sprite.alpha = 0;
