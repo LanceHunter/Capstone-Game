@@ -102,6 +102,8 @@ router.put('/shot', async (ctx) => {
         }); // End of checking player's oceans for a possible rubble loss.
 
       } else { // If target is too far for bomber to reach or if continent has no bombers available.
+        gameOver = false;
+        rubbleLoss = false;
         ctx.status = 400;
         ctx.body = {
           message: 'Target out of reach for bombers, or no bombers available.',
@@ -163,18 +165,24 @@ router.put('/shot', async (ctx) => {
         }); // End of checking player's oceans for a possible rubble loss.
 
       } else { // If no ICBMs available.
+        gameOver = false;
+        rubbleLoss = false;
         ctx.status = 400;
         ctx.body = {
           message: 'No ICBMs available from that location.',
         };
       } // End of conditional checking if ICBMs are avaialble.
     } else { // If the shot type is neither "bomber" or "icbm"
+      gameOver = false;
+      rubbleLoss = false;
       ctx.status = 400;
       ctx.body = {
         message: 'Invalid shot type.',
       };
     }
   } else { // If gameID is not valid of if war was not declared.
+    gameOver = false;
+    rubbleLoss = false;
     ctx.status = 400;
     ctx.body = {
       message: 'Invalid Game ID or war has not been declared.',
@@ -183,6 +191,7 @@ router.put('/shot', async (ctx) => {
 
   // If the game is over, we end game and start writing to database.
   if (gameOver && gameObj.war) {
+    console.log('Game is over!');
     await gameRef.once('value', (snap) => {
       gameObj = snap.val();
     }); // end of grabbing the info from Firebase one more time in case there were cross-fire shots that caused everyone to lose.
@@ -439,7 +448,6 @@ router.put('/shot', async (ctx) => {
     // While increasing the player's losses by 1.
     await knex('users').where('username', player).increment('losses', 1);
 
-
     if (enemyPlayerArr.length + 1 === 2) { // If we have two players in the game, updating info for two players.
       // let firstPlayerInfo = userTableInfo.filter((entry) => {
       //   return entry.username === playersArr[0];
@@ -564,12 +572,16 @@ router.put('/subshot', async (ctx) => {
 
 
     } else { // If target location is not valid and that there are enough subs.
+      gameOver = false;
+      rubbleLoss = false;
       ctx.status = 400;
       ctx.body = {
         message: 'Target cannot be reached from subs in that ocean, or insufficient sub missiles available.',
       };
     } // end of conditional checking if target location is valid and that there are enough subs.
   } else { // If gameID is not valid of if war was not declared.
+    gameOver = false;
+    rubbleLoss = false;
     ctx.status = 400;
     ctx.body = {
       message: 'Invalid Game ID or war has not been declared.',
