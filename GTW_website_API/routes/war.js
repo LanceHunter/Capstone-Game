@@ -522,8 +522,9 @@ router.put('/subshot', async (ctx) => {
       });
       ctx.status = 200;
 
-      // Changing the HP for this continent in the local copy of the gameObj.
+      // Changing the HP for this continent and subtracting the total number of subs for the shootign player in the launching ocean in the local copy of the gameObj.
       gameObj.continents[targetID].hp = gameObj.continents[targetID].hp - (50 + Math.floor(gameObj.players[player].rnd.damage / 500) * 5);
+      gameObj.oceans[launchID].subs[shooterID].total -= 1;
 
       // Check to see if game is over/everything is destroyed.
       // Running the check to see if this is game over...
@@ -872,11 +873,7 @@ router.put('/subshot', async (ctx) => {
     } // End of conditional checking if there are 2 or 3 players in the game.
   } // end of conditional checking if we are in a rubbleLoss
 
-
 }); // end of "subshot" route
-
-
-
 
 
 module.exports = router;
