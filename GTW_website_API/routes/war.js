@@ -24,6 +24,7 @@ router.put('/shot', async (ctx) => {
   let shotType = ctx.request.body.shotType;
   let gameObj;
   let gameOver = true;
+  let rubbleLoss = true;
 
   await gameRef.once('value', (snap) => {
     gameObj = snap.val();
@@ -36,11 +37,13 @@ router.put('/shot', async (ctx) => {
   let enemyPlayerArr = playerArr.slice(0);
   enemyPlayerArr.splice(enemyPlayerArr.indexOf(player), 1);
 
+  // An array of the player's continents.
+  let playerContinents = Object.keys(gameObj.players[player].continents);
 
   if (gameObj && gameObj.war) { // Checking if gameID is valid and that war was declared.
 
     if (shotType === 'bomber') { // If the type of shot is bomber.
-      if (gameObj.continents[launchID].distances[targetID] <= 1 && gameObj.continents[launchID].forces.bombers.total > 0) {
+      if (gameObj.continents[launchID].distances[targetID] <= 1 && gameObj.continents[launchID].forces.bombers.total > 0) { // Making sure target is within correct distance and that the player has bombers available.
 
         let updateBomberObj = {total : gameObj.continents[launchID].forces.bombers.total-1};
         let updateHpObj = {hp : gameObj.continents[targetID].hp - (50 + Math.floor(gameObj.players[player].rnd.damage/500)*5)};
@@ -50,13 +53,16 @@ router.put('/shot', async (ctx) => {
         await gameRef.child(`continents/${launchID}/forces/bombers`).update(updateBomberObj);
         ctx.status = 200;
 
-        // Running the check to see if this is game over...
+        // Running the check to see if this is game over due to all HP being lost or because of rubble loss...
         enemyPlayerArr.forEach((enemy) => {
           // Check the enemy's continents to see if any have any HP left.
           let enemyContinents = Object.keys(gameObj.players[enemy].continents);
           enemyContinents.forEach((enemyContinent) => {
             if (gameObj.continents[enemyContinent].hp > 0) {
               gameOver = false;
+              if (gameObj.continents[enemyContinent].forces.bombers.total > 0 || gameObj.continents[enemyContinent].forces.icbms.total > 0) {
+                rubbleLoss = false;
+              }
             }
           });
           // Check the enemy subs to see if there are any left.
@@ -64,9 +70,30 @@ router.put('/shot', async (ctx) => {
           enemyOceans.forEach((enemyOcean) => {
             if (gameObj.oceans[enemyOcean].subs[enemy].total > 0) {
               gameOver = false;
+              rubbleLoss = false;
             }
           });
         }); // End of forEach through every enemy checking if the game is over.
+
+        playerContinents.forEach((continent) => {
+          if (continent === launchID) {
+            if (gameObj.continents[launchID].hp > 0 && (gameObj.continents[launchID].forces.bombers.total-1 > 0 || gameObj.continents[launchID].forces.icbms.total > 0)) {
+              rubbleLoss = false;
+            }
+          } else {
+            if (gameObj.continents[launchID].hp > 0 && (gameObj.continents[launchID].forces.bombers.total > 0 || gameObj.continents[launchID].forces.icbms.total > 0)) {
+              rubbleLoss = false;
+            }
+          }
+        }); // End of checking player's continents for possible rubble loss.
+
+        let playerOceans = Object.keys(gameObj.players[player].oceans);
+        playerOceans.forEach((playerOcean) => {
+          if (gameObj.oceans[playerOcean].subs[player].total > 0) {
+            rubbleLoss = false;
+          }
+        }); // End of checking player's oceans for a possible rubble loss.
+
       } else { // If target is too far for bomber to reach or if continent has no bombers available.\
         ctx.status = 400;
         ctx.body = {
@@ -101,6 +128,25 @@ router.put('/shot', async (ctx) => {
           });
         }); // End of forEach through every enemy checking if the game is over.
 
+        playerContinents.forEach((continent) => {
+          if (continent === launchID) {
+            if (gameObj.continents[launchID].hp > 0 && (gameObj.continents[launchID].forces.bombers.total > 0 || gameObj.continents[launchID].forces.icbms.total-1 > 0)) {
+              rubbleLoss = false;
+            }
+          } else {
+            if (gameObj.continents[launchID].hp > 0 && (gameObj.continents[launchID].forces.bombers.total > 0 || gameObj.continents[launchID].forces.icbms.total > 0)) {
+              rubbleLoss = false;
+            }
+          }
+        }); // End of checking player's continents for possible rubble loss.
+
+        let playerOceans = Object.keys(gameObj.players[player].oceans);
+        playerOceans.forEach((playerOcean) => {
+          if (gameObj.oceans[playerOcean].subs[player].total > 0) {
+            rubbleLoss = false;
+          }
+        }); // End of checking player's oceans for a possible rubble loss.
+
       } else { // If no ICBMs available.
         ctx.status = 400;
         ctx.body = {
@@ -127,7 +173,7 @@ router.put('/shot', async (ctx) => {
     }); // end of grabbing the info from Firebase one more time in case there were cross-fire shots that caused everyone to lose.
     let warWon = false;
     let remainingHP = 0;
-    let playerContinents = Object.keys(gameObj.players[player].continents);
+
     playerContinents.forEach((continent) => {
       if (gameObj.continents[continent].hp > 0) {
         warWon = true;
@@ -333,6 +379,8 @@ router.put('/subshot', async (ctx) => {
   let enemyPlayerArr = playerArr.slice(0);
   enemyPlayerArr.splice(enemyPlayerArr.indexOf(player), 1);
 
+  // An array of the player's continents.
+  let playerContinents = Object.keys(gameObj.players[player].continents);
 
   if (gameObj && gameObj.war) { // Checking if gameID is valid.
     if (gameObj.continents[targetID].oceans[launchID] && gameObj.oceans[launchID].subs[shooterID].total > 0) {
@@ -384,7 +432,6 @@ router.put('/subshot', async (ctx) => {
     }); // end of grabbing the info from Firebase one more time in case there were cross-fire shots that caused everyone to lose.
     let warWon = false;
     let remainingHP = 0;
-    let playerContinents = Object.keys(gameObj.players[player].continents);
     playerContinents.forEach((continent) => {
       if (gameObj.continents[continent].hp > 0) {
         warWon = true;
