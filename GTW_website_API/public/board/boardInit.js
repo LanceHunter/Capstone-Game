@@ -1,16 +1,3 @@
-/*
-some globals
-*/
-let playerIDs;
-let colors = [0x550000, 0x005500, 0x000055];
-let subIcons = [], bomberIcons = [], capitalIcons = [], missileIcons = [];
-let width = boardWidth;
-let height = width * (9 / 16);
-let pointersPositions = [null, null, null];
-let playerPointers = [];
-let map;
-let phaser;
-
 function startGame(gameRef) {
   playerIDs = Object.keys(game.players);
 

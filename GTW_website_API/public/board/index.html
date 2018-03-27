@@ -18,8 +18,8 @@
           </div>
           <div class="total-forces">
             <h1>Total Forces:</h1>
-            <h3 v-for="player in players" v-bind="player">
-              <span style="color:{{player.color}}">{{ player.name }}: {{ player.totalDeclaredForces }}
+            <h3 v-for="(player, index) in players" v-bind="player">
+              <span v-bind:style="{ backgroundColor: colors[index] }">{{ player.name }}: {{ player.totalDeclaredForces }}
             </h3>
           </div>
           <!-- <div class="ticker-holder">
@@ -41,7 +41,7 @@
         </div>
         Users:
         <ul>
-          <li v-for="(username, index) in usernames" v-bind:style="{ color: colors[index] }">{{ username }}</li>
+          <li v-for="(username, index) in usernames" v-bind:style="{ backgroundColor: colors[index] }">{{ username }}</li>
         </ul>
         <button id="beginGameButton" class="beginGameButton" type="button">
           Begin game
@@ -82,6 +82,7 @@
     <script src="/board/vendor/tracking.js"></script>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser-ce/2.10.3/phaser.js"></script> -->
     <script src="/board/vendor/phaser.js"></script>
+    <script src="/board/globals.js"></script>
     <script src="/board/alignment.js"></script>
     <script src="/board/hud.js"></script>
     <script src="/board/continent.js"></script>

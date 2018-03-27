@@ -1,18 +1,6 @@
-// set variables for tracking program
-const minDistSq = Math.pow(30, 2);
-const maxTime = 1000;
-const redTargetColor = "#dcaaaa";
-const greenTargetColor = "#7ebe86";
-const blueTargetColor = "#7373e6";
-const boardMinBrightness = 50;
-const boardMaxBrightness = 260;
-const boardWidth = 1920;
-const boardHeight = boardWidth * (9 / 16);
-let gameID;
-let game;
 
-// create the global lasers object used by the game as pointers
-const lasers = [null, null, null];
+
+
 
 /*
   Creates a new game instance and shows the join game modal.
@@ -21,7 +9,7 @@ const lasers = [null, null, null];
 const joinGameModal = new Vue({
   el: '#joinGameModal',
   data: {
-    colors: colors,
+    colors: colors.map(c => 'rgb(' + [(c & 0xff0000) >> 16,  (c & 0x00ff00) >> 8,  (c & 0x0000ff)] + ')'),
     gameID: null,
     usernames: [],
   }

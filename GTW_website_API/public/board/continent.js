@@ -1,4 +1,3 @@
-let pointers = [];
 let continent = {
   preload: function() {
     this.game.load.image('map', '/board/assets/map.png');
