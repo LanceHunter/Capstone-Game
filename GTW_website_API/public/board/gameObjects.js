@@ -395,6 +395,10 @@ class Launch {
     // when done exploding, this.state = 'exploded'
   }
 
+  exploded() {
+    this.origin.launch = null;
+  }
+
 }
 
 class PlayerPointer {
