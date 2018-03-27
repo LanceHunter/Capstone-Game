@@ -45,7 +45,7 @@ html {
   pointer-events: none;
 }
 
-.joinGameModal {
+.modal {
   background-color: #1a181b;
   display: flex;
   flex-direction: column;
@@ -58,7 +58,16 @@ html {
   visibility: hidden;
   width: 30%;
   height: 30%;
+}
+
+.joinGameModal {
+  visibility: hidden;
   z-index: 999;
+}
+
+.gameOverModal {
+  visibility: hidden;
+  z-index: 998;
 }
 
 .joinGameModal button {

@@ -21,6 +21,7 @@ const lasers = [null, null, null];
 const joinGameModal = new Vue({
   el: '#joinGameModal',
   data: {
+    colors: colors,
     gameID: null,
     usernames: [],
   }

@@ -32,6 +32,14 @@ callback for game changes
 */
 function onGameChange(data) {
   game = data.val();
+
+  // check for game over
+  if (game.gameOver) {
+    gameOverModal.outcome = game.gameOver.outcome;
+    gameOverModal.winner = game.gameOver.winner;
+    document.getElementById('gameOverModal').style.visibility = 'visible';
+  }
+
   // board score stuff
   subIcons.forEach(subIcon => subIcon.update());
   bomberIcons.forEach(bomberIcon => bomberIcon.update());

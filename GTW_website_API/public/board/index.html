@@ -32,7 +32,7 @@
           </div> -->
         </div>
       </div>
-      <div id="joinGameModal" class="joinGameModal">
+      <div id="joinGameModal" class="joinGameModal modal">
         <div class="instructions">
           Join game with your phone app.
         </div>
@@ -41,11 +41,22 @@
         </div>
         Users:
         <ul>
-          <li v-for="username in usernames">{{ username }}</li>
+          <li v-for="(username, index) in usernames" v-bind:style="{ color: colors[index] }">{{ username }}</li>
         </ul>
         <button id="beginGameButton" class="beginGameButton" type="button">
           Begin game
         </button>
+      </div>
+      <div id="gameOverModal" class="gameOverModal modal">
+        <div>
+          GAME OVER
+        </div>
+        <div>
+          OUTCOME: {{ messages[outcome] }}
+        </div>
+        <div>
+          WINNER: {{ winner }}
+        </div>
       </div>
       <canvas id="alignmentCanvas" class="alignmentCanvas"></canvas>
       <video id="trackingVideo" class="trackingVideo" preload autoplay loop muted></video>
