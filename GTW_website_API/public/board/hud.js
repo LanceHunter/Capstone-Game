@@ -15,7 +15,7 @@ const gameOverModal = new Vue({
     messages: {
       overwhelming: 'overwhelming force',
       worldPeace: 'world peace',
-      warWon: 'war',
+      wonWar: 'war',
       destroyed: 'total destruction',
     },
     outcome: null,
