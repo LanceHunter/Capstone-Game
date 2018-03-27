@@ -7,14 +7,7 @@ function startGame(gameRef) {
   phaser.state.add('Peace', peace);
   phaser.state.add('War', war);
 
-  /*
-  THE REAL STUFF
-  // and we launch our ContinentSelect state
   phaser.state.start('ContinentSelect');
-  */
-
-  // SHORT CIRCUIT
-  phaser.state.start('War');
 
   document.getElementById('hud').style.visibility = 'visible';
   gameRef.on('value', onGameChange);
@@ -25,6 +18,12 @@ callback for game changes
 */
 function onGameChange(data) {
   game = data.val();
+
+  // state switcher
+  if (game.war && phaser.state.current != 'War') {
+    phaser.state.start('War');
+  }
+
   // board score stuff
   subIcons.forEach(subIcon => subIcon.updateState());
   bomberIcons.forEach(bomberIcon => bomberIcon.updateState());

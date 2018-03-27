@@ -1,73 +1,3 @@
-class SubIcon {
-  constructor(x, y, ocean, playerID) {
-    this.sprite = phaser.add.sprite(x, y, 'submarine');
-    this.sprite.anchor.set(0, 1);
-    this.playerID = playerID;
-    this.ocean = ocean;
-    this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
-    this.updateState();
-  }
-
-  updateState() {
-    // if the sub's player can be in that ocean
-    if (game.oceans[this.ocean].subs[this.playerID]) {
-      //check for game state and update inventory accordingly
-      if (game.war) {
-        this.inventory.setText(game.oceans[this.ocean].subs[this.playerID].total);
-
-        // if they are out of ammo
-        if (game.oceans[this.ocean].subs[this.playerID].declared + game.oceans[this.ocean].subs[this.playerID].total <= 0) {
-          this.sprite.alpha = 0.2;
-          this.inventory.alpha = 0.2;
-        } else {
-          this.sprite.alpha = 1;
-          this.inventory.alpha = 1;
-        }
-      } else {
-        this.inventory.setText(game.oceans[this.ocean].subs[this.playerID].declared);
-        // if they are out of ammo
-        if (game.oceans[this.ocean].subs[this.playerID].declared <= 0) {
-          this.sprite.alpha = 0.2;
-          this.inventory.alpha = 0.2;
-        } else {
-          this.sprite.alpha = 1;
-          this.inventory.alpha = 1;
-        }
-      }
-      this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
-      this.inventory.tint = colors[playerIDs.indexOf(this.playerID)];
-      this.sprite.inputEnabled = true;
-    } else {
-      this.sprite.alpha = 0;
-      this.inventory.alpha = 0;
-    }
-  }
-
-  update() {
-    if (this.launch) {
-      this.launch.update();
-    }
-  }
-
-  select(data) {
-    let self = data.self;
-    let pointer = data.pointer;
-
-    // is it your sub?
-    if (self.playerID === pointer.playerID) {
-      if (game.oceans[self.ocean].subs[self.playerID].total > 0) {
-        if (!self.launch) {
-          self.launch = new Launch(self);
-        } else {
-          console.log('there is already a launch in progress');
-        }
-      } else {
-        console.log('no ammo');
-      }
-    }
-  }
-}
-
 class CapitalIcon {
   constructor(x, y, continent) {
     this.sprite = phaser.add.sprite(x, y, 'capital');
@@ -135,6 +65,76 @@ class CapitalIcon {
             }
           }
         });
+      }
+    }
+  }
+}
+
+class SubIcon {
+  constructor(x, y, ocean, playerID) {
+    this.sprite = phaser.add.sprite(x, y, 'submarine');
+    this.sprite.anchor.set(0, 1);
+    this.playerID = playerID;
+    this.ocean = ocean;
+    this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
+    this.updateState();
+  }
+
+  updateState() {
+    // if the sub's player can be in that ocean
+    if (game.oceans[this.ocean].subs[this.playerID]) {
+      //check for game state and update inventory accordingly
+      if (game.war) {
+        this.inventory.setText(game.oceans[this.ocean].subs[this.playerID].total);
+
+        // if they are out of ammo
+        if (game.oceans[this.ocean].subs[this.playerID].declared + game.oceans[this.ocean].subs[this.playerID].total <= 0) {
+          this.sprite.alpha = 0.2;
+          this.inventory.alpha = 0.2;
+        } else {
+          this.sprite.alpha = 1;
+          this.inventory.alpha = 1;
+        }
+      } else {
+        this.inventory.setText(game.oceans[this.ocean].subs[this.playerID].declared);
+        // if they are out of ammo
+        if (game.oceans[this.ocean].subs[this.playerID].declared <= 0) {
+          this.sprite.alpha = 0.2;
+          this.inventory.alpha = 0.2;
+        } else {
+          this.sprite.alpha = 1;
+          this.inventory.alpha = 1;
+        }
+      }
+      this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
+      this.inventory.tint = colors[playerIDs.indexOf(this.playerID)];
+      this.sprite.inputEnabled = true;
+    } else {
+      this.sprite.alpha = 0;
+      this.inventory.alpha = 0;
+    }
+  }
+
+  update() {
+    if (this.launch) {
+      this.launch.update();
+    }
+  }
+
+  select(data) {
+    let self = data.self;
+    let pointer = data.pointer;
+
+    // is it your sub?
+    if (self.playerID === pointer.playerID) {
+      if (game.oceans[self.ocean].subs[self.playerID].total > 0) {
+        if (!self.launch) {
+          self.launch = new Launch(self);
+        } else {
+          console.log('there is already a launch in progress');
+        }
+      } else {
+        console.log('no ammo');
       }
     }
   }
@@ -335,6 +335,7 @@ class Launch {
 
   // when user paints a destination
   launch(capital, playerID) {
+    this.target = capital;
     // check if the destination is valid first
     if (capital.playerID != this.playerID && game.continents[capital.continent].hp > 0) {
       this.targetIndicator = phaser.add.sprite(capital.sprite.centerX, capital.sprite.centerY, 'circle');
@@ -342,48 +343,59 @@ class Launch {
       this.targetIndicator.anchor.set(0.5);
     }
 
-    this.state = 'countdown';
+    this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'circle');
+    this.projectile.tint = colors[playerIDs.indexOf(playerID)];
+    this.projectile.anchor.set(0.5);
+    this.projectile.scale.set(0.3);
+    this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
+    this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(10, 10);
 
-    // set up the countdown indicator
-    // this.countdownIndicator = phaser.add.sprite(origin.x, origin.y, 'circle');
-    // this.countdownIndicator.tint = player.color;
-    // this.countdownIndicator.anchor.set(0.5);
-    // this.countdownIndicator.position = this.origin;
-  }
-
-  // after a destination is verified, start the countdown
-  countdown() {
-    let theta = (this.frame / 15)
-    // figure out which of the launch points to use
-    // start the countdown clock and animation
-    // when the countdown is over, this.state = 'enroute'
-    if (this.count > this.delay * 60) {
-      this.state = 'enroute';
-    } else {
-      this.count++;
-      // continue countdown animation
-      this.targetIndicator.scale.set((Math.sin(theta) + 2) / 5);
-      this.targetIndicator.alpha = (Math.sin(theta + Math.PI) + 2) / 3;
-    }
+    this.state = 'enroute';
   }
 
   // while the missile is traveling
   enroute() {
-    // fakeit
-    console.log('enroute');
-    this.enrouteCount++;
-    if (this.enrouteCount > 3 * 60) {
-      this.state = 'exploding';
-    }
-    // start the launch animation
+    let theta = (this.frame / 15)
+    this.originIndicator.scale.set((Math.sin(theta) + 2) / 5);
+    this.originIndicator.alpha = (Math.sin(theta + Math.PI) + 2) / 3;
+    this.targetIndicator.scale.set((Math.sin(theta) + 2) / 5);
+    this.targetIndicator.alpha = (Math.sin(theta + Math.PI) + 2) / 3;
+
+    this.projectile.position.add(this.projectile.velocity.x, this.projectile.velocity.y);
+
     // when it gets to the destination, this.state = 'exploding'
+    if (this.projectile.overlap(this.target.sprite)) {
+      console.log('HIT');
+      this.state = 'exploding';
+      this.projectile.destroy();
+      this.targetIndicator.destroy();
+      this.originIndicator.destroy();
+
+      let data = {
+        gameID: gameID,
+        launchID: this.origin.continent,
+        targetID: this.target.continent,
+        type: 'bomber'
+      };
+      console.log(data);
+
+
+      $.ajax({
+        // url: "https://gtnwthegame.com/api/war/shot",
+        url: "http://localhost:3000/api/war/shot",
+        method: "put",
+        data: JSON.stringify(data),
+        dataType: 'application/json'
+      }).then(r => console.log(r));
+
+    }
   }
 
   // while the explosion animation is happening
   exploding() {
     console.log('exploding');
     this.explodingCount++;
-    if (this.explodingCount > 1 * 60) {
+    if (this.explodingCount > 20) {
       this.state = 'exploded';
     }
     // when the missile gets to the destination
