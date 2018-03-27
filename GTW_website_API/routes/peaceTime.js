@@ -746,18 +746,22 @@ router.put('/spendrnd', async (ctx) => {
 router.post('/declarewar', async (ctx) => {
   let gameID = ctx.request.body.gameID;
   let gameRef = ref.child(gameID);
+  let gameObj;
   console.log('War!');
   await gameRef.once('value', (snap) => {
-    if (snap.val()) { // Making sure gameID is in the system.
-      gameRef.update({war:true});
-      ctx.status = 200;
-    } else { // If gameID isn't valid.
-      ctx.status = 400;
-      ctx.body = {
-        message: 'Not a valid gameID.',
-      };
-    } // End of conditional checking to make sure gameID is valid.
+    gameObj = snap.val();
   }); // End of grabbing data from Firebase.
+
+  if (gameObj && gameObj.year > 1953) { // Making sure gameID is in the system.
+    gameRef.update({war:true});
+    ctx.status = 200;
+  } else { // If gameID isn't valid.
+    ctx.status = 400;
+    ctx.body = {
+      message: 'Not a valid gameID or too early for war.',
+    };
+  } // End of conditional checking to make sure gameID is valid.
+
 }); // End of the "declarwar" route.
 
 
