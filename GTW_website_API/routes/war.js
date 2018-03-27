@@ -77,11 +77,11 @@ router.put('/shot', async (ctx) => {
 
         playerContinents.forEach((continent) => {
           if (continent === launchID) {
-            if (gameObj.continents[launchID].hp > 0 && (gameObj.continents[launchID].forces.bombers.total-1 > 0 || gameObj.continents[launchID].forces.icbms.total > 0)) {
+            if (gameObj.continents[continent].hp > 0 && (gameObj.continents[continent].forces.bombers.total-1 > 0 || gameObj.continents[continent].forces.icbms.total > 0)) {
               rubbleLoss = false;
             }
           } else {
-            if (gameObj.continents[launchID].hp > 0 && (gameObj.continents[launchID].forces.bombers.total > 0 || gameObj.continents[launchID].forces.icbms.total > 0)) {
+            if (gameObj.continents[continent].hp > 0 && (gameObj.continents[continent].forces.bombers.total > 0 || gameObj.continents[continent].forces.icbms.total > 0)) {
               rubbleLoss = false;
             }
           }
@@ -134,11 +134,11 @@ router.put('/shot', async (ctx) => {
 
         playerContinents.forEach((continent) => {
           if (continent === launchID) {
-            if (gameObj.continents[launchID].hp > 0 && (gameObj.continents[launchID].forces.bombers.total > 0 || gameObj.continents[launchID].forces.icbms.total-1 > 0)) {
+            if (gameObj.continents[continent].hp > 0 && (gameObj.continents[continent].forces.bombers.total > 0 || gameObj.continents[continent].forces.icbms.total-1 > 0)) {
               rubbleLoss = false;
             }
           } else {
-            if (gameObj.continents[launchID].hp > 0 && (gameObj.continents[launchID].forces.bombers.total > 0 || gameObj.continents[launchID].forces.icbms.total > 0)) {
+            if (gameObj.continents[continent].hp > 0 && (gameObj.continents[continent].forces.bombers.total > 0 || gameObj.continents[continent].forces.icbms.total > 0)) {
               rubbleLoss = false;
             }
           }
@@ -353,14 +353,97 @@ router.put('/shot', async (ctx) => {
         await knex('users').where('username', enemyPlayerArr[0]).update(updatePlayerTwo);
         await knex('users').where('username', enemyPlayerArr[1]).update(updatePlayerThree);
       } // End of conditional checking if there are 2 or 3 players in the game.
-
     } // end of conditional checking if game was won or if everyone lost.
   } // end of conditional checking if we are in a gameOver state.
 
 
   // If the game is over, we end game and start writing to database.
   if (rubbleLoss && gameObj.war) {
-    
+    gameRef.update({gameOver : {type: 'rubble', winner: 'none'}});
+    let enemyTableInfo = await knex.select('*').from('users').whereIn('username', enemyPlayerArr);
+    let playerTableInfo = await knex.select('*').from('users').whereIn('username', player);
+    let gameIDforDB = await knex('games').returning('id').insert({outcome : 'rubble'});
+
+    // Here is where we map the enemy player info to write to player DB.
+    let enemiesDatabaseWrite = enemyTableInfo.map((entry) => {
+      let rndMultiplier = Math.floor(gameObj.players[(entry.username)].rnd.damage/500);
+      let thisEnemyContinents = Object.keys(gameObj.players[(entry.username)].continents);
+      let enemyHP = 0;
+      thisEnemyContinents.forEach((thisEnemyContinent) => {
+        enemyHP += gameObj.continents[thisEnemyContinent].hp;
+      });
+      return {
+        user_id : entry.id,
+        game_id : gameIDforDB[0],
+        won : false,
+        hit_points : enemyHP,
+        score : 0,
+        shots : gameObj.players[(entry.username)].shotsFired,
+        rnd_multiplier : rndMultiplier
+      };
+    });
+    // And here is where we write the enemy player info to DB.
+    await knex('players').insert(enemiesDatabaseWrite);
+
+    let playerDatabaseWrite = playerTableInfo.map((entry) => {
+      let rndMultiplier = Math.floor(gameObj.players[(entry.username)].rnd.damage/500);
+      let playerHitPoints = 0;
+      playerContinents.forEach((continent) => {
+        playerHitPoints += gameObj.continents[continent].hp;
+      });
+      return {
+        user_id : entry.id,
+        game_id : gameIDforDB[0],
+        won : false,
+        hit_points : playerHitPoints,
+        score : 0,
+        shots : gameObj.players[(entry.username)].shotsFired,
+        rnd_multiplier : rndMultiplier
+      };
+    });
+    // And here is where we write the winning player info to DB.
+    await knex('players').insert(playerDatabaseWrite);
+    // Then we increase the enemy's losses by 1.
+    await knex('users').whereIn('username', enemyPlayerArr).increment('losses', 1);
+    // While increasing the player's losses by 1.
+    await knex('users').where('username', player).increment('losses', 1);
+
+
+    if (enemyPlayerArr.length + 1 === 2) { // If we have two players in the game, updating info for two players.
+      // let firstPlayerInfo = userTableInfo.filter((entry) => {
+      //   return entry.username === playersArr[0];
+      // });
+      let updatePlayerOne = {
+        average_score : (((playerTableInfo[0].wins + playerTableInfo[0].losses) * playerTableInfo[0].average_score)) / (playerTableInfo[0].wins + playerTableInfo[0].losses + 1)
+      };
+      let updatePlayerTwo = {
+        average_score : (((enemyTableInfo[0].wins + enemyTableInfo[0].losses) * enemyTableInfo[0].average_score)) / (enemyTableInfo[0].wins + enemyTableInfo[0].losses + 1)
+      };
+      await knex('users').where('username', player).update(updatePlayerOne);
+      await knex('users').where('username', enemyPlayerArr[0]).update(updatePlayerTwo);
+
+    } else if (enemyPlayerArr.length + 1 === 3) { // If we have three players in the game, updating info for three players.
+
+      let updatePlayerOne = {
+        average_score : (((playerTableInfo[0].wins + playerTableInfo[0].losses) * playerTableInfo[0].average_score)) / (playerTableInfo[0].wins + playerTableInfo[0].losses + 1)
+      };
+
+      let secondPlayerInfo = enemyTableInfo.filter((entry) => {
+        return entry.username === enemyPlayerArr[0];
+      });
+      let updatePlayerTwo = {
+        average_score : ((secondPlayerInfo[0].wins + secondPlayerInfo[0].losses) * secondPlayerInfo[0].average_score) / (secondPlayerInfo[0].wins + secondPlayerInfo[0].losses + 1)
+      };
+      let thirdPlayerInfo = enemyTableInfo.filter((entry) => {
+        return entry.username === enemyPlayerArr[1];
+      });
+      let updatePlayerThree = {
+        average_score : ((thirdPlayerInfo[0].wins + thirdPlayerInfo[0].losses) * thirdPlayerInfo[0].average_score) / (thirdPlayerInfo[0].wins + thirdPlayerInfo[0].losses + 1)
+      };
+      await knex('users').where('username', player).update(updatePlayerOne);
+      await knex('users').where('username', enemyPlayerArr[0]).update(updatePlayerTwo);
+      await knex('users').where('username', enemyPlayerArr[1]).update(updatePlayerThree);
+    } // End of conditional checking if there are 2 or 3 players in the game.
   } // end of conditional checking if we are in a rubbleLoss
 
 
@@ -378,6 +461,7 @@ router.put('/subshot', async (ctx) => {
   let shooterID = ctx.request.body.shooterID;
   let gameObj;
   let gameOver = true;
+  let rubbleLoss = true;
 
   await gameRef.once('value', (snap) => {
     gameObj = snap.val();
@@ -411,6 +495,9 @@ router.put('/subshot', async (ctx) => {
         enemyContinents.forEach((enemyContinent) => {
           if (gameObj.continents[enemyContinent].hp > 0) {
             gameOver = false;
+            if (gameObj.continents[enemyContinent].forces.bombers.total > 0 || gameObj.continents[enemyContinent].forces.icbms.total > 0) {
+              rubbleLoss = false;
+            }
           }
         });
         // Check the enemy subs to see if there are any left.
@@ -418,9 +505,24 @@ router.put('/subshot', async (ctx) => {
         enemyOceans.forEach((enemyOcean) => {
           if (gameObj.oceans[enemyOcean].subs[enemy].total > 0) {
             gameOver = false;
+            rubbleLoss = false;
           }
         });
       }); // End of forEach through every enemy checking if the game is over.
+
+      playerContinents.forEach((continent) => {
+        if (gameObj.continents[continent].hp > 0 && (gameObj.continents[continent].forces.bombers.total > 0 || gameObj.continents[continent].forces.icbms.total > 0)) {
+          rubbleLoss = false;
+        }
+      }); // End of checking player's continents for possible rubble loss.
+
+      let playerOceans = Object.keys(gameObj.players[player].oceans);
+      playerOceans.forEach((playerOcean) => {
+        if (gameObj.oceans[playerOcean].subs[player].total > 0) {
+          rubbleLoss = false;
+        }
+      }); // End of checking player's oceans for a possible rubble loss.
+
 
     } else { // If target location is not valid and that there are enough subs.
       ctx.status = 400;
@@ -618,9 +720,98 @@ router.put('/subshot', async (ctx) => {
         await knex('users').where('username', enemyPlayerArr[0]).update(updatePlayerTwo);
         await knex('users').where('username', enemyPlayerArr[1]).update(updatePlayerThree);
       } // End of conditional checking if there are 2 or 3 players in the game.
-
     } // end of conditional checking if game was won or if everyone lost.
   } // end of conditional checking if we are in a gameOver state.
+
+
+  // If the game is over, we end game and start writing to database.
+  if (rubbleLoss && gameObj.war) {
+    gameRef.update({gameOver : {type: 'rubble', winner: 'none'}});
+    let enemyTableInfo = await knex.select('*').from('users').whereIn('username', enemyPlayerArr);
+    let playerTableInfo = await knex.select('*').from('users').whereIn('username', player);
+    let gameIDforDB = await knex('games').returning('id').insert({outcome : 'rubble'});
+
+    // Here is where we map the enemy player info to write to player DB.
+    let enemiesDatabaseWrite = enemyTableInfo.map((entry) => {
+      let rndMultiplier = Math.floor(gameObj.players[(entry.username)].rnd.damage/500);
+      let thisEnemyContinents = Object.keys(gameObj.players[(entry.username)].continents);
+      let enemyHP = 0;
+      thisEnemyContinents.forEach((thisEnemyContinent) => {
+        enemyHP += gameObj.continents[thisEnemyContinent].hp;
+      });
+      return {
+        user_id : entry.id,
+        game_id : gameIDforDB[0],
+        won : false,
+        hit_points : enemyHP,
+        score : 0,
+        shots : gameObj.players[(entry.username)].shotsFired,
+        rnd_multiplier : rndMultiplier
+      };
+    });
+    // And here is where we write the enemy player info to DB.
+    await knex('players').insert(enemiesDatabaseWrite);
+
+    let playerDatabaseWrite = playerTableInfo.map((entry) => {
+      let rndMultiplier = Math.floor(gameObj.players[(entry.username)].rnd.damage/500);
+      let playerHitPoints = 0;
+      playerContinents.forEach((continent) => {
+        playerHitPoints += gameObj.continents[continent].hp;
+      });
+      return {
+        user_id : entry.id,
+        game_id : gameIDforDB[0],
+        won : false,
+        hit_points : playerHitPoints,
+        score : 0,
+        shots : gameObj.players[(entry.username)].shotsFired,
+        rnd_multiplier : rndMultiplier
+      };
+    });
+    // And here is where we write the winning player info to DB.
+    await knex('players').insert(playerDatabaseWrite);
+    // Then we increase the enemy's losses by 1.
+    await knex('users').whereIn('username', enemyPlayerArr).increment('losses', 1);
+    // While increasing the player's losses by 1.
+    await knex('users').where('username', player).increment('losses', 1);
+
+
+    if (enemyPlayerArr.length + 1 === 2) { // If we have two players in the game, updating info for two players.
+      // let firstPlayerInfo = userTableInfo.filter((entry) => {
+      //   return entry.username === playersArr[0];
+      // });
+      let updatePlayerOne = {
+        average_score : (((playerTableInfo[0].wins + playerTableInfo[0].losses) * playerTableInfo[0].average_score)) / (playerTableInfo[0].wins + playerTableInfo[0].losses + 1)
+      };
+      let updatePlayerTwo = {
+        average_score : (((enemyTableInfo[0].wins + enemyTableInfo[0].losses) * enemyTableInfo[0].average_score)) / (enemyTableInfo[0].wins + enemyTableInfo[0].losses + 1)
+      };
+      await knex('users').where('username', player).update(updatePlayerOne);
+      await knex('users').where('username', enemyPlayerArr[0]).update(updatePlayerTwo);
+
+    } else if (enemyPlayerArr.length + 1 === 3) { // If we have three players in the game, updating info for three players.
+
+      let updatePlayerOne = {
+        average_score : (((playerTableInfo[0].wins + playerTableInfo[0].losses) * playerTableInfo[0].average_score)) / (playerTableInfo[0].wins + playerTableInfo[0].losses + 1)
+      };
+
+      let secondPlayerInfo = enemyTableInfo.filter((entry) => {
+        return entry.username === enemyPlayerArr[0];
+      });
+      let updatePlayerTwo = {
+        average_score : ((secondPlayerInfo[0].wins + secondPlayerInfo[0].losses) * secondPlayerInfo[0].average_score) / (secondPlayerInfo[0].wins + secondPlayerInfo[0].losses + 1)
+      };
+      let thirdPlayerInfo = enemyTableInfo.filter((entry) => {
+        return entry.username === enemyPlayerArr[1];
+      });
+      let updatePlayerThree = {
+        average_score : ((thirdPlayerInfo[0].wins + thirdPlayerInfo[0].losses) * thirdPlayerInfo[0].average_score) / (thirdPlayerInfo[0].wins + thirdPlayerInfo[0].losses + 1)
+      };
+      await knex('users').where('username', player).update(updatePlayerOne);
+      await knex('users').where('username', enemyPlayerArr[0]).update(updatePlayerTwo);
+      await knex('users').where('username', enemyPlayerArr[1]).update(updatePlayerThree);
+    } // End of conditional checking if there are 2 or 3 players in the game.
+  } // end of conditional checking if we are in a rubbleLoss
 
 
 }); // end of "subshot" route
