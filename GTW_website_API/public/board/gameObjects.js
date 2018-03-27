@@ -304,11 +304,6 @@ class Launch {
     this.originIndicator.anchor.set(0.5);
     this.originIndicator.scale.set(0.1);
 
-
-    // some fake stuff for animations that don't exist yet
-    this.enrouteCount = 0;
-    this.explodingCount = 0;
-
     // a gear for animations
     this.frame = 0;
 
@@ -365,7 +360,6 @@ class Launch {
 
     // when it gets to the destination, this.state = 'exploding'
     if (this.projectile.overlap(this.target.sprite)) {
-      console.log('HIT');
       this.state = 'exploding';
       this.projectile.destroy();
       this.targetIndicator.destroy();
@@ -377,17 +371,13 @@ class Launch {
         targetID: this.target.continent,
         type: 'bomber'
       };
-      console.log(data);
-
 
       $.ajax({
-        // url: "https://gtnwthegame.com/api/war/shot",
-        url: "http://localhost:3000/api/war/shot",
+        url: "/api/war/shot",
         method: "put",
         data: JSON.stringify(data),
         dataType: 'application/json'
       }).then(r => console.log(r));
-
     }
   }
 
@@ -471,7 +461,6 @@ class Intersection {
         this.action(this.data);
         return false;
       };
-
       return true;
     } else {
       return false;
