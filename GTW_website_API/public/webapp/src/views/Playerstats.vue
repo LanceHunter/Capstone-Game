@@ -6,7 +6,7 @@
     <div class='message-body'>
       <!-- wins & losses -->
       <!-- <h5>Wins-Losses</h5> -->
-      <svg id="chart" width='1000' height='500'></svg>
+      <svg id='chart' width='1000' height='500'></svg>
     </div>
 
   </div>
@@ -33,24 +33,64 @@ function drawPlayerChart(stats) {
   const y = d3.scaleLinear().range([height, 0]);
 
   // Define the line
+  // score
   let statsline = d3.line()
     .x((d) => {
-      console.log('Ln 48: date on x axis: ', d.date);
+      console.log('Ln 39: date on x axis: ', d.date);
       return x(d.date);
     })
     .y((d) => {
-      console.log('Ln 52: score on y axis: ', d.score);
+      console.log('Ln 43: score on y axis: ', d.score);
       return y(d.score);
+    });
+
+  // hit points
+  let statslinehp = d3.line()
+    .x((d) => {
+      console.log('Ln 50: date on x axis: ', d.date);
+      return x(d.date);
+    })
+    .y((d) => {
+      console.log('Ln 54: hit points on y axis: ', d.hit_points);
+      return y(d.hit_points);
+    });
+
+  // damaged caused
+  let statslinedc = d3.line()
+    .x((d) => {
+      console.log('Ln 61: date on x axis: ', d.date);
+      return x(d.date);
+    })
+    .y((d) => {
+      console.log('Ln 65: damaged caused on y axis: ', d.damage_caused);
+      return y(d.damage_caused);
+    });
+
+  // shots
+  let statslineshots = d3.line()
+    .x((d) => {
+      console.log('Ln 72: date on x axis: ', d.date);
+      return x(d.date);
+    })
+    .y((d) => {
+      console.log('Ln 76: shots on y axis: ', d.shots);
+      return y(d.shots);
     });
 
   // Get the data
   stats.forEach(function (d) {
-    console.log('Ln 25: this is d: ', d);
-    console.log('Ln 26: date: ', d.created_at);
+    console.log('Ln 82: this is d: ', d);
+    console.log('Ln 83: date: ', d.created_at);
     d.date = new Date(d.created_at);
-    console.log('Ln 28: parsed date: ', d.date);
+    console.log('Ln 85: parsed date: ', d.date);
 		d.score = +d.score;
-    console.log('Ln 30: d.score: ', d.score);
+    console.log('Ln 87: d.score: ', d.score);
+    d.hit_points = +d.hit_points;
+    console.log('Ln 89: hit_points: ', d.hit_points);
+    d.damage_caused = +d.damage_caused;
+    console.log('Ln 91: damage_caused: ', d.damage_caused);
+    d.shots = +d.shots;
+    console.log('Ln 93: shots: ', d.shots);
   });
 
   // Adds the svg canvas
@@ -77,52 +117,146 @@ function drawPlayerChart(stats) {
     .entries(stats);
 
   // set the color scale
-  const color = d3.scaleOrdinal(d3.schemeCategory10);
+  let color = d3.scaleBand().range[('steelblue', '#f18436', '#519c3e', '#c73933')];
+  console.log('Ln 121: color: ', color);
 
   // spacing for the legend
-  const legendSpace = width / dataNest.length;
+  let legendSpace = width / dataNest.length;
+  console.log('Ln 124: legendSpace: ', legendSpace);
 
   // Loop through each symbol / key
   dataNest.forEach(function (d, i) {
-    console.log('Ln 87: this is d: ', d);
-    // for (let d in d2) {
-      // console.log('Ln 97: another d2: ', d2);
-      // console.log('Ln 98: d2.values: ', d2.values);
-
+    console.log('Ln 127: this is d: ', d);
+        // score
         svg.append('path')
           .attr('class', 'line')
           .attr('fill', 'none')
           .attr('stroke-width', '3')
-          .style('stroke', function() { // Add the colors dynamically
-            d.color = color(d.key);
-            return d.color;
-          })
-          // .attr('id', 'tag' + d.key.replace(/\s+/g, '')) // assign ID
+          .attr('stroke', 'steelblue')
           .attr('d', statsline(d.values));
-          console.log('Ln 99: d.values: ', d.values);
+          console.log('Ln 135: d.values score: ', d.values)
 
-        // Add the Legend
-        svg.append('text')
-          .attr('x', (legendSpace / 2) + i * legendSpace) // space legend
-          .attr('y', height + (margin.bottom / 2) + 5)
-          .attr('class', 'legend')  // style the legend
-          .style('fill', function fl() {  // Add the colours dynamically
-            d.color = color(d.key);
-            return d.color;
-          })
-          .on('click', function cl() {
-            // Determine if current line is visible
-            const active = d.active ? false : true,
-              newOpacity = active ? 0 : 1;
-            // Hide or show the elements based on the ID
-            d3.select('#tag' + d.key.replace(/\s+/g, ''))
-              .transition().duration(100)
-              .style('opacity', newOpacity);
-            // Update whether or not the elements are active
-            d.active = active;
-          })
-          .text(d.key);
-    // }
+        // hit points
+        svg.append('path')
+          .attr('class', 'line')
+          .attr('fill', 'none')
+          .attr('stroke-width', '3')
+          .attr('stroke', '#f18436')
+          .attr('d', statslinehp(d.values));
+          console.log('Ln 144: d.values hp: ', d.values);
+
+        // damaged caused
+        svg.append('path')
+          .attr('class', 'line')
+          .attr('fill', 'none')
+          .attr('stroke-width', '3')
+          .attr('stroke', '#519c3e')
+          .attr('d', statslinedc(d.values));
+          console.log('Ln 153: d.values damage_caused: ', d.values);
+
+        // shots
+        svg.append('path')
+          .attr('class', 'line')
+          .attr('fill', 'none')
+          .attr('stroke-width', '3')
+          .attr('stroke', '#c73933')
+          .attr('d', statslineshots(d.values));
+          console.log('Ln 162: d.values shots: ', d.values);
+
+        // // Add the Legend
+        // svg.append('text')
+        //   .attr('x', (legendSpace / 2) + i * legendSpace) // space legend
+        //   .attr('y', height + (margin.bottom / 2) + 5)
+        //   .attr('class', 'legend')  // style the legend
+        //   .style('fill', function fl() {  // Add the colours dynamically
+        //     return d.color = color(d.key);
+        //   })
+        //   .on('click', function cl() {
+        //     // Determine if current line is visible
+        //     const active = d.active ? false : true,
+        //       newOpacity = active ? 0 : 1;
+        //     // Hide or show the elements based on the ID
+        //     d3.select('#tag' + d.key.replace(/\s+/g, ''))
+        //       .transition().duration(100)
+        //       .style('opacity', newOpacity);
+        //     // Update whether or not the elements are active
+        //     d.active = active;
+        //   })
+        //   .text(d.key);
+
+       //  // Add the legend
+       // svg.append("text")
+       //    .attr("x", (legendSpace/2) + i*legendSpace) // spacing
+       //    .attr("y", height + (margin.bottom/2) + 5)
+       //    .attr("class", "legend")  // style the legend
+       //    .style("fill", function() {
+       //      console.log("Ln 196: d.color: ", d.color);
+       //       return d.color = color(d.key);
+       //    })
+       //    .on("click", function(){
+       //       // Determine if current line is visable
+       //       var active = d.active ? false : true,
+       //       newOpacity = active ? 1 : 0;
+       //       // Hide or show the elements based on the ID
+       //       d3.selectAll("#tag"+d.key.replace(/\s+/g, ''))
+       //         .transition().duration(100)
+       //         .style("opacity", newOpacity);
+       //       d3.select(this)
+       //         .style("font-size", function() {
+       //           if (active) {return "25px"}
+       //         })
+       //       // Update whether or not the elements are active
+       //       console.log(active)
+       //       d.active = active
+       //       console.log(active)
+       //    })
+       //   .on("mouseover", function(){
+       //       if (d.active != true) {
+       //         d3.selectAll("#tag"+d.key.replace(/\s+/g, ''))
+       //           .transition()
+       //           .duration(50)
+       //           .style("opacity", 1)
+       //         d3.select(this)
+       //           .transition()
+       //           .duration(50)
+       //           .style("font-size", function() {
+       //             if (d.active != true) {return "25px"}
+       //           })
+       //           ;
+       //       }
+       //   //Get this bar's x/y values, then augment for the tooltip
+       //   var xPosition =  legendSpace/2 + i*legendSpace // spacing
+       //   var yPosition = height + (margin.bottom/2) + 5;
+       //   //Update the tooltip position and value
+       //   d3.select("#tooltip")
+       //     .style("left", xPosition + "px")
+       //     .style("top", yPosition - 30 + "px")
+       //     .select("#value")
+       //
+       //     .text( desc ) ;
+       //
+       //   //Show the tooltip
+       //   d3.select("#tooltip").classed("hidden", false);
+       //
+       //   })
+       //   .on("mouseout", function() {
+       //     if(d.active != true) {
+       //         d3.selectAll("#tag"+d.key.replace(/\s+/g, ''))
+       //           .transition()
+       //           .duration(1000)
+       //           .style("opacity", 0)
+       //         d3.select(this)
+       //           .transition()
+       //           .duration(1000)
+       //           .style("font-size", function() {
+       //             return "16px"
+       //           }
+       //           )}
+       //   //Hide the tooltip
+       //   d3.select("#tooltip").classed("hidden", true);
+       //
+       //   })
+       //   .text(d.key);
   });
 
   // Add the X Axis
@@ -203,11 +337,11 @@ body {
   font: 12px Arial;
 }
 
-path line {
+/* path line {
   stroke: steelblue;
   stroke-width: 3;
   fill: none;
-}
+} */
 
 .axis path, .axis line {
   fill: none;
