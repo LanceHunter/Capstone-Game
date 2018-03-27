@@ -3,9 +3,64 @@
   <head>
     <meta charset="utf-8">
     <title>Phaser Tests</title>
+    <link rel='stylesheet' type="text/css" href='../stylesheets/style.css'/>
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
   </head>
   <body>
-    <h1>Testing</h1>
+    <!-- alignment and laser tracking elements -->
+    <div id="phaserContainer" class="fullscreenContainer">
+      <div id="hud" class="hudcontainer">
+        <div class="newsholder">
+          <div class="game-header">
+            <h1>Global Thermonuclear Warfare</h1>
+            <h3 v-bind="year">Year: {{year}}</h3>
+            <h3 v-bind="gameID">Game ID: {{gameID}}</h3>
+          </div>
+          <div class="total-forces">
+            <h1>Total Forces:</h1>
+            <h3 v-for="(player, index) in players" v-bind="player">
+              <span v-bind:style="{ backgroundColor: colors[index] }">{{ player.name }}: {{ player.totalDeclaredForces }}
+            </h3>
+          </div>
+          <!-- <div class="ticker-holder">
+            <div class="ticker">
+              <div class="tickeritem">Year: 1950</div>
+              <div class="tickeritem">Subs deployed to Atlantic Ocean... </div>
+              <div class="tickeritem">ICBMs declared in South America...</div>
+              <div class="tickeritem">More spy messages...</div>
+            </div>
+          </div> -->
+        </div>
+      </div>
+      <div id="joinGameModal" class="joinGameModal modal">
+        <div class="instructions">
+          Join game with your phone app.
+        </div>
+        <div class="gameIdLabel">
+          Game ID: {{ gameID }}
+        </div>
+        Users:
+        <ul>
+          <li v-for="(username, index) in usernames" v-bind:style="{ backgroundColor: colors[index] }">{{ username }}</li>
+        </ul>
+        <button id="beginGameButton" class="beginGameButton" type="button">
+          Begin game
+        </button>
+      </div>
+      <div id="gameOverModal" class="gameOverModal modal">
+        <div>
+          GAME OVER
+        </div>
+        <div>
+          OUTCOME: {{ messages[outcome] }}
+        </div>
+        <div>
+          WINNER: {{ winner }}
+        </div>
+      </div>
+      <canvas id="alignmentCanvas" class="alignmentCanvas"></canvas>
+      <video id="trackingVideo" class="trackingVideo" preload autoplay loop muted></video>
+    </div>
     <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
     <script>
       // Initialize Firebase
@@ -23,8 +78,18 @@
       src="https://code.jquery.com/jquery-3.3.1.min.js"
       integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
       crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="/board/vendor/tracking.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser-ce/2.10.3/phaser.js"></script> -->
     <script src="/board/vendor/phaser.js"></script>
-    <script src="/board/testGame.js"></script>
-    <script src="/board/script.js"></script>
+
+    <script src="/board/globals.js"></script>
+    <script src="/board/alignment.js"></script>
+    <script src="/board/hud.js"></script>
+    <script src="/board/continent.js"></script>
+    <script src="/board/boardInit.js"></script>
+    <script src="/board/peace.js"></script>
+    <script src="/board/war.js"></script>
+    <script src="/board/gameObjects.js"></script>
   </body>
 </html>

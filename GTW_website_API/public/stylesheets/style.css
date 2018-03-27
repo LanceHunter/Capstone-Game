@@ -1,8 +1,232 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+/* ======================
+laser tracking
+======================== */
+
+*, html {
+  border: 0;
+  margin: 0px;
+  font-family: 'Press Start 2P', cursive;
+  color: #dddddd;
 }
 
-a {
-  color: #00B7FF;
+html {
+  background-color: black;
 }
+
+.fullscreenContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  position: fixed;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+  z-index:-999;
+}
+
+.alignmentCanvas {
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+  z-index:900;
+  pointer-events: none;
+}
+
+.trackingVideo {
+  visibility: hidden;
+  position: absolute;
+  width: 480px;
+  /* height: 540px; */
+  z-index:990;
+  pointer-events: none;
+}
+
+.modal {
+  background-color: #1a181b;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  color: #f7ebec;
+  border: 3px solid #827887;
+  list-style-type: none;
+  text-align: center;
+  position: absolute;
+  visibility: hidden;
+  width: 40%;
+  height: 40%;
+}
+
+.joinGameModal {
+  visibility: hidden;
+
+  z-index: 999;
+}
+
+.gameOverModal {
+  visibility: hidden;
+  z-index: 998;
+}
+
+.joinGameModal button {
+  margin: 0 auto;
+  width: 50%;
+  height: 5em;
+  background: #827887;
+}
+
+.joinGameModal ul {
+  margin: 0;
+  padding: 0;
+}
+
+.joinGameModal li {
+  margin: 0 10%;
+  padding: 5%;
+  border: 1px solid #827887;
+}
+
+/* ======================
+heads up display
+======================== */
+
+/* body {
+  padding: 0px;
+  margin: 0px;
+  font-family: 'Press Start 2P', cursive;
+  color: #dddddd;
+} */
+
+h1 {
+  color: #827887;
+  font-size: 36px;
+}
+
+h3 {
+  color: #dddddd;
+  font-size: 24px;
+}
+
+.game-header {
+  padding: 20px;
+  width: 65%;
+  margin: auto;
+  z-index: 3;
+  border: 2px solid white;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  height: 25%;
+  margin-top: 30px;
+}
+
+.total-forces {
+  padding: 20px;
+  margin: auto;
+  z-index: 3;
+  border: 2px solid white;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  height: 25%;
+  margin-top: 30px;
+}
+
+.hudcontainer {
+  visibility: hidden;
+  width: 1920px;
+  height: 1080px;
+  position: absolute;
+  z-index: 997;
+}
+
+.hudcontainer, .hudcontainer div {
+  pointer-events: none;
+}
+
+.newsholder {
+  width: 1920px;
+  height: 89%;
+  z-index: 998;
+  display: flex;
+  /* background-color: rgba(0, 0, 0, 0.3); */
+}
+
+.playernews {
+  margin: auto;
+  z-index: 999;
+  border: 2px solid white;
+  /* margin: 10px; */
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+}
+
+h5 {
+  margin: 20px 0px 20px 40px;
+}
+
+h5, h6, li {
+  font-size: 18px;
+}
+
+h6 {
+  margin: 10px 0px 0px 40px;
+}
+
+ul {
+  margin-top: 0px;
+}
+
+li {
+  margin-left: 40px;
+  list-style-type: none;
+}
+
+/* ======================
+ticker
+======================== */
+
+* {
+  box-sizing: border-box;
+}
+
+@keyframes ticker {
+  0% {
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+.ticker-holder {
+  position: fixed;
+  /* bottom: 0; */
+  width: 100%;
+  overflow: hidden;
+  height: 4rem;
+  padding-left: 100%;
+  box-sizing: content-box;
+}
+
+.ticker {
+  display: inline-block;
+  height: 4rem;
+  line-height: 4rem;
+  white-space: nowrap;
+  padding-right: 100%;
+  box-sizing: content-box;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-name: ticker;
+  animation-duration: 30s;
+}
+
+.tickeritem {
+  display: inline-block;
+  padding: 0 3rem;
+  font-size: 2rem;
+  color: red;
+} */
