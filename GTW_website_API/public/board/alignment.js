@@ -9,20 +9,53 @@
 const joinGameModal = new Vue({
   el: '#joinGameModal',
   data: {
+    error: null,
+    state: 'off',
     colors: colors.map(c => 'rgb(' + [(c & 0xff0000) >> 16,  (c & 0x00ff00) >> 8,  (c & 0x0000ff)] + ')'),
     gameID: null,
     usernames: [],
+  },
+  methods: {
+    newGame: async function() {
+      const database = firebase.database();
+      const data = await $.post('/api/pregame/setup');
+      gameID = data.gameID;
+      const gameRef = await database.ref('gameInstance').child(gameID);
+      if (gameRef) {
+        joinGameModal.gameID = gameID
+        joinGame(gameID);
+      } else {
+        joinGameModal.error = 'Game creation failed, try again.';
+      }
+    },
+    existingGame: async function() {
+      const database = firebase.database();
+      gameID = joinGameModal.gameID;
+      const gameRef = await database.ref('gameInstance').child(gameID);
+      if (gameRef) {
+        joinGame(gameID);
+      } else {
+        joinGameModal.error = 'Game not found, try again.';
+      }
+    },
+    beginGame: async function() {
+      console.log('clicked button');
+      if (usernames.length > 1) {
+        gameRef.off();
+        document.getElementById("joinGameModal").remove();
+        await $.post('/api/pregame/startgame', {gameID: gameID});
+        startGame(gameRef);
+      }
+    }
   }
 })
 
-async function joinGame() {
-  console.log('lauched join game');
+async function joinGame(gameID) {
   // create a game instance
-  const database = firebase.database();
-  const data = await $.post('/api/pregame/setup');
-  gameID = data.gameID;
   console.log('gameID:', gameID);
   joinGameModal.gameID = gameID;
+  joinGameModal.state = 'join';
+  const database = firebase.database();
   const gameRef = database.ref('gameInstance').child(gameID);
   let usernames = [];
   gameRef.on('value', function(snapshot) {
@@ -30,22 +63,6 @@ async function joinGame() {
     if (game.players) {
       usernames = Object.keys(game.players);
       joinGameModal.usernames = usernames;
-    }
-  });
-
-  // display join game modal
-  const modal = document.getElementById("joinGameModal");
-  modal.style.visibility = "visible";
-
-  // start game on button press
-  const beginGameButton = document.getElementById("beginGameButton");
-  beginGameButton.addEventListener('click', async function() {
-    console.log('clicked button');
-    if (usernames.length > 1) {
-      gameRef.off();
-      document.getElementById("joinGameModal").remove();
-      await $.post('/api/pregame/startgame', {gameID: gameID});
-      startGame(gameRef);
     }
   });
 }
@@ -266,7 +283,7 @@ function align(boardWidth, boardHeight) {
           console.log('finishied alignment');
           state = 'finished';
           trackLasers(translator);
-          joinGame();
+          launchJoinGameModal();
         }
         boardTrackerTask.stop();
       }, 0);
