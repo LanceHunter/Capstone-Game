@@ -372,11 +372,13 @@ class Launch {
         type: 'bomber'
       };
 
+      console.log(data);
+
       $.ajax({
         url: "/api/war/shot",
         method: "put",
-        data: JSON.stringify(data),
-        dataType: 'application/json'
+        data,
+        dataType: 'json'
       }).then(r => console.log(r));
     }
   }
