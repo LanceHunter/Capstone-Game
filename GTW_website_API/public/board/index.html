@@ -37,11 +37,11 @@
           <div v-if="error">
             {{ error }}
           </div>
-          <button id="newGameButton" class="modalButton" type="button">
+          <button id="newGameButton" v-on:click="newGame" class="modalButton" type="button">
             New game
           </button>
           <input v-model="gameID" placeholder="Game ID">
-          <button id="existingGameButton" class="modalButton" type="button">
+          <button id="existingGameButton" v-on:click="existingGame" class="modalButton" type="button">
             Connect
           </button>
         </div>
@@ -56,7 +56,7 @@
           <ul>
             <li v-for="(username, index) in usernames" v-bind:style="{ backgroundColor: colors[index] }">{{ username }}</li>
           </ul>
-          <button id="beginGameButton" class="modalButton" type="button">
+          <button id="beginGameButton" v-on:click="beginGame" class="modalButton" type="button">
             Begin game
           </button>
         </div>

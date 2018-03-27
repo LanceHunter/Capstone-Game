@@ -13,27 +13,28 @@ const joinGameModal = new Vue({
     state: 'off',
     colors: colors.map(c => 'rgb(' + [(c & 0xff0000) >> 16,  (c & 0x00ff00) >> 8,  (c & 0x0000ff)] + ')'),
     gameID: null,
+    gameRef: null,
     usernames: [],
   },
   methods: {
     newGame: async function() {
       const database = firebase.database();
       const data = await $.post('/api/pregame/setup');
-      gameID = data.gameID;
-      const gameRef = await database.ref('gameInstance').child(gameID);
-      if (gameRef) {
-        joinGameModal.gameID = gameID
-        joinGame(gameID);
+      joinGameModal.gameID = data.gameID;
+      joinGameModal.gameRef = await database.ref('gameInstance').child(joinGameModal.gameID);
+      console.log('new ref:', joinGameModal.gameRef);
+      if (joinGameModal.gameRef) {
+        joinGameModal.joinGame();
       } else {
         joinGameModal.error = 'Game creation failed, try again.';
       }
     },
     existingGame: async function() {
       const database = firebase.database();
-      gameID = joinGameModal.gameID;
-      const gameRef = await database.ref('gameInstance').child(gameID);
-      if (gameRef) {
-        joinGame(gameID);
+      joinGameModal.gameRef = await database.ref('gameInstance').child(joinGameModal.gameID);
+      console.log('existing ref:', joinGameModal.gameRef);
+      if (joinGameModal.gameRef) {
+        joinGameModal.joinGame();
       } else {
         joinGameModal.error = 'Game not found, try again.';
       }
@@ -41,31 +42,25 @@ const joinGameModal = new Vue({
     beginGame: async function() {
       console.log('clicked button');
       if (usernames.length > 1) {
-        gameRef.off();
+        joinGameModal.gameRef.off();
         document.getElementById("joinGameModal").remove();
-        await $.post('/api/pregame/startgame', {gameID: gameID});
-        startGame(gameRef);
+        await $.post('/api/pregame/startgame', {gameID: joinGameModal.gameID});
+        startGame(joinGameModal.gameRef);
       }
+    },
+    joinGame: async function() {
+      console.log('gameID:', joinGameModal.gameID);
+      joinGameModal.state = 'join';
+      joinGameModal.gameRef.on('value', function(snapshot) {
+        game = snapshot.val();
+        if (game.players) {
+          usernames = Object.keys(game.players);
+          joinGameModal.usernames = usernames;
+        }
+      });
     }
   }
 })
-
-async function joinGame(gameID) {
-  // create a game instance
-  console.log('gameID:', gameID);
-  joinGameModal.gameID = gameID;
-  joinGameModal.state = 'join';
-  const database = firebase.database();
-  const gameRef = database.ref('gameInstance').child(gameID);
-  let usernames = [];
-  gameRef.on('value', function(snapshot) {
-    game = snapshot.val();
-    if (game.players) {
-      usernames = Object.keys(game.players);
-      joinGameModal.usernames = usernames;
-    }
-  });
-}
 
 /*
   Creates a translator object which maps coordinates from the camera to coortinates on the display. Initialize with two coordinates from the camera along with where they should be mapped to on the display.
@@ -283,7 +278,7 @@ function align(boardWidth, boardHeight) {
           console.log('finishied alignment');
           state = 'finished';
           trackLasers(translator);
-          launchJoinGameModal();
+          joinGameModal.state = 'connect';
         }
         boardTrackerTask.stop();
       }, 0);
