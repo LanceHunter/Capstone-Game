@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Mobile Logic</title>
+  </head>
+
+  <body>
+    <div id="mobilePage">
+      <div v-if="init">
+        <input type="text" v-model="myPlayerID" style="border: 1px solid black">
+        <button v-on:click="joinGame">Start Game</button>
+      </div>
+      <div v-if="gameData.peacetime">
+        <h2>
+          The year: {{ gameData.year }}
+        </h2>
+        <input type="text" v-model="userName" v-if="!joined">
+        <button v-on:click="joinGame" v-if="!joined">
+          Join Game
+        </button>
+      </div>
+    </div>
+  </body>
+
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyCoG0SCkdYyS_6ah9OUlTVdajp-QsMKfi8",
+      authDomain: "gtwthegame.firebaseapp.com",
+      databaseURL: "https://gtwthegame.firebaseio.com",
+      projectId: "gtwthegame",
+      storageBucket: "gtwthegame.appspot.com",
+      messagingSenderId: "58827652319"
+    };
+    firebase.initializeApp(config);
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="mobileWeb.js"></script>
+
+</html>
