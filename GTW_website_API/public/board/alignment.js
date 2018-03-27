@@ -17,19 +17,10 @@ async function joinGame() {
   const database = firebase.database();
 
   /*
-<<<<<<< Updated upstream
   THE REAL STUFF
   const data = await $.post('/api/pregame/setup');
   gameID = data.gameID;
   */
-
-  // short circuit
-  gameID = 'testgame0'
-=======
-  const data = await $.post('/api/pregame/setup');
-  gameID = data.gameID;
-  */
->>>>>>> Stashed changes
 
   // TEST GAME
   gameID = 'testgame0';
