@@ -24,6 +24,13 @@ function onGameChange(data) {
     phaser.state.start('War');
   }
 
+  // check for game over
+  if (game.gameOver) {
+    gameOverModal.outcome = game.gameOver.outcome;
+    gameOverModal.winner = game.gameOver.winner;
+    document.getElementById('gameOverModal').style.visibility = 'visible';
+  }
+
   // board score stuff
   subIcons.forEach(subIcon => subIcon.updateState());
   bomberIcons.forEach(bomberIcon => bomberIcon.updateState());
