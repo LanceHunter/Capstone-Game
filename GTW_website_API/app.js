@@ -11,6 +11,7 @@ const bcrypt = require('bcryptjs');
 const passport = require('koa-passport');
 const localStrategy = require('passport-local').Strategy;
 const session = require('koa-session');
+const enforceHttps = require('koa-sslify');
 
 const index = require('./routes/index');
 const stats = require('./routes/stats');
@@ -34,6 +35,12 @@ app.use(views(__dirname + '/views', {
   extension: 'pug'
 }));
 
+// Middleware to enforce an HTTPS connection through AWS load balancer.
+app.use(enforceHttps({
+  trustProtoHeader: true
+}));
+
+
 //Added middlewares
 
 app.use(passport.initialize());
@@ -54,8 +61,8 @@ app.use(index.routes()).use(index.allowedMethods());
 app.use(stats.routes()).use(stats.allowedMethods());
 app.use(preGame.routes()).use(preGame.allowedMethods());
 app.use(peaceTime.routes()).use(peaceTime.allowedMethods());
-app.use(peaceTime.routes()).use(peaceTime.allowedMethods());
-// app.use(board.routes()).use(board.allowedMethods());
+app.use(war.routes()).use(war.allowedMethods());
+app.use(board.routes()).use(board.allowedMethods());
 app.use(webapp.routes()).use(webapp.allowedMethods());
 
 // error-handling
