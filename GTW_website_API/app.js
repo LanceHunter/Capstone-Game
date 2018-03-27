@@ -36,9 +36,9 @@ app.use(views(__dirname + '/views', {
 }));
 
 // Middleware to enforce an HTTPS connection through AWS load balancer.
-app.use(enforceHttps({
-  trustProtoHeader: true
-}));
+// app.use(enforceHttps({
+//   trustProtoHeader: true
+// }));
 
 app.use(passport.initialize());
 app.use(passport.session());
