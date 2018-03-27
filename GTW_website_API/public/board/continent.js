@@ -1,4 +1,3 @@
-let pointers = [];
 let continent = {
   preload: function() {
     this.game.load.image('map', '/board/assets/map.png');
@@ -22,7 +21,6 @@ let continent = {
     }
   },
   update: function() {
-
     pointers.forEach((pointer) => {
       pointer.setPosition();
       if (!pointer.intersecting()) {

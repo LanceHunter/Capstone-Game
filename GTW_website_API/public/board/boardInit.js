@@ -1,16 +1,3 @@
-/*
-some globals
-*/
-let playerIDs;
-let colors = [0x550000, 0x005500, 0x000055];
-let subIcons = [], bomberIcons = [], capitalIcons = [], missileIcons = [];
-let width = boardWidth;
-let height = width * (9 / 16);
-let pointersPositions = [null, null, null];
-let playerPointers = [];
-let map;
-let phaser;
-
 function startGame(gameRef) {
   playerIDs = Object.keys(game.players);
 
@@ -20,8 +7,14 @@ function startGame(gameRef) {
   phaser.state.add('Peace', peace);
   phaser.state.add('War', war);
 
+  /*
+  THE REAL STUFF
   // and we launch our ContinentSelect state
   phaser.state.start('ContinentSelect');
+  */
+
+  // SHORT CIRCUIT
+  phaser.state.start('War');
 
   document.getElementById('hud').style.visibility = 'visible';
   gameRef.on('value', onGameChange);

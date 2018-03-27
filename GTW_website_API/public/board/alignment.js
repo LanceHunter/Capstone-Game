@@ -1,19 +1,3 @@
-// set variables for tracking program
-const minDistSq = Math.pow(30, 2);
-const maxTime = 1000;
-const redTargetColor = "#dcaaaa";
-const greenTargetColor = "#7ebe86";
-const blueTargetColor = "#7373e6";
-const boardMinBrightness = 50;
-const boardMaxBrightness = 260;
-const boardWidth = 1920;
-const boardHeight = boardWidth * (9 / 16);
-let gameID;
-let game;
-
-// create the global lasers object used by the game as pointers
-const lasers = [null, null, null];
-
 /*
   Creates a new game instance and shows the join game modal.
 */
@@ -30,8 +14,16 @@ async function joinGame() {
   console.log('lauched join game');
   // create a game instance
   const database = firebase.database();
+
+  /*
+  THE REAL STUFF
   const data = await $.post('/api/pregame/setup');
   gameID = data.gameID;
+  */
+
+  // short circuit
+  gameID = 'testgame0'
+
   console.log('gameID:', gameID);
   joinGameModal.gameID = gameID;
   const gameRef = database.ref('gameInstance').child(gameID);

@@ -128,7 +128,10 @@ h3 {
   height: 1080px;
   position: absolute;
   z-index: 997;
-  /* display: none; */
+}
+
+.hudcontainer, .hudcontainer div {
+  pointer-events: none;
 }
 
 .newsholder {

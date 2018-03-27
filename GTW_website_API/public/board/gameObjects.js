@@ -24,7 +24,7 @@ class SubIcon {
 
     // some listeners
     this.sprite.events.onInputDown.add(() => {
-      this.launches.push(new SubLaunch(this.playerID, {x: this.sprite.centerX, y: this.sprite.centerY}, this.ocean));
+      this.launches.push(new Launch(this.playerID, {x: this.sprite.centerX, y: this.sprite.centerY}, this.ocean));
     }, this);
 
     this.sprite.events.onInputUp.add(() => {
@@ -67,6 +67,10 @@ class SubIcon {
       this.sprite.alpha = 0;
       this.inventory.alpha = 0;
     }
+  }
+
+  select() {
+    console.log(continent, 'sub selected');
   }
 }
 
@@ -115,6 +119,10 @@ class CapitalIcon {
 
     this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
   }
+
+  select() {
+    console.log(continent, 'capital selected');
+  }
 }
 
 class BomberIcon {
@@ -129,7 +137,7 @@ class BomberIcon {
 
     // some listeners
     this.sprite.events.onInputDown.add(() => {
-      this.launches.push(new SubLaunch(this.playerID, {x: this.sprite.centerX, y: this.sprite.centerY}, this.ocean));
+      this.launches.push(new Launch(this.playerID, {x: this.sprite.centerX, y: this.sprite.centerY}, this.ocean));
     }, this);
 
     this.sprite.events.onInputUp.add(() => {
@@ -169,6 +177,10 @@ class BomberIcon {
     this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
     this.inventory.tint = colors[playerIDs.indexOf(this.playerID)];
   }
+
+  select() {
+    console.log(continent, 'bomber selected');
+  }
 }
 
 class MissileIcon {
@@ -185,7 +197,7 @@ class MissileIcon {
 
     // some listeners
     this.sprite.events.onInputDown.add(() => {
-      this.launches.push(new SubLaunch(this.playerID, {x: this.sprite.centerX, y: this.sprite.centerY}, this.ocean));
+      this.launches.push(new Launch(this.playerID, {x: this.sprite.centerX, y: this.sprite.centerY}, this.ocean));
     }, this);
 
     this.sprite.events.onInputUp.add(() => {
@@ -223,6 +235,10 @@ class MissileIcon {
         this.inventory.alpha = 1;
       }
     }
+  }
+
+  select() {
+    console.log(continent, 'missile selected');
   }
 }
 
@@ -337,34 +353,17 @@ class Launch {
 
 }
 
-/*
-game loop
-*/
-function update() {
-  // handle all the launch stuff
-  subIcons.forEach(subIcon => {
-    subIcon.launches.forEach(launch => {
-      if (launch.state === 'impossible') {
-        // show a dialog that indicates out of ammo
-        console.log('impossible');
-      } else
-      if (launch.state === 'exploded') {
-        subIcon.launches.shift();
-        console.log(subIcon.launches);
-      } else {
-        launch.update();
-      }
-    });
-  });
-}
-
 class PlayerPointer {
   constructor(index, state) {
     this.playerIndex = index;
-    this.sprite = state.game.add.sprite(0, 0, 'circle');
+    this.sprite = state.game.add.sprite(state.game.width / 2, state.game.height / 2, 'circle');
     this.sprite.tint = colors[index];
     // this.sprite.alpha = 0;
     this.sprite.scale.set(0.2);
+
+    this.sprite.inputEnabled = true;
+    this.sprite.input.enableDrag(true);
+
     this.intersection = null;
   }
 
@@ -407,7 +406,7 @@ class Intersection {
   checkOverlap() {
     if (this.playerSprite.overlap(this.targetSprite)) {
       this.count++;
-      if (this.count > 60) {
+      if (this.count > 10) {
         this.action(this.data);
         return false;
       };
