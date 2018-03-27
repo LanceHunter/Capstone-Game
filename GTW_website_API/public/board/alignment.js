@@ -16,14 +16,12 @@ async function joinGame() {
   // create a game instance
   const database = firebase.database();
 
-  /*
-  THE REAL STUFF
   const data = await $.post('/api/pregame/setup');
   gameID = data.gameID;
-  */
 
-  // short circuit
+  /* SHORT CIRCUIT
   gameID = 'testgame0'
+  */
 
   console.log('gameID:', gameID);
   joinGameModal.gameID = gameID;
