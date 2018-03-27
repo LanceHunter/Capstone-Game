@@ -2,7 +2,7 @@
 
 // Firebase setup.
 const admin = require("firebase-admin");
-const serviceAccount = require('../../../private/gtwthegame-firebase-adminsdk-xemv3-858ad1023b.json');
+const serviceAccount = require('../../private/gtwthegame-firebase-adminsdk-xemv3-858ad1023b.json');
 const fs = require('fs');
 
 admin.initializeApp({

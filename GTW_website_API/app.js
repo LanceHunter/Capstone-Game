@@ -11,7 +11,7 @@ const bcrypt = require('bcryptjs');
 const passport = require('koa-passport');
 const localStrategy = require('passport-local').Strategy;
 const session = require('koa-session');
-// const enforceHttps = require('koa-sslify');
+const enforceHttps = require('koa-sslify');
 
 const index = require('./routes/index');
 const stats = require('./routes/stats');
@@ -36,11 +36,11 @@ app.use(views(__dirname + '/views', {
 }));
 
 // Middleware to enforce an HTTPS connection through AWS load balancer.
-/*
+
 app.use(enforceHttps({
   trustProtoHeader: true
 }));
-*/
+
 
 
 app.use(passport.initialize());
