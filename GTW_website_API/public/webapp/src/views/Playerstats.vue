@@ -6,7 +6,7 @@
     <div class='message-body'>
       <!-- wins & losses -->
       <!-- <h5>Wins-Losses</h5> -->
-      <svg id='chart' width='1000' height='500'></svg>
+      <svg id="chart" width='1000' height='500'></svg>
     </div>
 
   </div>
@@ -21,112 +21,120 @@ const d3 = require('d3');
 
 function drawPlayerChart(stats) {
   // Set the dimensions of the canvas / graph
-  const margin = {top: 30, right: 20, bottom: 70, left: 50},
+  const margin = { top: 30, right: 20, bottom: 70, left: 50 },
     width = 900 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
   // Parse the date / time
-  const parseDate = d3.timeParse('%B %b, %Y');
+  // const parseDate = d3.timeParse('%B %b, %Y');
 
   // Set the ranges
   const x = d3.scaleTime().range([0, width]);
   const y = d3.scaleLinear().range([height, 0]);
 
   // Define the line
-  const statsline = d3.line()
+  let statsline = d3.line()
     .x((d) => {
-      console.log('Ln 38: date on x axis: ', d.date);
+      console.log('Ln 48: date on x axis: ', d.date);
       return x(d.date);
     })
-    .y(function (d) {
-      return y(d.price);
+    .y((d) => {
+      console.log('Ln 52: score on y axis: ', d.score);
+      return y(d.score);
     });
+
+  // Get the data
+  stats.forEach(function (d) {
+    console.log('Ln 25: this is d: ', d);
+    console.log('Ln 26: date: ', d.created_at);
+    d.date = new Date(d.created_at);
+    console.log('Ln 28: parsed date: ', d.date);
+		d.score = +d.score;
+    console.log('Ln 30: d.score: ', d.score);
+  });
 
   // Adds the svg canvas
   const svg = d3.select('#chart')
     .append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom)
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
     .append('g')
-      .attr('transform',
-            'translate(' + margin.left + ',' + margin.top + ')');
+    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-  console.log('Ln 54: these are the stats: ', stats);
+  // Scale the range of the data
+  x.domain(d3.extent(stats, function (d) {
+    return d.date;
+  }));
+  y.domain([0, d3.max(stats, function (d) {
+    return d.score;
+  })]);
 
-  // Get the data
-  // d3.csv('stats.csv', function(error, data) {
-    stats.forEach(function (d) {
-      console.log('Ln 59: this is d: ', d);
-      console.log('Ln 60: date: ', d.end_time);
-  		d.date = new Date(d.end_time);
-      console.log('Ln 62: parsed date: ', d.date);
-  		d.score = +d.score;
-    });
+  // Nest the entries by symbol
+  const dataNest = d3.nest(stats)
+    .key(function (d) {
+      return d.symbol;
+    })
+    .entries(stats);
 
-    // Scale the range of the data
-    x.domain(d3.extent(stats, function (d) {
-      return d.date;
-    }));
-    y.domain([0, d3.max(stats, function (d) {
-      return d.score;
-    })]);
+  // set the color scale
+  const color = d3.scaleOrdinal(d3.schemeCategory10);
 
-    // Nest the entries by symbol
-    const dataNest = d3.nest()
-      .key(function(d) {
-        return d.symbol;
-      })
-      .entries(stats);
+  // spacing for the legend
+  const legendSpace = width / dataNest.length;
 
-    // set the color scale
-    const color = d3.scaleOrdinal(d3.schemeCategory10);
+  // Loop through each symbol / key
+  dataNest.forEach(function (d, i) {
+    console.log('Ln 87: this is d: ', d);
+    // for (let d in d2) {
+      // console.log('Ln 97: another d2: ', d2);
+      // console.log('Ln 98: d2.values: ', d2.values);
 
-    // spacing for the legend
-    const legendSpace = width/dataNest.length;
-
-    // Loop through each symbol / key
-    dataNest.forEach(function(d,i) {
-      console.log('Ln 89: another d: ', d);
-      console.log('Ln 90: d.values: ', d.values);
-      svg.append('path')
-        .attr('class', 'line')
-        .style('stroke', function() { // Add the colors dynamically
-          return d.color = color(d.key); })
-        // .attr('id', 'tag'+d.key.replace(/\s+/g, '')) // assign ID
-        .attr('d', statsline(d.values));
-
-      // Add the Legend
-      svg.append('text')
-        .attr('x', (legendSpace/2)+i*legendSpace)  // space legend
-        .attr('y', height + (margin.bottom/2)+ 5)
-        .attr('class', 'legend')    // style the legend
-        .style('fill', function fl() { // Add the colours dynamically
-          return d.color = color(d.key); })
-        .on('click', function cl(){
-          // Determine if current line is visible
-          var active   = d.active ? false : true,
-          newOpacity = active ? 0 : 1;
-          // Hide or show the elements based on the ID
-          d3.select('#tag'+d.key.replace(/\s+/g, ''))
-            .transition().duration(100)
-            .style('opacity', newOpacity);
-          // Update whether or not the elements are active
-          d.active = active;
+        svg.append('path')
+          .attr('class', 'line')
+          .attr('fill', 'none')
+          .attr('stroke-width', '3')
+          .style('stroke', function() { // Add the colors dynamically
+            d.color = color(d.key);
+            return d.color;
           })
-        .text(d.key);
-    });
+          // .attr('id', 'tag' + d.key.replace(/\s+/g, '')) // assign ID
+          .attr('d', statsline(d.values));
+          console.log('Ln 99: d.values: ', d.values);
 
-    // Add the X Axis
-    svg.append('g')
-      .attr('class', 'axis')
-      .attr('transform', 'translate(0,' + height + ')')
-      .call(d3.axisBottom(x));
+        // Add the Legend
+        svg.append('text')
+          .attr('x', (legendSpace / 2) + i * legendSpace) // space legend
+          .attr('y', height + (margin.bottom / 2) + 5)
+          .attr('class', 'legend')  // style the legend
+          .style('fill', function fl() {  // Add the colours dynamically
+            d.color = color(d.key);
+            return d.color;
+          })
+          .on('click', function cl() {
+            // Determine if current line is visible
+            const active = d.active ? false : true,
+              newOpacity = active ? 0 : 1;
+            // Hide or show the elements based on the ID
+            d3.select('#tag' + d.key.replace(/\s+/g, ''))
+              .transition().duration(100)
+              .style('opacity', newOpacity);
+            // Update whether or not the elements are active
+            d.active = active;
+          })
+          .text(d.key);
+    // }
+  });
 
-    // Add the Y Axis
-    svg.append('g')
-      .attr('class', 'axis')
-      .call(d3.axisLeft(y));
-  // });
+  // Add the X Axis
+  svg.append('g')
+    .attr('class', 'axis')
+    .attr('transform', 'translate(0,' + height + ')')
+    .call(d3.axisBottom(x));
+
+  // Add the Y Axis
+  svg.append('g')
+    .attr('class', 'axis')
+    .call(d3.axisLeft(y));
 }
 
 
@@ -150,12 +158,6 @@ export default {
   beforeMount() {
     this.getStats(this.$route.params.username);
   },
-
-  // beforeMount() {
-  //   $(document).ready(function drawPChart() {
-  //     drawPlayerChart();
-  //   });
-  // },
 };
 </script>
 
@@ -201,9 +203,9 @@ body {
   font: 12px Arial;
 }
 
-path {
+path line {
   stroke: steelblue;
-  stroke-width: 2;
+  stroke-width: 3;
   fill: none;
 }
 

@@ -71,12 +71,13 @@ router.get('/(.*)', async ctx => {
     .select(
       'won',
       'outcome',
+      'players.created_at',
       'score',
       'hit_points',
       'shots',
       'rnd_multiplier',
       knex.raw('(shots * rnd_multiplier) AS damage_caused'),
-      knex.raw('players.created_at AS end_time'),
+      // knex.raw('players.created_at AS end_time'),
     )
 
     if (stats.length) {

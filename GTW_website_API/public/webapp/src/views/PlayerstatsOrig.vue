@@ -75,12 +75,15 @@ function InitChart(stats) {
     .entries(stats);
 
   // Loop through each symbol / key
-  statsNest.forEach(function (d) {
-    console.log('Ln 79: another d: ', d);
-    console.log('Ln 80: d.values: ', d.values);
-    svg.append('path')
-      .attr('class', 'line')
-      .attr('d', statsline(d.values));
+  statsNest.forEach(function (d2) {
+    console.log('Ln 79: another d: ', d2);
+    console.log('Ln 80: d.values: ', d2.values);
+    d2.forEach(function (d) {
+      console.log('Ln 82: second loop d: ', d);
+      svg.append('path')
+        .attr('class', 'line')
+        .attr('d', statsline(d.values));
+    })
   });
 
   // Add the X Axis
