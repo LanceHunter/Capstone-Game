@@ -95,8 +95,8 @@
         War!
         </h3>
         <h4>
-          If any player at <strong>any</strong> time chooses to declare war, the
-          game enters <strong>War</strong> mode. Players will be able to fire
+          If any player at <bold>any</bold> time chooses to declare war, the
+          game enters <bold>War</bold> mode. Players will be able to fire
           missiles and launch bombers from their continents towards another
           player's continents.
 
@@ -115,7 +115,7 @@
 
           When you no longer have a continent with any remaining HP, you lose.
 
-          <strong>However</strong>, even if you have lost you can continue to launch
+          <bold>However</bold>, even if you have lost you can continue to launch
           any submarine-based missiles you have until you have used them all.
         </h4>
       </div>
