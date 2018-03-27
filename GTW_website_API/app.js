@@ -35,17 +35,10 @@ app.use(views(__dirname + '/views', {
   extension: 'pug'
 }));
 
-<<<<<<< HEAD
-// Added middlewares
-=======
 // Middleware to enforce an HTTPS connection through AWS load balancer.
 app.use(enforceHttps({
   trustProtoHeader: true
 }));
-
-
-//Added middlewares
->>>>>>> dev
 
 app.use(passport.initialize());
 app.use(passport.session());
