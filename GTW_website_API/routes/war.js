@@ -117,6 +117,9 @@ router.put('/shot', async (ctx) => {
           enemyContinents.forEach((enemyContinent) => {
             if (gameObj.continents[enemyContinent].hp > 0) {
               gameOver = false;
+              if (gameObj.continents[enemyContinent].forces.bombers.total > 0 || gameObj.continents[enemyContinent].forces.icbms.total > 0) {
+                rubbleLoss = false;
+              }
             }
           });
           // Check the enemy subs to see if there are any left.
@@ -124,6 +127,7 @@ router.put('/shot', async (ctx) => {
           enemyOceans.forEach((enemyOcean) => {
             if (gameObj.oceans[enemyOcean].subs[enemy].total > 0) {
               gameOver = false;
+              rubbleLoss = false;
             }
           });
         }); // End of forEach through every enemy checking if the game is over.
@@ -352,6 +356,13 @@ router.put('/shot', async (ctx) => {
 
     } // end of conditional checking if game was won or if everyone lost.
   } // end of conditional checking if we are in a gameOver state.
+
+
+  // If the game is over, we end game and start writing to database.
+  if (rubbleLoss && gameObj.war) {
+    
+  } // end of conditional checking if we are in a rubbleLoss
+
 
 }); // end of the "shot" route.
 
