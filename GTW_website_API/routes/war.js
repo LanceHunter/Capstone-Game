@@ -6,7 +6,7 @@ const firebase = admin.database();
 const ref = firebase.ref('gameInstance');
 
 // Getting Knex
-const config = require('../knexfile')[process.env.ENV || 'development'];
+const config = require('../knexfile')['production'];
 const knex = require('knex')(config);
 
 //Setting up express routing

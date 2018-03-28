@@ -1,6 +1,6 @@
 const router = require('koa-router')()
 
-const config = require('../knexfile')['development'];
+const config = require('../knexfile')['production'];
 const knex = require('knex')(config);
 const bcrypt = require('bcryptjs');
 const passport = require('koa-passport');
