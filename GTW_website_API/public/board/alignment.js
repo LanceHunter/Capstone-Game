@@ -19,9 +19,6 @@ async function joinGame() {
   const data = await $.post('/api/pregame/setup');
   gameID = data.gameID;
 
-  // test game
-  gameID = 'game8634';
-
   console.log('gameID:', gameID);
   joinGameModal.gameID = gameID;
   const gameRef = database.ref('gameInstance').child(gameID);
