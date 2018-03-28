@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "58827652319",
+    "firebase_url": "https://gtwthegame.firebaseio.com",
+    "project_id": "gtwthegame",
+    "storage_bucket": "gtwthegame.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:58827652319:android:1c5aa957fb20022f",
+        "android_client_info": {
+          "package_name": "com.gtw.gtw"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "58827652319-59k2n777347h6lp7b19cvk2iqh4to1v8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gtw.gtw",
+            "certificate_hash": "3033b1cdd09ee370582772ecc1b1607ea43c9f3c"
+          }
+        },
+        {
+          "client_id": "58827652319-6vs24c45ob6t4uihg45862u1btru8db4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1CAONAtiBnKQvT8w6mp_1TYfttm8iqxM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "58827652319-5m91qfmpe9jglomt2f0fl6ird8vi1sm2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.gtw.gtw"
+              }
+            },
+            {
+              "client_id": "58827652319-6vs24c45ob6t4uihg45862u1btru8db4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
