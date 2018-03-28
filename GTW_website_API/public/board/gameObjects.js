@@ -296,13 +296,9 @@ class Launch {
   constructor(origin) {
     this.origin = origin;
 
-    this.originIndicator = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'circle');
-    this.originIndicator.tint = colors[playerIDs.indexOf(this.origin.playerID)];
-    this.originIndicator.anchor.set(0.5);
-    this.originIndicator.scale.set(0.1);
+    this.originIndicator = new TargetIndicator(this.origin.sprite, colors[playerIDs.indexOf(this.origin.playerID)]);
 
     // first we arm the weapon
-    this.originFrame = 0;
     this.state = 'armed';
   }
 
@@ -314,10 +310,7 @@ class Launch {
 
   // a weapon has been selected, launch is pending
   armed() {
-    this.originFrame++;
-    let theta = (this.originFrame / 15)
-    this.originIndicator.scale.set((Math.sin(theta) + 2) / 5);
-    this.originIndicator.alpha = (Math.sin(theta + Math.PI) + 2) / 3;
+    this.originIndicator.update();
   }
 
   // when user paints a destination
@@ -325,14 +318,13 @@ class Launch {
     this.target = capital;
 
     // check that the capital doesn't belong to the origin and isn't already dead
-    if (capital.playerID != this.origin.playerID && game.continents[capital.continent].hp > 0) {
+    if (this.target.playerID != this.origin.playerID && game.continents[this.target.continent].hp > 0) {
       if (this.origin.type === 'sub') {
         // check for valid sub launch
         if (Object.keys(game.oceans[this.origin.ocean].canHit).includes(this.target.continent)) {
           // sprite stuff
-          this.targetIndicator = phaser.add.sprite(capital.sprite.centerX, capital.sprite.centerY, 'circle');
-          this.targetIndicator.tint = colors[playerIDs.indexOf(playerID)];
-          this.targetIndicator.anchor.set(0.5);
+          this.targetIndicator = new TargetIndicator(capital.sprite, colors[playerIDs.indexOf(this.origin.playerID)]);
+
           this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'circle');
           this.projectile.tint = colors[playerIDs.indexOf(playerID)];
           this.projectile.anchor.set(0.5);
@@ -351,9 +343,8 @@ class Launch {
         if (game.continents[this.origin.continent].distances[this.target.continent] === 1) {
           console.log('valid bomb');
           // sprite stuff
-          this.targetIndicator = phaser.add.sprite(capital.sprite.centerX, capital.sprite.centerY, 'circle');
-          this.targetIndicator.tint = colors[playerIDs.indexOf(playerID)];
-          this.targetIndicator.anchor.set(0.5);
+          this.targetIndicator = new TargetIndicator(capital.sprite, colors[playerIDs.indexOf(this.origin.playerID)]);
+
           this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'circle');
           this.projectile.tint = colors[playerIDs.indexOf(playerID)];
           this.projectile.anchor.set(0.5);
@@ -368,9 +359,8 @@ class Launch {
         }
       } else {
         // sprite stuff
-        this.targetIndicator = phaser.add.sprite(capital.sprite.centerX, capital.sprite.centerY, 'circle');
-        this.targetIndicator.tint = colors[playerIDs.indexOf(playerID)];
-        this.targetIndicator.anchor.set(0.5);
+        this.targetIndicator = new TargetIndicator(capital.sprite, colors[playerIDs.indexOf(this.origin.playerID)]);
+
         this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'circle');
         this.projectile.tint = colors[playerIDs.indexOf(playerID)];
         this.projectile.anchor.set(0.5);
@@ -386,14 +376,8 @@ class Launch {
 
   // while the missile is traveling
   enroute() {
-    this.targetFrame++;
-    this.originFrame++;
-    let targetTheta = (this.targetFrame / 15);
-    let originTheta = (this.originFrame / 10);
-    this.originIndicator.scale.set((Math.sin(originTheta) + 2) / 5);
-    this.originIndicator.alpha = (Math.sin(originTheta + Math.PI) + 2) / 3;
-    this.targetIndicator.scale.set((Math.sin(targetTheta) + 2) / 5);
-    this.targetIndicator.alpha = (Math.sin(targetTheta + Math.PI) + 2) / 3;
+    this.originIndicator.update();
+    this.targetIndicator.update();
 
     this.projectile.position.add(this.projectile.velocity.x, this.projectile.velocity.y);
 
@@ -521,20 +505,26 @@ class Intersection {
 /*
 INDICATORS
 */
-class SelectedIndicator {
-  constructor(position, color) {
+class TargetIndicator {
+  constructor(target, color) {
     this.sprites = [
-      phaser.add.sprite(position.x, position.y, 'target01'),
-      phaser.add.sprite(position.x, position.y, 'target02'),
-      phaser.add.sprite(position.x, position.y, 'target03'),
-      phaser.add.sprite(position.x, position.y, 'target04')
+      phaser.add.sprite(target.centerX, target.centerY, 'target01'),
+      phaser.add.sprite(target.centerX, target.centerY, 'target02'),
+      phaser.add.sprite(target.centerX, target.centerY, 'target03'),
+      phaser.add.sprite(target.centerX, target.centerY, 'target04')
     ];
+    this.sprites.forEach(sprite => {
+      sprite.anchor.set(0.5);
+      sprite.tint = color;
+    })
     this.frame = 0;
   }
 
   update() {
+    this.frame++;
     this.sprites.forEach((sprite, i) => {
-      sprite.angle = 10 * (.3 * i);
+      sprite.angle = this.frame * 10 * (.3 * i);
+      sprite.scale.set(1 + (Math.sin(this.frame / 5) * 0.15));
     });
   }
 
