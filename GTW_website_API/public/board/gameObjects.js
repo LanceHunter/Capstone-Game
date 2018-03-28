@@ -146,10 +146,10 @@ class SubIcon {
         if (!self.launch) {
           self.launch = new Launch(self);
         } else {
-          console.log('there is already a launch in progress');
+          // console.log('there is already a launch in progress');
         }
       } else {
-        console.log('no ammo');
+        // console.log('no ammo');
       }
     }
   }
@@ -216,10 +216,10 @@ class BomberIcon {
         if (!self.launch) {
           self.launch = new Launch(self);
         } else {
-          console.log('there is already a launch in progress');
+          // console.log('there is already a launch in progress');
         }
       } else {
-        console.log('no ammo');
+        // console.log('no ammo');
       }
     }
   }
@@ -282,14 +282,14 @@ class MissileIcon {
     // is it your sub?
     if (self.playerID === pointer.playerID) {
       if (game.continents[self.continent].forces.icbms.total > 0) {
-        console.log(self.launch);
+        // console.log(self.launch);
         if (!self.launch) {
           self.launch = new Launch(self);
         } else {
-          console.log('there is already a launch in progress');
+          // console.log('there is already a launch in progress');
         }
       } else {
-        console.log('no ammo');
+        // console.log('no ammo');
       }
     }
   }
@@ -399,7 +399,7 @@ class Launch {
       this.originIndicator.destroy();
 
       if (this.origin.type === 'sub') {
-        console.log('sub hit');
+        // console.log('sub hit');
         let data = {
           gameID: gameID,
           launchID: this.origin.ocean,
@@ -412,10 +412,10 @@ class Launch {
           data: data,
           dataType: 'json'
         }).then(
-          r => console.log(r)
+          // r => console.log(r)
         );
       } else {
-        console.log('air hit');
+        // console.log('air hit');
         let data = {
           gameID: gameID,
           launchID: this.origin.continent,
@@ -429,7 +429,7 @@ class Launch {
           data: data,
           dataType: 'json'
         }).then(
-          r => console.log(r)
+          // r => console.log(r)
         );
       }
     }

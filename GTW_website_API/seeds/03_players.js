@@ -8,7 +8,7 @@ exports.seed = function(knex, Promise) {
       score: 5000,
       shots: 320,
       rnd_multiplier: 5,
-      created_at: '2001-03-21T14:34:55.247Z',
+      created_at: new Date('2001-03-21T14:34:55.247Z'),
     },
     {
       user_id: 1,
@@ -18,7 +18,7 @@ exports.seed = function(knex, Promise) {
       score: 5000,
       shots: 300,
       rnd_multiplier: 2,
-      created_at: '2003-06-01T14:34:55.247Z',
+      created_at: new Date('2003-06-01T14:34:55.247Z'),
     },
     {
       user_id: 1,
@@ -28,7 +28,7 @@ exports.seed = function(knex, Promise) {
       score: 3000,
       shots: 180,
       rnd_multiplier: 3,
-      created_at: '2007-01-19T14:34:55.247Z',
+      created_at: new Date('2007-01-19T14:34:55.247Z'),
     },
     {
       user_id: 1,
@@ -38,7 +38,7 @@ exports.seed = function(knex, Promise) {
       score: 7000,
       shots: 430,
       rnd_multiplier: 4,
-      created_at: '2010-06-13T14:34:55.247Z',
+      created_at: new Date('2010-06-13T14:34:55.247Z'),
     },
     {
       user_id: 1,
@@ -48,7 +48,7 @@ exports.seed = function(knex, Promise) {
       score: 5500,
       shots: 350,
       rnd_multiplier: 1,
-      created_at: '2010-11-25T14:34:55.247Z',
+      created_at: new Date('2010-11-25T14:34:55.247Z'),
     },
     {
       user_id: 1,
@@ -58,7 +58,7 @@ exports.seed = function(knex, Promise) {
       score: 3200,
       shots: 270,
       rnd_multiplier: 3,
-      created_at: '2015-07-20T14:34:55.247Z',
+      created_at: new Date('2015-07-20T14:34:55.247Z'),
     },
     {
       user_id: 1,
@@ -68,7 +68,7 @@ exports.seed = function(knex, Promise) {
       score: 2500,
       shots: 80,
       rnd_multiplier: 2,
-      created_at: '2016-05-14T14:34:55.247Z',
+      created_at: new Date('2016-05-14T14:34:55.247Z'),
     },
     {
       user_id: 1,
@@ -78,7 +78,7 @@ exports.seed = function(knex, Promise) {
       score: 6500,
       shots: 390,
       rnd_multiplier: 3,
-      created_at: '2017-02-28T14:34:55.247Z',
+      created_at: new Date('2017-02-28T14:34:55.247Z'),
     },
     {
       user_id: 1,
@@ -88,7 +88,7 @@ exports.seed = function(knex, Promise) {
       score: 4900,
       shots: 170,
       rnd_multiplier: 2,
-      created_at: '2018-02-21T14:34:55.247Z',
+      created_at: new Date('2018-02-21T14:34:55.247Z'),
     },
     {
       user_id: 1,
@@ -98,7 +98,7 @@ exports.seed = function(knex, Promise) {
       score: 5400,
       shots: 240,
       rnd_multiplier: 1,
-      created_at: '2018-03-21T14:34:55.247Z',
+      created_at: new Date('2018-03-21T14:34:55.247Z'),
     },
     {
       user_id: 2,
@@ -108,7 +108,7 @@ exports.seed = function(knex, Promise) {
       score: 0,
       shots: 80,
       rnd_multiplier: 5,
-      // created_at: '2018-03-10T14:34:55.247Z',
+      created_at: new Date('2018-03-10T14:34:55.247Z'),
     },
     {
       user_id: 2,
@@ -118,7 +118,7 @@ exports.seed = function(knex, Promise) {
       score: 0,
       shots: 80,
       rnd_multiplier: 2,
-      // created_at: '2018-03-21T14:34:55.247Z',
+      created_at: new Date('2018-03-21T14:34:55.247Z'),
     },
     {
       user_id: 2,
@@ -128,7 +128,7 @@ exports.seed = function(knex, Promise) {
       score: 0,
       shots: 80,
       rnd_multiplier: 3,
-      // created_at: '2018-03-21T14:34:55.247Z',
+      created_at: new Date('2018-03-21T14:34:55.247Z'),
     },
     {
       user_id: 2,
@@ -138,7 +138,7 @@ exports.seed = function(knex, Promise) {
       score: 0,
       shots: 50,
       rnd_multiplier: 4,
-      // created_at: '2018-03-21T14:34:55.247Z',
+      created_at: new Date('2018-03-21T14:34:55.247Z'),
     },
     {
       user_id: 2,
@@ -148,7 +148,7 @@ exports.seed = function(knex, Promise) {
       score: 1000,
       shots: 60,
       rnd_multiplier: 3,
-      // created_at: '2018-03-21T14:34:55.247Z',
+      created_at: new Date('2018-03-21T14:34:55.247Z'),
     },
     {
       user_id: 2,
@@ -158,7 +158,7 @@ exports.seed = function(knex, Promise) {
       score: 6000,
       shots: 0,
       rnd_multiplier: 9,
-      // created_at: '2018-03-21T14:34:55.247Z',
+      created_at: new Date('2018-03-21T14:34:55.247Z'),
     },
     {
       user_id: 2,
@@ -168,7 +168,7 @@ exports.seed = function(knex, Promise) {
       score: 8000,
       shots: 0,
       rnd_multiplier: 2,
-      // created_at: '2018-03-21T14:34:55.247Z',
+      created_at: new Date('2018-03-21T14:34:55.247Z'),
     },
     {
       user_id: 2,
@@ -178,7 +178,7 @@ exports.seed = function(knex, Promise) {
       score: 0,
       shots: 0,
       rnd_multiplier: 3,
-      // created_at: '2018-03-21T14:34:55.247Z',
+      created_at: new Date('2018-03-21T14:34:55.247Z'),
     },
     {
       user_id: 2,
@@ -188,7 +188,7 @@ exports.seed = function(knex, Promise) {
       score: 3000,
       shots: 40,
       rnd_multiplier: 2,
-      // created_at: '2018-03-21T14:34:55.247Z',
+      created_at: new Date('2018-03-21T14:34:55.247Z'),
     },
     {
       user_id: 2,
@@ -198,7 +198,7 @@ exports.seed = function(knex, Promise) {
       score: 0,
       shots: 0,
       rnd_multiplier: 1,
-      // created_at: '2018-03-21T14:34:55.247Z',
+      created_at: new Date('2018-03-21T14:34:55.247Z'),
     },
   ]
 

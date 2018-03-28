@@ -12,14 +12,16 @@ const joinGameModal = new Vue({
 })
 
 async function joinGame() {
-  console.log('lauched join game');
   // create a game instance
   const database = firebase.database();
 
   const data = await $.post('/api/pregame/setup');
   gameID = data.gameID;
 
-  console.log('gameID:', gameID);
+  /* SHORT CIRCUIT
+  gameID = 'testgame0'
+  */
+
   joinGameModal.gameID = gameID;
   const gameRef = database.ref('gameInstance').child(gameID);
   let usernames = [];
@@ -38,7 +40,6 @@ async function joinGame() {
   // start game on button press
   const beginGameButton = document.getElementById("beginGameButton");
   beginGameButton.addEventListener('click', async function() {
-    console.log('clicked button');
     if (usernames.length > 1) {
       gameRef.off();
       document.getElementById("joinGameModal").remove();
@@ -129,7 +130,6 @@ function distanceSquared(rect, pointer) {
   center ('which is white regardless of which laser pointer is used') and thier halo ('which is set at the top of this file as a target color'). It uses the last seen location of each pointer and it's halo to determin which white dot coresponds to which color laser pointer. It then writes that pointer location data to the global 'lasers' array for use in the game function.
 */
 function trackLasers(translator) {
-  console.log('tracking lasers');
   // set up the pointer objects
   let redPointer = new Pointer(redTargetColor);
   tracking.ColorTracker.registerColor('red', (r,g,b) => redPointer.range(r,g,b));
@@ -150,9 +150,6 @@ function trackLasers(translator) {
   let trackerTask = tracking.track('#trackingVideo', tracker, { camera: true });
 
   tracker.on('track', function(event) {
-    // console.log('red:', lasers[0]);
-    // console.log('gree:', lasers[2]);
-    // console.log('blue:', lasers[3]);
     event.data.forEach((rect) => {
       rect.center = translator.coordinates({x: rect.x - rect.width / 2, y: rect.y - rect.height / 2});
 
@@ -206,7 +203,6 @@ function trackLasers(translator) {
   Creates a board on the display with given width and height, detects that rectangle with the camera, and then creates a translator object that maps coordinates from the camera to coordinates on the display. Pass the translator object to the next function that needs it in the setTimeout function at the bottom (right now that is set to testPointer).
 */
 function align(boardWidth, boardHeight) {
-  console.log('starting alignment');
   // set up board
   let state = 'rough';
   let c = document.getElementById("alignmentCanvas");
@@ -215,7 +211,6 @@ function align(boardWidth, boardHeight) {
   let ctx = c.getContext("2d");
   ctx.beginPath()
   ctx.fillStyle = "#FFF";
-  console.log('drawing rect');
   ctx.fillRect((c.width - boardWidth) / 2, (c.height - boardHeight) / 2, boardWidth, boardHeight);
   ctx.stroke();
 
@@ -257,11 +252,6 @@ function align(boardWidth, boardHeight) {
       setTimeout(function() {
         if (state === 'precise') {
           ctx.clearRect(0, 0, c.width, c.height);
-          // ctx.beginPath()
-          // ctx.strokeStyle = "#F00";
-          // ctx.rect(rect.x, rect.y, rect.width, rect.height);
-          // ctx.stroke();
-          console.log('finishied alignment');
           state = 'finished';
           trackLasers(translator);
           joinGame();
