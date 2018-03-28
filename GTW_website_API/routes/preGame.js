@@ -351,7 +351,7 @@ router.post('/continentselect', async (ctx) => {
     gameObj = snap.val();
   }); // End of the snapshot.
 
-  let totalPlayers = Object.keys(gameObj.players);
+  let totalPlayers = Object.keys(gameObj.players).length;
 
   if (gameObj && gameObj.gameStarted) { // Verifying that gameID is valid.
     if (gameObj.players[playerID]) { // Verifying that player is part of this game.
