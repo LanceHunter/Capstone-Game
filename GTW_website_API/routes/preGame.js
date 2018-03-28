@@ -2,7 +2,7 @@
 
 // Firebase setup.
 const admin = require("firebase-admin");
-const serviceAccount = require('../../private/gtwthegame-firebase-adminsdk-xemv3-858ad1023b.json');
+const serviceAccount = require('../../../private/gtwthegame-firebase-adminsdk-xemv3-858ad1023b.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -252,7 +252,11 @@ router.put('/joingame', async (ctx) => {
         let playerObj = {};
         playerObj[playerID] = {
           totalDeclaredForces : 0,
-          continents : true,
+          totalForces : 0,
+          totalBombers : 0,
+          totalICBMs : 0,
+          totalSubs : 0,
+          continents : false,
           oceans : true,
           rnd : {
             speed : 0,
@@ -276,7 +280,11 @@ router.put('/joingame', async (ctx) => {
       let playerObj = {};
       playerObj[playerID] = {
         totalDeclaredForces : 0,
-        continents : true,
+        totalForces : 0,
+        totalBombers : 0,
+        totalICBMs : 0,
+        totalSubs : 0,
+        continents : false,
         oceans : true,
         rnd : {
           speed : 0,
@@ -335,21 +343,27 @@ router.post('/continentselect', async (ctx) => {
   let playerID = ctx.request.body.playerID;
   let gameID = ctx.request.body.gameID;
   let continent = ctx.request.body.continent;
-
   let gameRef = ref.child(gameID);
   let player = gameRef.child(`players/${playerID}`);
+  let gameObj;
 
   await gameRef.once('value', (snap) => {
-    if (snap.val() && snap.val().gameStarted) { // Verifying that gameID is valid.
-      if (snap.val().players[playerID]) { // Verifying that player is part of this game.
-        if (!snap.val().continents[continent].player) { // Checking to see if continent is already assigned.
+    gameObj = snap.val();
+  }); // End of the snapshot.
+
+  let totalPlayers = Object.keys(gameObj.players);
+
+  if (gameObj && gameObj.gameStarted) { // Verifying that gameID is valid.
+    if (gameObj.players[playerID]) { // Verifying that player is part of this game.
+      if (!gameObj.players[playerID].continents) { // Checking to see if the player has no continents yet.
+        if (!gameObj.continents[continent].player) { // Checking to see if continent is already assigned.
           let continentAssignObj = {};
           continentAssignObj[continent] = true;
           let playerAssignObj = {};
           playerAssignObj[playerID] = true;
           player.child(`continents`).update(continentAssignObj);
 
-          let oceansArr = Object.keys(snap.val().continents[continent].oceans);
+          let oceansArr = Object.keys(gameObj.continents[continent].oceans);
           oceansArr.forEach((ocean) => {
             let oceanSubsForPlayer = {};
             oceanSubsForPlayer[playerID] = {
@@ -358,7 +372,7 @@ router.post('/continentselect', async (ctx) => {
             };
             gameRef.child(`oceans/${ocean}/subs`).update(oceanSubsForPlayer);
           });
-          player.child(`oceans`).update(snap.val().continents[continent].oceans); // Adding the oceans player can access with this continent.
+          player.child(`oceans`).update(gameObj.continents[continent].oceans); // Adding the oceans player can access with this continent.
           gameRef.child(`continents/${continent}/player`).update(playerAssignObj);
           ctx.status = 200;
         } else {
@@ -367,19 +381,27 @@ router.post('/continentselect', async (ctx) => {
             message: 'Continent has already been assigned.',
           };
         } // End of continent-already-assigned conditional.
-      } else { // if player is not part of this game.
+      } else if (Object.keys(gameObj.players[playerID].continents).length * totalPlayers < 6) { // If the player has continents, making sure they don't have more than their share.
+      } else {
         ctx.status = 400;
         ctx.body = {
-          message: 'PlayerID is not valid for this game.',
+          message: 'Player has max nuber of continents.',
         };
-      } // End of player verification conditional.
-    } else { // If this game ID doesn't exist.
+      }
+    } else { // if player is not part of this game.
       ctx.status = 400;
       ctx.body = {
-        message: 'Invalid game ID, or game has not yet started.',
+        message: 'PlayerID is not valid for this game.',
       };
-    }// End of gameID/game start verification conditional.
-  }) // End of the snapshot.
+    } // End of player verification conditional.
+  } else { // If this game ID doesn't exist.
+    ctx.status = 400;
+    ctx.body = {
+      message: 'Invalid game ID, or game has not yet started.',
+    };
+  }// End of gameID/game start verification conditional.
+
+
 }); // End of the route.
 
 router.post('/beginpeace', async (ctx) => {
