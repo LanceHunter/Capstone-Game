@@ -26,18 +26,19 @@ class CapitalIcon {
     this.hitPoints.setText(game.continents[this.continent].hp);
     this.hitPoints.position.x = this.sprite.centerX - (this.hitPoints.width / 2);
 
-    // if they are out of hit points
-    if (game.continents[this.continent].hp <= 0) {
-      this.sprite.alpha = 0.2;
-      this.hitPoints.alpha = 0.2;
-    }
     if (game.peacetime) {
       this.sprite.alpha = 1;
       this.hitPoints.alpha = 1;
-    }
+    } else
     if (game.war) {
       this.sprite.alpha = alphaAdjust;
       this.hitPoints.alpha = alphaAdjust;
+      if (game.continents[this.continent].hp <= 0) {
+        this.sprite.alpha = 0.2;
+        this.hitPoints.alpha = 0.2;
+      }
+    } else {
+      this.sprite.alpha = alphaAdjust;
     }
 
     this.hitPoints.setText(game.continents[this.continent].hp);
