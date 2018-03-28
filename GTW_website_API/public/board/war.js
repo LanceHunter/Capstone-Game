@@ -83,9 +83,8 @@ let war = {
 
     // look at every pointer
     pointers.forEach((pointer) => {
-      /* SHORT CIRCUIT
+      // short circuit when no lasers
       pointer.setPosition();
-      */
 
       if (!pointer.intersecting()) {
         capitalIcons.some((capital) => {
