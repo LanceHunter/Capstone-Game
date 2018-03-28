@@ -335,7 +335,8 @@ class Launch {
           this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'circle');
           this.projectile.tint = colors[playerIDs.indexOf(playerID)];
           this.projectile.anchor.set(0.5);
-          this.projectile.scale.set(0.3);
+          this.projectile.alpha = alphaAdjust;
+          this.projectile.scale.set(0.2);
           this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
           let velocity = 10 + (game.players[playerID].rnd.speed * 2 / 500);
           this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(velocity, velocity);
@@ -355,7 +356,8 @@ class Launch {
           this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'circle');
           this.projectile.tint = colors[playerIDs.indexOf(playerID)];
           this.projectile.anchor.set(0.5);
-          this.projectile.scale.set(0.3);
+          this.projectile.alpha = alphaAdjust;
+          this.projectile.scale.set(0.2);
           this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
           let velocity = 10 + (game.players[playerID].rnd.speed * 2 / 500);
           this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(velocity, velocity);
@@ -372,7 +374,8 @@ class Launch {
         this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'circle');
         this.projectile.tint = colors[playerIDs.indexOf(playerID)];
         this.projectile.anchor.set(0.5);
-        this.projectile.scale.set(0.3);
+        this.projectile.alpha = alphaAdjust;
+        this.projectile.scale.set(0.2);
         this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
         let velocity = 10 + (game.players[playerID].rnd.speed * 2 / 500);
         this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(velocity, velocity);
