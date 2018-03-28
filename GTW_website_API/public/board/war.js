@@ -1,6 +1,6 @@
 let war = {
   preload: function() {
-    this.game.load.image('map', '/board/assets/map.png');
+    this.game.load.image('map', '/board/assets/warmap.png');
     this.game.load.image('capital', '/board/assets/capital.png');
     this.game.load.bitmapFont('closeness', '/board/assets/fonts/closeness.png', '/board/assets/fonts/closeness.fnt');
     this.game.load.image('missile', '/board/assets/missile.png');
