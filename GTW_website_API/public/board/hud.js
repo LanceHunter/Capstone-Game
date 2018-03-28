@@ -20,5 +20,10 @@ const gameOverModal = new Vue({
     },
     outcome: null,
     winner: null,
+  },
+  computed: {
+    outcomeMessages: function() {
+      return this.messages[this.outcome];
+    }
   }
 })
