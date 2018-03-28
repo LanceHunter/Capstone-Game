@@ -29,6 +29,3 @@ let pointers;
 
 // create the global lasers object used by the game as pointers
 const lasers = [null, null, null];
-
-// are we testing?
-const testing = true;
