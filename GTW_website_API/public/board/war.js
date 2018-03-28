@@ -13,14 +13,6 @@ let war = {
     this.game.add.sprite(0, 0, 'map');
 
     /*
-    our pointer objects
-    */
-    pointers = [];
-    for (let i = 0; i < playerIDs.length; i++) {
-      pointers.push(new PlayerPointer(i, this))
-    }
-
-    /*
     sub icons
     */
     subIcons = [
@@ -68,6 +60,14 @@ let war = {
     bomberIcons.push(new BomberIcon(850, (1080 - 365), 'africa'));
     capitalIcons.push(new CapitalIcon(955, (1080 - 365), 'africa'));
     missileIcons.push(new MissileIcon(1060, (1080 - 365), 'africa'));
+
+    /*
+    our pointer objects
+    */
+    pointers = [];
+    for (let i = 0; i < playerIDs.length; i++) {
+      pointers.push(new PlayerPointer(i, this))
+    }
   },
   update: function() {
     // update icons
@@ -86,7 +86,7 @@ let war = {
       /* SHORT CIRCUIT
       pointer.setPosition();
       */
-      
+
       if (!pointer.intersecting()) {
         capitalIcons.some((capital) => {
           let data = {

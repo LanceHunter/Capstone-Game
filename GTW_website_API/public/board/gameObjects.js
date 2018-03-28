@@ -1,3 +1,6 @@
+/*
+TARGETS
+*/
 class CapitalIcon {
   constructor(x, y, continent) {
     this.sprite = phaser.add.sprite(x, y, 'capital');
@@ -14,6 +17,7 @@ class CapitalIcon {
     this.playerID = Object.keys(game.continents[this.continent].player)[0];
   }
 
+  // triggered when the firebase state changes
   updateState() {
     if (game.war) {
       this.sprite.inputEnabled = true;
@@ -35,14 +39,14 @@ class CapitalIcon {
     this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
   }
 
+  // triggered when a capital is painted
   select(data) {
     let self = data.self;
     let pointer = data.pointer;
-    console.log(pointer.playerID, self.playerID);
+    // check that you aren't painting your own capital
     if (pointer.playerID != self.playerID) {
-      console.log('not your capital');
+      // and that the capital has hp
       if (game.continents[self.continent].hp > 0) {
-        console.log('capital has ' + game.continents[self.continent].hp + ' hp');
         // check all the weapons for armed launch objects
         subIcons.forEach((sub) => {
           if (sub.playerID === pointer.playerID) {
@@ -70,8 +74,12 @@ class CapitalIcon {
   }
 }
 
+/*
+WEAPONS
+*/
 class SubIcon {
   constructor(x, y, ocean, playerID) {
+    this.type = 'sub';
     this.sprite = phaser.add.sprite(x, y, 'submarine');
     this.sprite.anchor.set(0, 1);
     this.playerID = playerID;
@@ -127,7 +135,7 @@ class SubIcon {
 
     // is it your sub?
     if (self.playerID === pointer.playerID) {
-      if (game.oceans[self.ocean].subs[self.playerID].total > 0) {
+      if (game.oceans[self.ocean].subs[self.playerID] && game.oceans[self.ocean].subs[self.playerID].total > 0) {
         if (!self.launch) {
           self.launch = new Launch(self);
         } else {
@@ -142,6 +150,7 @@ class SubIcon {
 
 class BomberIcon {
   constructor(x, y, continent) {
+    this.type = 'bomber';
     this.sprite = phaser.add.sprite(x, y, 'bomber');
     this.sprite.anchor.set(0, 1);
     this.continent = continent;
@@ -149,15 +158,6 @@ class BomberIcon {
     this.continent = continent;
     this.launches = [];
     this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
-
-    // some listeners
-    this.sprite.events.onInputDown.add(() => {
-      this.launches.push(new Launch(this.playerID, {x: this.sprite.centerX, y: this.sprite.centerY}, this.ocean));
-    }, this);
-
-    this.sprite.events.onInputUp.add(() => {
-      this.launches[this.launches.length - 1].launch({x: 10, y: 10});
-    }, this);
 
     this.updateState();
   }
@@ -227,14 +227,7 @@ class MissileIcon {
     this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
     this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
     this.inventory.tint = colors[playerIDs.indexOf(this.playerID)];
-
-    // some listeners
-    this.sprite.events.onInputDown.add(() => {
-    }, this);
-
-    this.sprite.events.onInputUp.add(() => {
-      this.launches[this.launches.length - 1].launch({x: 10, y: 10});
-    }, this);
+    this.type="icbm";
 
     this.updateState();
   }
@@ -282,6 +275,7 @@ class MissileIcon {
     // is it your sub?
     if (self.playerID === pointer.playerID) {
       if (game.continents[self.continent].forces.icbms.total > 0) {
+        console.log(self.launch);
         if (!self.launch) {
           self.launch = new Launch(self);
         } else {
@@ -294,29 +288,21 @@ class MissileIcon {
   }
 }
 
+/*
+LAUNCH
+*/
 class Launch {
   // these will be created whenever a players's sub-deploy thing is activated
   constructor(origin) {
     this.origin = origin;
 
     this.originIndicator = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'circle');
-    this.originIndicator.tint = colors[playerIDs.indexOf(origin.playerID)];
+    this.originIndicator.tint = colors[playerIDs.indexOf(this.origin.playerID)];
     this.originIndicator.anchor.set(0.5);
     this.originIndicator.scale.set(0.1);
 
-
-    // some fake stuff for animations that don't exist yet
-    this.enrouteCount = 0;
-    this.explodingCount = 0;
-
-    // a gear for animations
-    this.frame = 0;
-
-    // to keep track of the countdown timer
-    this.delay = 3;
-    this.count = 0;
-
-    // first we start aiming
+    // first we arm the weapon
+    this.originFrame = 0;
     this.state = 'armed';
   }
 
@@ -328,7 +314,8 @@ class Launch {
 
   // a weapon has been selected, launch is pending
   armed() {
-    let theta = (this.frame / 15)
+    this.originFrame++;
+    let theta = (this.originFrame / 15)
     this.originIndicator.scale.set((Math.sin(theta) + 2) / 5);
     this.originIndicator.alpha = (Math.sin(theta + Math.PI) + 2) / 3;
   }
@@ -336,90 +323,143 @@ class Launch {
   // when user paints a destination
   launch(capital, playerID) {
     this.target = capital;
-    // check if the destination is valid first
-    if (capital.playerID != this.playerID && game.continents[capital.continent].hp > 0) {
-      this.targetIndicator = phaser.add.sprite(capital.sprite.centerX, capital.sprite.centerY, 'circle');
-      this.targetIndicator.tint = colors[playerIDs.indexOf(playerID)];
-      this.targetIndicator.anchor.set(0.5);
+
+    // check that the capital doesn't belong to the origin and isn't already dead
+    if (capital.playerID != this.origin.playerID && game.continents[capital.continent].hp > 0) {
+      if (this.origin.type === 'sub') {
+        // check for valid sub launch
+        if (Object.keys(game.oceans[this.origin.ocean].canHit).includes(this.target.continent)) {
+          // sprite stuff
+          this.targetIndicator = phaser.add.sprite(capital.sprite.centerX, capital.sprite.centerY, 'circle');
+          this.targetIndicator.tint = colors[playerIDs.indexOf(playerID)];
+          this.targetIndicator.anchor.set(0.5);
+          this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'circle');
+          this.projectile.tint = colors[playerIDs.indexOf(playerID)];
+          this.projectile.anchor.set(0.5);
+          this.projectile.scale.set(0.3);
+          this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
+          this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(10, 10);
+
+          this.state = 'enroute';
+          this.targetFrame = 0;
+        } else {
+          console.log('invalid sub');
+        }
+      } else
+      if (this.origin.type === 'bomber') {
+        // check for valid bomber launch
+        if (game.continents[this.origin.continent].distances[this.target.continent] === 1) {
+          console.log('valid bomb');
+          // sprite stuff
+          this.targetIndicator = phaser.add.sprite(capital.sprite.centerX, capital.sprite.centerY, 'circle');
+          this.targetIndicator.tint = colors[playerIDs.indexOf(playerID)];
+          this.targetIndicator.anchor.set(0.5);
+          this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'circle');
+          this.projectile.tint = colors[playerIDs.indexOf(playerID)];
+          this.projectile.anchor.set(0.5);
+          this.projectile.scale.set(0.3);
+          this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
+          this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(10, 10);
+
+          this.state = 'enroute';
+          this.targetFrame = 0;
+        } else {
+          console.log('invalid bomb');
+        }
+      } else {
+        // sprite stuff
+        this.targetIndicator = phaser.add.sprite(capital.sprite.centerX, capital.sprite.centerY, 'circle');
+        this.targetIndicator.tint = colors[playerIDs.indexOf(playerID)];
+        this.targetIndicator.anchor.set(0.5);
+        this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'circle');
+        this.projectile.tint = colors[playerIDs.indexOf(playerID)];
+        this.projectile.anchor.set(0.5);
+        this.projectile.scale.set(0.3);
+        this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
+        this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(10, 10);
+
+        this.state = 'enroute';
+        this.targetFrame = 0;
+      }
     }
-
-    this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'circle');
-    this.projectile.tint = colors[playerIDs.indexOf(playerID)];
-    this.projectile.anchor.set(0.5);
-    this.projectile.scale.set(0.3);
-    this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
-    this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(10, 10);
-
-    this.state = 'enroute';
   }
 
   // while the missile is traveling
   enroute() {
-    let theta = (this.frame / 15)
-    this.originIndicator.scale.set((Math.sin(theta) + 2) / 5);
-    this.originIndicator.alpha = (Math.sin(theta + Math.PI) + 2) / 3;
-    this.targetIndicator.scale.set((Math.sin(theta) + 2) / 5);
-    this.targetIndicator.alpha = (Math.sin(theta + Math.PI) + 2) / 3;
+    this.targetFrame++;
+    this.originFrame++;
+    let targetTheta = (this.targetFrame / 15);
+    let originTheta = (this.originFrame / 10);
+    this.originIndicator.scale.set((Math.sin(originTheta) + 2) / 5);
+    this.originIndicator.alpha = (Math.sin(originTheta + Math.PI) + 2) / 3;
+    this.targetIndicator.scale.set((Math.sin(targetTheta) + 2) / 5);
+    this.targetIndicator.alpha = (Math.sin(targetTheta + Math.PI) + 2) / 3;
 
     this.projectile.position.add(this.projectile.velocity.x, this.projectile.velocity.y);
 
     // when it gets to the destination, this.state = 'exploding'
     if (this.projectile.overlap(this.target.sprite)) {
-      console.log('HIT');
       this.state = 'exploding';
+      this.explodingFrame = 0;
       this.projectile.destroy();
       this.targetIndicator.destroy();
       this.originIndicator.destroy();
 
-      let data = {
-        gameID: gameID,
-        launchID: this.origin.continent,
-        targetID: this.target.continent,
-        type: 'bomber'
-      };
-      console.log(data);
+      if (this.origin.type === 'sub') {
+        console.log('sub hit');
+        let data = {
+          gameID: gameID,
+          launchID: this.origin.ocean,
+          targetID: this.target.continent,
+          shooterID: this.origin.playerID
+        };
+        $.ajax({
+          url: '/api/war/subshot',
+          method: 'PUT',
+          data: data,
+          dataType: 'json'
+        }).then(
+          r => console.log(r)
+        );
+      } else {
+        console.log('air hit');
+        let data = {
+          gameID: gameID,
+          launchID: this.origin.continent,
+          targetID: this.target.continent,
+          type: this.origin.type
+        };
 
-
-      $.ajax({
-        // url: "https://gtnwthegame.com/api/war/shot",
-        url: "http://localhost:3000/api/war/shot",
-        method: "put",
-        data: JSON.stringify(data),
-        dataType: 'application/json'
-      }).then(r => console.log(r));
-
+        $.ajax({
+          url: '/api/war/shot',
+          method: 'PUT',
+          data: data,
+          dataType: 'json'
+        }).then(
+          r => console.log(r)
+        );
+      }
     }
   }
 
   // while the explosion animation is happening
   exploding() {
-    console.log('exploding');
-    this.explodingCount++;
-    if (this.explodingCount > 20) {
-      this.state = 'exploded';
+    this.explodingFrame++;
+    if (this.explodingFrame > 20) {
+      this.origin.launch = false;
     }
-    // when the missile gets to the destination
-    // get rid of the
-    // ocean.subs[player.name].total--;
-    // if (ocean.subs[player.name].declared > 0) {
-    //   ocean.subs[player.name].declared--;
-    // }
-    // when done exploding, this.state = 'exploded'
   }
-
-  exploded() {
-    this.origin.launch = null;
-  }
-
 }
 
+/*
+LASER TRACKING STUFF
+*/
 class PlayerPointer {
   constructor(index, state) {
     this.playerIndex = index;
     this.playerID = playerIDs[index];
     this.sprite = state.game.add.sprite(state.game.width / 2, state.game.height / 2, 'circle');
     this.sprite.tint = colors[index];
-    // this.sprite.alpha = 0;
     this.sprite.scale.set(0.2);
 
     this.sprite.inputEnabled = true;
@@ -471,7 +511,6 @@ class Intersection {
         this.action(this.data);
         return false;
       };
-
       return true;
     } else {
       return false;
