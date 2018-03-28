@@ -5,7 +5,7 @@
 const joinGameModal = new Vue({
   el: '#joinGameModal',
   data: {
-    colors: colors.map(c => 'rgb(' + [(c & 0xff0000) >> 16,  (c & 0x00ff00) >> 8,  (c & 0x0000ff)] + ')'),
+    colors: colors.map(c => 'rgb(' + [(c & 0x880000) >> 16,  (c & 0x008800) >> 8,  (c & 0x000088)] + ')'),
     gameID: null,
     usernames: [],
   }
@@ -19,9 +19,8 @@ async function joinGame() {
   const data = await $.post('/api/pregame/setup');
   gameID = data.gameID;
 
-  /* SHORT CIRCUIT
-  gameID = 'testgame0'
-  */
+  // test game
+  gameID = 'game8634';
 
   console.log('gameID:', gameID);
   joinGameModal.gameID = gameID;

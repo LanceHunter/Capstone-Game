@@ -215,7 +215,7 @@ router.post('/yearcomplete', async (ctx) => {
               let spyPlayersArr = playersArr.slice(0);
               spyPlayersArr.splice(playersArr.indexOf(playerInOcean), 1);
               let recipientPlayer = spyPlayersArr[Math.floor(Math.random()*spyPlayersArr.length)];
-              let spyMessage = gameObj.players[recipientPlayer].spyMessage + `Your spies discovered that ${playerInOcean} has ${gameObj.oceans[ocean].subs[playerInOcean].total - gameObj.oceans[ocean].subs[playerInOcean].declared} undeclared submarines in the ${ocean.name}! `;
+              let spyMessage = gameObj.players[recipientPlayer].spyMessage + `Your spies discovered that ${playerInOcean} has ${gameObj.oceans[ocean].subs[playerInOcean].total - gameObj.oceans[ocean].subs[playerInOcean].declared} undeclared submarines in the ${gameObj.oceans[ocean].name}! `;
               gameRef.child(`players/${recipientPlayer}`).update({spyMessage:spyMessage});
             } // End of conditional checking spy roll fail.
           } // End of conditional checking if there are subs in the ocean for that player.

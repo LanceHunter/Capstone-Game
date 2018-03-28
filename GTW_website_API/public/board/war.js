@@ -7,7 +7,10 @@ let war = {
     this.game.load.image('submarine', '/board/assets/submarine.png');
     this.game.load.image('bomber', '/board/assets/bomber.png');
     this.game.load.image('circle', '/board/assets/circle.png');
-    this.game.load.image('ring', '/board/assets/ring.png');
+    this.game.load.image('target01', '/board/assets/target01.png');
+    this.game.load.image('target02', '/board/assets/target02.png');
+    this.game.load.image('target03', '/board/assets/target03.png');
+    this.game.load.image('target04', '/board/assets/target04.png');
   },
   create: function() {
     this.game.add.sprite(0, 0, 'map');
