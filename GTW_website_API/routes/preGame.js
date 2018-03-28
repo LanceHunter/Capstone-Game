@@ -252,6 +252,10 @@ router.put('/joingame', async (ctx) => {
         let playerObj = {};
         playerObj[playerID] = {
           totalDeclaredForces : 0,
+          totalForces : 0,
+          totalBombers : 0,
+          totalICBMs : 0,
+          totalSubs : 0,
           continents : true,
           oceans : true,
           rnd : {

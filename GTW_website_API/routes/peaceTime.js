@@ -339,7 +339,13 @@ router.put('/deploybomber', async (ctx) => {
     if (gameObj.players[playerID].currentBudget >= bomberCost * quantity && gameObj.players[playerID].continents[location]) {
       let bombers = gameObj.continents[location].forces.bombers.total + quantity;
       let currentBudget = gameObj.players[playerID].currentBudget - (bomberCost * quantity);
-      gameRef.child(`players/${playerID}`).update({currentBudget : currentBudget});
+      let totalForces = gameObj.players[playerID].totalForces + 1;
+      let totalBombers = gameObj.players[playerID].totalBombers + 1;
+      gameRef.child(`players/${playerID}`).update({
+        currentBudget : currentBudget,
+        totalForces : totalForces,
+        totalBombers : totalBombers
+      });
       gameRef.child(`continents/${location}/forces/bombers`).update({total : bombers});
       ctx.status = 200;
     } else { // If the player doesn't have enough funds or is trying to put them on a continent they don't own.
@@ -373,7 +379,13 @@ router.put('/deployicbm', async (ctx) => {
     if (gameObj.players[playerID].currentBudget >= icbmCost * quantity && gameObj.players[playerID].continents[location]) {
       let icbms = gameObj.continents[location].forces.icbms.total + quantity;
       let currentBudget = gameObj.players[playerID].currentBudget - (icbmCost * quantity);
-      gameRef.child(`players/${playerID}`).update({currentBudget : currentBudget});
+      let totalForces = gameObj.players[playerID].totalForces + 1;
+      let totalICBMs = gameObj.players[playerID].totalICBMs + 1;
+      gameRef.child(`players/${playerID}`).update({
+        currentBudget : currentBudget,
+        totalForces : totalForces,
+        totalICBMs : totalICBMs
+      });
       gameRef.child(`continents/${location}/forces/icbms`).update({total : icbms});
       ctx.status = 200;
     } else { // If the player doesn't have enough funds or is trying to put them on a continent they don't own.
@@ -408,6 +420,13 @@ router.put('/deploysub', async (ctx) => {
     if (gameObj.players[playerID].currentBudget >= subCost * quantity && gameObj.players[playerID].oceans[location]) {
       let subs = gameObj.oceans[location].subs[playerID].total + quantity;
       let currentBudget = gameObj.players[playerID].currentBudget - (subCost * quantity);
+      let totalForces = gameObj.players[playerID].totalForces + 1;
+      let totalSubs = gameObj.players[playerID].totalSubs + 1;
+      gameRef.child(`players/${playerID}`).update({
+        currentBudget : currentBudget,
+        totalForces : totalForces,
+        totalSubs : totalSubs
+      });
       gameRef.child(`players/${playerID}`).update({currentBudget : currentBudget});
       gameRef.child(`oceans/${location}/subs/${playerID}`).update({total : subs});
       ctx.status = 200;
