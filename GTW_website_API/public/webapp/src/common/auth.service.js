@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // const salt = bcrypt.genSatlSync(10);
-const baseURL = 'https://gtnwthegame.com/api';
+const baseURL = '/api';
 const server = axios.create({
   baseURL,
 });
