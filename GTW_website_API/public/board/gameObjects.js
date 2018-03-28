@@ -337,7 +337,7 @@ class Launch {
           this.projectile.anchor.set(0.5);
           this.projectile.scale.set(0.3);
           this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
-          let velocity = 10 + (game.players[playerID].rnd.speed * 3 / 500);
+          let velocity = 10 + (game.players[playerID].rnd.speed * 2 / 500);
           this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(velocity, velocity);
 
           this.state = 'enroute';
@@ -357,7 +357,7 @@ class Launch {
           this.projectile.anchor.set(0.5);
           this.projectile.scale.set(0.3);
           this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
-          let velocity = 10 + (game.players[playerID].rnd.speed * 3 / 500);
+          let velocity = 10 + (game.players[playerID].rnd.speed * 2 / 500);
           this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(velocity, velocity);
 
           this.state = 'enroute';
@@ -374,7 +374,7 @@ class Launch {
         this.projectile.anchor.set(0.5);
         this.projectile.scale.set(0.3);
         this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
-        let velocity = 10 + (game.players[playerID].rnd.speed / 500);
+        let velocity = 10 + (game.players[playerID].rnd.speed * 2 / 500);
         this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(velocity, velocity);
 
         this.state = 'enroute';
