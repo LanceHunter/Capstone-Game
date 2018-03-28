@@ -86,9 +86,7 @@ let war = {
 
     // look at every pointer
     pointers.forEach((pointer) => {
-      /* SHORT CIRCUIT
       pointer.setPosition();
-      */
 
       if (!pointer.intersecting()) {
         capitalIcons.some((capital) => {

@@ -5,7 +5,7 @@
 const joinGameModal = new Vue({
   el: '#joinGameModal',
   data: {
-    colors: colors.map(c => 'rgb(' + [(c & 0x880000) >> 16,  (c & 0x008800) >> 8,  (c & 0x000088)] + ')'),
+    colors: colors.map(c => 'rgb(' + [(c & 0xFF0000) >> 16,  (c & 0x00FF00) >> 8,  (c & 0x0000FF)] + ')'),
     gameID: null,
     usernames: [],
   }
