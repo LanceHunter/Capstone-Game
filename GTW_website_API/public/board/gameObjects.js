@@ -135,7 +135,7 @@ class SubIcon {
 
     // is it your sub?
     if (self.playerID === pointer.playerID) {
-      if (game.oceans[self.ocean].subs[self.playerID].total > 0) {
+      if (game.oceans[self.ocean].subs[self.playerID] && game.oceans[self.ocean].subs[self.playerID].total > 0) {
         if (!self.launch) {
           self.launch = new Launch(self);
         } else {
@@ -345,7 +345,7 @@ class Launch {
         } else {
           console.log('invalid sub');
         }
-      }
+      } else
       if (this.origin.type === 'bomber') {
         // check for valid bomber launch
         if (game.continents[this.origin.continent].distances[this.target.continent] === 1) {
@@ -366,6 +366,20 @@ class Launch {
         } else {
           console.log('invalid bomb');
         }
+      } else {
+        // sprite stuff
+        this.targetIndicator = phaser.add.sprite(capital.sprite.centerX, capital.sprite.centerY, 'circle');
+        this.targetIndicator.tint = colors[playerIDs.indexOf(playerID)];
+        this.targetIndicator.anchor.set(0.5);
+        this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'circle');
+        this.projectile.tint = colors[playerIDs.indexOf(playerID)];
+        this.projectile.anchor.set(0.5);
+        this.projectile.scale.set(0.3);
+        this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
+        this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(10, 10);
+
+        this.state = 'enroute';
+        this.targetFrame = 0;
       }
     }
   }
