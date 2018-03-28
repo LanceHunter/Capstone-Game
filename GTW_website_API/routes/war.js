@@ -52,14 +52,43 @@ router.put('/shot', async (ctx) => {
           hp: gameObj.continents[targetID].hp - (50 + Math.floor(gameObj.players[player].rnd.damage / 500) * 5)
         }; // Get ready to write an update to the game object decrementing the HP from the target continent.
         let shotsFired = gameObj.players[player].shotsFired + 1; // Get ready to write an update to the game object increasing number of shots fired.
+        let totalBombers = gameObj.players[player].totalBombers - 1;
         // These next three lines are writing those Firebase updates.
         await gameRef.child(`players/${player}`).update({
-          shotsFired: shotsFired
+          shotsFired: shotsFired,
+          totalBombers : totalBombers
         });
         await gameRef.child(`continents/${targetID}`).update(updateHpObj);
         await gameRef.child(`continents/${launchID}/forces/bombers`).update(updateBomberObj);
         // Then we send a 200 status indicating all is done.
         ctx.status = 200;
+
+
+        // If the continent is killed, remove its forces.
+        if ((gameObj.continents[targetID].hp - (50 + Math.floor(gameObj.players[player].rnd.damage / 500) * 5)) <= 0) {
+          let killedBombers = gameObj.continents[targetID].forces.bombers.total;
+          let killedICBMs = gameObj.continents[targetID].forces.icbms.total;
+          let deadContinentOwner = Object.keys(gameObj.continents[targetID].player)[0];
+          let totalEnemyForces = gameObj.players[deadContinentOwner].totalForces - (killedICBMs + killedBombers);
+          let totalEnemyICBMS = gameObj.players[deadContinentOwner].totalICBMS - killedICBMs;
+          let totalEnemyBombers = gameObj.players[deadContinentOwner].totalBombers - killedBombers;
+          let killedForcesUpdateObj = {
+            bombers : {
+              total : 0,
+              declared : 0
+            },
+            icbms : {
+              total : 0,
+              declared : 0
+            }
+          };
+          await gameRef.child(`continents/${targetID}/forces`).update(killedForcesUpdateObj);
+          await gameRef.child(`players/${deadContinentOwner}`).update({
+            totalForces : totalEnemyForces,
+            totalICBMS : totalEnemyICBMS,
+            totalBombers : totalEnemyBombers
+          });
+        } // end of conditional removing the continent's forces if it was destroyed.
 
         // Changing the HP for this continent and remaining bombers for launch continent in the local copy of the gameObj. (To make later checks easier/cleaner.)
         gameObj.continents[targetID].hp = gameObj.continents[targetID].hp - (50 + Math.floor(gameObj.players[player].rnd.damage / 500) * 5);
@@ -118,12 +147,47 @@ router.put('/shot', async (ctx) => {
           hp: gameObj.continents[targetID].hp - (50 + Math.floor(gameObj.players[player].rnd.damage / 500) * 5)
         };
         let shotsFired = gameObj.players[player].shotsFired + 1;
+        let totalICBMs = gameObj.players[player].totalICBMs - 1;
+        let totalForces = gameObj.players[player].totalForces - 1;
+        // These next three lines are writing those Firebase updates.
+        await gameRef.child(`players/${player}`).update({
+          shotsFired: shotsFired,
+          totalICBMs : totalICBMs,
+          totalForces : totalForces
+        });
         await gameRef.child(`players/${player}`).update({
           shotsFired: shotsFired
         });
         await gameRef.child(`continents/${targetID}`).update(updateHpObj);
         await gameRef.child(`continents/${launchID}/forces/icbms`).update(updateIcbmObj);
         ctx.status = 200;
+
+        // If the continent is killed, remove its forces.
+        if ((gameObj.continents[targetID].hp - (50 + Math.floor(gameObj.players[player].rnd.damage / 500) * 5)) <= 0) {
+          let killedBombers = gameObj.continents[targetID].forces.bombers.total;
+          let killedICBMs = gameObj.continents[targetID].forces.icbms.total;
+          let deadContinentOwner = Object.keys(gameObj.continents[targetID].player)[0];
+          let totalEnemyForces = gameObj.players[deadContinentOwner].totalForces - (killedICBMs + killedBombers);
+          let totalEnemyICBMS = gameObj.players[deadContinentOwner].totalICBMS - killedICBMs;
+          let totalEnemyBombers = gameObj.players[deadContinentOwner].totalBombers - killedBombers;
+          let killedForcesUpdateObj = {
+            bombers : {
+              total : 0,
+              declared : 0
+            },
+            icbms : {
+              total : 0,
+              declared : 0
+            }
+          };
+          await gameRef.child(`continents/${targetID}/forces`).update(killedForcesUpdateObj);
+          await gameRef.child(`players/${deadContinentOwner}`).update({
+            totalForces : totalEnemyForces,
+            totalICBMS : totalEnemyICBMS,
+            totalBombers : totalEnemyBombers
+          });
+        } // end of conditional removing the continent's forces if it was destroyed.
+
 
         // Changing the HP for this continent and the number of total ICBMs in the launching continent in the local copy of the gameObj.
         gameObj.continents[targetID].hp = gameObj.continents[targetID].hp - (50 + Math.floor(gameObj.players[player].rnd.damage / 500) * 5);
@@ -520,14 +584,46 @@ router.put('/subshot', async (ctx) => {
       let updateHpObj = {
         hp: gameObj.continents[targetID].hp - (50 + Math.floor(gameObj.players[shooterID].rnd.damage / 500) * 5)
       };
+
       let shotsFired = gameObj.players[shooterID].shotsFired + 1;
-      gameRef.child(`players/${shooterID}`).update({
-        shotsFired: shotsFired
+      let totalSubs = gameObj.players[shooterID].totalSubs - 1;
+      await gameRef.child(`players/${shooterID}`).update({
+        shotsFired : shotsFired,
+        totalSubs : totalSubs
       });
-      gameRef.child(`continents/${targetID}`).update(updateHpObj);
-      gameRef.child(`oceans/${launchID}/subs/${shooterID}`).update({
+      await gameRef.child(`continents/${targetID}`).update(updateHpObj);
+      await gameRef.child(`oceans/${launchID}/subs/${shooterID}`).update({
         total: subsTotal
       });
+
+      // If the continent is killed, remove its forces.
+      if ((gameObj.continents[targetID].hp - (50 + Math.floor(gameObj.players[player].rnd.damage / 500) * 5)) <= 0) {
+        let killedBombers = gameObj.continents[targetID].forces.bombers.total;
+        let killedICBMs = gameObj.continents[targetID].forces.icbms.total;
+        let deadContinentOwner = Object.keys(gameObj.continents[targetID].player)[0];
+        let totalForces = gameObj.players[deadContinentOwner].totalForces - (killedICBMs + killedBombers);
+        let totalICBMS = gameObj.players[deadContinentOwner].totalICBMS - killedICBMs;
+        let totalBombers = gameObj.players[deadContinentOwner].totalBombers - killedBombers;
+        let killedForcesUpdateObj = {
+          bombers : {
+            total : 0,
+            declared : 0
+          },
+          icbms : {
+            total : 0,
+            declared : 0
+          }
+        };
+        await gameRef.child(`continents/${targetID}/forces`).update(killedForcesUpdateObj);
+        await gameRef.child(`players/${deadContinentOwner}`).update({
+          totalForces : totalForces,
+          totalICBMS : totalICBMS,
+          totalBombers : totalBombers
+        });
+      } // end of conditional removing the continent's forces if it was destroyed.
+
+
+
       ctx.status = 200;
 
       // Changing the HP for this continent and subtracting the total number of subs for the shootign player in the launching ocean in the local copy of the gameObj.
