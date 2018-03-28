@@ -1,3 +1,6 @@
+/*
+TARGETS
+*/
 class CapitalIcon {
   constructor(x, y, continent) {
     this.sprite = phaser.add.sprite(x, y, 'capital');
@@ -71,6 +74,9 @@ class CapitalIcon {
   }
 }
 
+/*
+WEAPONS
+*/
 class SubIcon {
   constructor(x, y, ocean, playerID) {
     this.type = 'sub';
@@ -282,6 +288,9 @@ class MissileIcon {
   }
 }
 
+/*
+LAUNCH
+*/
 class Launch {
   // these will be created whenever a players's sub-deploy thing is activated
   constructor(origin) {
@@ -428,6 +437,9 @@ class Launch {
   }
 }
 
+/*
+LASER TRACKING STUFF
+*/
 class PlayerPointer {
   constructor(index, state) {
     this.playerIndex = index;
