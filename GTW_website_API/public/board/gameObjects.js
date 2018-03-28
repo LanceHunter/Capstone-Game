@@ -337,18 +337,18 @@ class Launch {
           this.projectile.anchor.set(0.5);
           this.projectile.scale.set(0.3);
           this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
-          this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(10, 10);
+          let velocity = 10 + (game.players[playerID].rnd.speed * 3 / 500);
+          this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(velocity, velocity);
 
           this.state = 'enroute';
           this.targetFrame = 0;
         } else {
-          console.log('invalid sub');
+          //console.log('invalid sub');
         }
       } else
       if (this.origin.type === 'bomber') {
         // check for valid bomber launch
         if (game.continents[this.origin.continent].distances[this.target.continent] === 1) {
-          console.log('valid bomb');
           // sprite stuff
           this.targetIndicator = new TargetIndicator(capital.sprite, colors[playerIDs.indexOf(this.origin.playerID)]);
 
@@ -357,12 +357,13 @@ class Launch {
           this.projectile.anchor.set(0.5);
           this.projectile.scale.set(0.3);
           this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
-          this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(10, 10);
+          let velocity = 10 + (game.players[playerID].rnd.speed * 3 / 500);
+          this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(velocity, velocity);
 
           this.state = 'enroute';
           this.targetFrame = 0;
         } else {
-          console.log('invalid bomb');
+          // console.log('invalid bomb');
         }
       } else {
         // sprite stuff
@@ -373,7 +374,8 @@ class Launch {
         this.projectile.anchor.set(0.5);
         this.projectile.scale.set(0.3);
         this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
-        this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(10, 10);
+        let velocity = 10 + (game.players[playerID].rnd.speed / 500);
+        this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(velocity, velocity);
 
         this.state = 'enroute';
         this.targetFrame = 0;

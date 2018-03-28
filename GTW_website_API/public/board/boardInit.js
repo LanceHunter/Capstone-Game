@@ -44,4 +44,5 @@ function onGameChange(data) {
   }
   hud.war = game.war;
   hud.year = game.year;
+  hud.gameID = gameID;
 }
