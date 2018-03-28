@@ -35,61 +35,46 @@ function drawPlayerChart(stats) {
   // score
   let statsline = d3.line()
     .x((d) => {
-      console.log('Ln 39: date on x axis: ', d.date);
       return x(d.date);
     })
     .y((d) => {
-      console.log('Ln 43: score on y axis: ', d.score);
       return y(d.score);
     });
 
   // hit points
   let statslinehp = d3.line()
     .x((d) => {
-      console.log('Ln 50: date on x axis: ', d.date);
       return x(d.date);
     })
     .y((d) => {
-      console.log('Ln 54: hit points on y axis: ', d.hit_points);
       return y(d.hit_points);
     });
 
   // damaged caused
   let statslinedc = d3.line()
     .x((d) => {
-      console.log('Ln 61: date on x axis: ', d.date);
       return x(d.date);
     })
     .y((d) => {
-      console.log('Ln 65: damaged caused on y axis: ', d.damage_caused);
       return y(d.damage_caused);
     });
 
   // shots
   let statslineshots = d3.line()
     .x((d) => {
-      console.log('Ln 72: date on x axis: ', d.date);
       return x(d.date);
     })
     .y((d) => {
-      console.log('Ln 76: shots on y axis: ', d.shots);
       return y(d.shots);
     });
 
   // Get the data
   stats.forEach(function (d) {
-    console.log('Ln 82: this is d: ', d);
-    console.log('Ln 83: date: ', d.created_at);
     d.date = new Date(d.created_at);
-    console.log('Ln 85: parsed date: ', d.date);
 		d.score = +d.score;
-    console.log('Ln 87: d.score: ', d.score);
     d.hit_points = +d.hit_points;
-    console.log('Ln 89: hit_points: ', d.hit_points);
     d.damage_caused = +d.damage_caused;
-    console.log('Ln 91: damage_caused: ', d.damage_caused);
     d.shots = +d.shots;
-    console.log('Ln 93: shots: ', d.shots);
   });
 
   // Adds the svg canvas
@@ -117,15 +102,12 @@ function drawPlayerChart(stats) {
 
   // set the color scale
   let color = d3.scaleBand().range[('steelblue', '#f18436', '#519c3e', '#c73933')];
-  console.log('Ln 121: color: ', color);
 
   // spacing for the legend
   let legendSpace = width / dataNest.length;
-  console.log('Ln 124: legendSpace: ', legendSpace);
 
   // Loop through each symbol / key
   dataNest.forEach(function (d, i) {
-    console.log('Ln 127: this is d: ', d);
         // score
         svg.append('path')
           .attr('class', 'line')
@@ -133,7 +115,6 @@ function drawPlayerChart(stats) {
           .attr('stroke-width', '3')
           .attr('stroke', 'steelblue')
           .attr('d', statsline(d.values))
-          console.log('Ln 135: d.values score: ', d.values)
 
         // hit points
         svg.append('path')
@@ -142,7 +123,6 @@ function drawPlayerChart(stats) {
           .attr('stroke-width', '3')
           .attr('stroke', '#f18436')
           .attr('d', statslinehp(d.values))
-          console.log('Ln 144: d.values hp: ', d.values)
 
         // damaged caused
         svg.append('path')
@@ -151,7 +131,6 @@ function drawPlayerChart(stats) {
           .attr('stroke-width', '3')
           .attr('stroke', '#519c3e')
           .attr('d', statslinedc(d.values))
-          console.log('Ln 153: d.values damage_caused: ', d.values)
 
         // shots
         svg.append('path')
@@ -160,7 +139,6 @@ function drawPlayerChart(stats) {
           .attr('stroke-width', '3')
           .attr('stroke', '#c73933')
           .attr('d', statslineshots(d.values))
-          console.log('Ln 162: d.values shots: ', d.values)
   });
 
 
@@ -222,7 +200,6 @@ export default {
         .then((stats) => {
           this.stats = stats;
           drawPlayerChart(stats);
-          console.log('set stats to:', this.stats);
         });
     },
   },

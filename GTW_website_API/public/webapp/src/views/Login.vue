@@ -50,26 +50,12 @@ export default {
     };
   },
   methods: {
-    loginToggle() {
-      console.log('was logged in:', auth.isLoggedIn()); // eslint-disable-line
-      if (!auth.isLoggedIn()) {
-        auth.login('test0', 'password')
-          .then(() => {
-            console.log('now logged in:', auth.isLoggedIn()); // eslint-disable-line
-          });
-      } else {
-        auth.logout();
-        console.log('now logged in:', auth.isLoggedIn()); // eslint-disable-line
-      }
-    },
     tryLogin(username, password) {
       auth.login(username, password)
         .then((response) => {
-          console.log('succeded with:', response); // eslint-disable-line
           this.$router.push({ name: 'Home' });
         })
         .catch((error) => {
-          console.log('failed with:', error); // eslint-disable-line
           this.repeate = true;
         });
     },

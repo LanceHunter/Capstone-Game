@@ -1,15 +1,11 @@
 import axios from 'axios';
 
-// const salt = bcrypt.genSatlSync(10);
-const baseURL = 'https://gtnwthegame.co/api';
-const server = axios.create({
-  baseURL,
-});
+const server = axios.create();
 
 const AuthService = {
   login(username, password) {
     return new Promise((resolve, reject) => {
-      server.post('/login', {
+      server.post('/api/login', {
         username,
         password,
       })
@@ -25,7 +21,7 @@ const AuthService = {
 
   create(username, password) {
     return new Promise((resolve, reject) => {
-      server.post('/register', {
+      server.post('/api/register', {
         username,
         password,
       })

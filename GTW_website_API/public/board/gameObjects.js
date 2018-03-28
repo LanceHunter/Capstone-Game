@@ -139,10 +139,10 @@ class SubIcon {
         if (!self.launch) {
           self.launch = new Launch(self);
         } else {
-          console.log('there is already a launch in progress');
+          // console.log('there is already a launch in progress');
         }
       } else {
-        console.log('no ammo');
+        // console.log('no ammo');
       }
     }
   }
@@ -209,10 +209,10 @@ class BomberIcon {
         if (!self.launch) {
           self.launch = new Launch(self);
         } else {
-          console.log('there is already a launch in progress');
+          // console.log('there is already a launch in progress');
         }
       } else {
-        console.log('no ammo');
+        // console.log('no ammo');
       }
     }
   }
@@ -275,14 +275,14 @@ class MissileIcon {
     // is it your sub?
     if (self.playerID === pointer.playerID) {
       if (game.continents[self.continent].forces.icbms.total > 0) {
-        console.log(self.launch);
+        // console.log(self.launch);
         if (!self.launch) {
           self.launch = new Launch(self);
         } else {
-          console.log('there is already a launch in progress');
+          // console.log('there is already a launch in progress');
         }
       } else {
-        console.log('no ammo');
+        // console.log('no ammo');
       }
     }
   }
@@ -343,13 +343,13 @@ class Launch {
           this.state = 'enroute';
           this.targetFrame = 0;
         } else {
-          console.log('invalid sub');
+          // console.log('invalid sub');
         }
       } else
       if (this.origin.type === 'bomber') {
         // check for valid bomber launch
         if (game.continents[this.origin.continent].distances[this.target.continent] === 1) {
-          console.log('valid bomb');
+          // console.log('valid bomb');
           // sprite stuff
           this.targetIndicator = phaser.add.sprite(capital.sprite.centerX, capital.sprite.centerY, 'circle');
           this.targetIndicator.tint = colors[playerIDs.indexOf(playerID)];
@@ -364,7 +364,7 @@ class Launch {
           this.state = 'enroute';
           this.targetFrame = 0;
         } else {
-          console.log('invalid bomb');
+          // console.log('invalid bomb');
         }
       } else {
         // sprite stuff
@@ -406,7 +406,7 @@ class Launch {
       this.originIndicator.destroy();
 
       if (this.origin.type === 'sub') {
-        console.log('sub hit');
+        // console.log('sub hit');
         let data = {
           gameID: gameID,
           launchID: this.origin.ocean,
@@ -419,10 +419,10 @@ class Launch {
           data: data,
           dataType: 'json'
         }).then(
-          r => console.log(r)
+          // r => console.log(r)
         );
       } else {
-        console.log('air hit');
+        // console.log('air hit');
         let data = {
           gameID: gameID,
           launchID: this.origin.continent,
@@ -436,7 +436,7 @@ class Launch {
           data: data,
           dataType: 'json'
         }).then(
-          r => console.log(r)
+          // r => console.log(r)
         );
       }
     }

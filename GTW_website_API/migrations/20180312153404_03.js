@@ -11,8 +11,7 @@ exports.up = function(knex, Promise) {
     table.integer('score');
     table.integer('shots');
     table.float('rnd_multiplier');
-    table.dateTime('created_at');
-    // table.timestamps(true, true);
+    table.timestamps(true, true);
   });
 };
 

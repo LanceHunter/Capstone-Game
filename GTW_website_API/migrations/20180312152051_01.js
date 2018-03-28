@@ -8,7 +8,6 @@ exports.up = function(knex, Promise) {
     table.integer('losses');
     table.float('average_score');
     table.integer('high_score');
-    // table.string('date_time');
     table.timestamps(true, true);
   });
 };

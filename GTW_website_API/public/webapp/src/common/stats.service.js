@@ -1,15 +1,11 @@
 import axios from 'axios';
 
-// const salt = bcrypt.genSatlSync(10);
-const baseURL = 'https://gtnwthegame.co/api/stats';
-const server = axios.create({
-  baseURL,
-});
+const server = axios.create();
 
 const StatsService = {
   leaders(order) {
     return new Promise((resolve, reject) => {
-      server.get(`/leaders?order=${order}`)
+      server.get(`/api/stats/leaders?order=${order}`)
         .then((response) => {
           resolve(response.data.leaders);
         })
@@ -21,7 +17,7 @@ const StatsService = {
 
   user(username) {
     return new Promise((resolve, reject) => {
-      server.get(`/${username}`)
+      server.get(`/api/stats/${username}`)
         .then((response) => {
           resolve(response.data.stats);
         })
