@@ -524,6 +524,7 @@ class TargetIndicator {
     this.sprites.forEach(sprite => {
       sprite.anchor.set(0.5);
       sprite.tint = color;
+      sprite.alpha = alphaAdjust;
     })
     this.frame = 0;
   }
@@ -531,8 +532,9 @@ class TargetIndicator {
   update() {
     this.frame++;
     this.sprites.forEach((sprite, i) => {
-      sprite.angle = this.frame * 10 * (.3 * i);
-      sprite.scale.set(1 + (Math.sin(this.frame / 5) * 0.15));
+      sprite.angle = this.frame * 10 * (.3 * i) * (i % 2 === 0 ? 1 : -1);
+      sprite.scale.set(0.8 + (Math.sin((this.frame + 5 * i) / 5) * 0.35));
+      sprite.alpha = (0.5 + (Math.sin((this.frame + 5 * i) / 5) * 0.2));
     });
   }
 
