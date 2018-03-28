@@ -6,7 +6,7 @@ const firebase = admin.database();
 const ref = firebase.ref('gameInstance');
 
 // Getting Knex
-const config = require('../knexfile')[process.env.ENV || 'development'];
+const config = require('../knexfile')['production'];
 const knex = require('knex')(config);
 
 //Setting up koa routing
@@ -453,10 +453,10 @@ router.put('/declarebomber', async (ctx) => {
       let totalDeclared = gameObj.players[playerID].totalDeclaredForces + quantity;
       gameRef.child(`players/${playerID}`).update({totalDeclaredForces : totalDeclared});
       // Checking if this player just won by overwhelming force.
-      if (totalDeclared >= 10) {
+      if (totalDeclared >= 10 && gameObj.year >= 1953) {
         overwhelmingForce = true;
         enemyPlayerArr.forEach((enemy) => {
-          if (totalDeclared <= enemy.totalDeclaredForces*2) {
+          if (totalDeclared >= enemy.totalDeclaredForces*2) {
             overwhelmingForce = false;
           }
         });
@@ -508,10 +508,10 @@ router.put('/declareicbm', async (ctx) => {
       let totalDeclared = gameObj.players[playerID].totalDeclaredForces + quantity;
       gameRef.child(`players/${playerID}`).update({totalDeclaredForces : totalDeclared});
       // Checking if this player just won by overwhelming force.
-      if (totalDeclared >= 10) {
+      if (totalDeclared >= 10 && gameObj.year >= 1953) {
         overwhelmingForce = true;
         enemyPlayerArr.forEach((enemy) => {
-          if (totalDeclared <= enemy.totalDeclaredForces*2) {
+          if (totalDeclared >= enemy.totalDeclaredForces*2) {
             overwhelmingForce = false;
           }
         });
@@ -563,10 +563,10 @@ router.put('/declaresub', async (ctx) => {
       let totalDeclared = gameObj.players[playerID].totalDeclaredForces + quantity;
       gameRef.child(`players/${playerID}`).update({totalDeclaredForces : totalDeclared});
       // Checking if this player just won by overwhelming force.
-      if (totalDeclared >= 10) {
+      if (totalDeclared >= 10 && gameObj.year >= 1953) {
         overwhelmingForce = true;
         enemyPlayerArr.forEach((enemy) => {
-          if (totalDeclared <= enemy.totalDeclaredForces*2) {
+          if (totalDeclared >= enemy.totalDeclaredForces*2) {
             overwhelmingForce = false;
           }
         });
