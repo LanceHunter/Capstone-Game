@@ -101,7 +101,19 @@ router.put('/shot', async (ctx) => {
           enemyContinents.forEach((enemyContinent) => {
             if (gameObj.continents[enemyContinent].hp > 0) {
               gameOver = false;
-              if (gameObj.continents[enemyContinent].forces.bombers.total > 0 || gameObj.continents[enemyContinent].forces.icbms.total > 0) {
+              if (gameObj.continents[enemyContinent].forces.bombers.total > 0) {
+                let distanceKeys = Object.keys(gameObj.continents[enemyContinent].distances);
+                let whereIHit = distanceKeys.filter((distance) => {
+                  return gameObj.continents[enemyContinent].distances[distance] <= 1;
+                });
+                whereIHit.forEach((spotIHit) => {
+                  let spotHitPlayer = Object.keys(gameObj.continents[spotIHit].player)[0];
+                  if (gameObj.continents[spotIHit].hp > 0 && spotHitPlayer !== enemy) {
+                    rubbleLoss = false;
+                  }
+                });
+              }
+              if (gameObj.continents[enemyContinent].forces.icbms.total > 0) {
                 rubbleLoss = false;
               }
             }
@@ -110,24 +122,52 @@ router.put('/shot', async (ctx) => {
           let enemyOceans = Object.keys(gameObj.players[enemy].oceans);
           enemyOceans.forEach((enemyOcean) => {
             if (gameObj.oceans[enemyOcean].subs[enemy].total > 0) {
-              gameOver = false;
-              rubbleLoss = false;
-            }
-          });
+              let whereIHit = Object.keys(gameObj.oceans[enemyOcean].canHit);
+              whereIHit.forEach((spotIHit) => {
+                let spotHitPlayer = Object.keys(gameObj.continents[spotIHit].player)[0];
+                if (gameObj.continents[spotIHit].hp > 0 && spotHitPlayer !== enemy) {
+                  gameOver = false;
+                  rubbleLoss = false;
+                }
+              }); // end of forEach going through each spot the enemy's subs can hit.
+            } // end of conditional checking to see if the enemy has subs in this ocean
+          }); // end of forEach going through each ocean for this enemy
         }); // End of forEach through every enemy checking if the game is over.
 
         // Now we check the player information for a possible rubble loss.
         playerContinents.forEach((continent) => { // Going through all of player's continents.
-          if (gameObj.continents[continent].hp > 0 && (gameObj.continents[continent].forces.bombers.total > 0 || gameObj.continents[continent].forces.icbms.total > 0)) { // If any have any HP & forces left, it's not a rubble loss.
-            rubbleLoss = false;
+          if (gameObj.continents[continent].hp > 0) {
+            gameOver = false;
+            if (gameObj.continents[continent].forces.bombers.total > 0) {
+              let distanceKeys = Object.keys(gameObj.continents[continent].distances);
+              let whereIHit = distanceKeys.filter((distance) => {
+                return gameObj.continents[continent].distances[distance] <= 1;
+              });
+              whereIHit.forEach((spotIHit) => {
+                let spotHitPlayer = Object.keys(gameObj.continents[spotIHit].player)[0];
+                if (gameObj.continents[spotIHit].hp > 0 && spotHitPlayer !== player) {
+                  rubbleLoss = false;
+                }
+              });
+            }
+            if (gameObj.continents[continent].forces.icbms.total > 0) {
+              rubbleLoss = false;
+            }
           }
         }); // End of checking player's continents for possible rubble loss.
 
         let playerOceans = Object.keys(gameObj.players[player].oceans);
         playerOceans.forEach((playerOcean) => { // Going through all of player's oceans.
           if (gameObj.oceans[playerOcean].subs[player].total > 0) { // If there are any subs left, it's not a rubble loss.
-            rubbleLoss = false;
-          }
+            let whereIHit = Object.keys(gameObj.oceans[playerOcean].canHit);
+            whereIHit.forEach((spotIHit) => {
+              let spotHitPlayer = Object.keys(gameObj.continents[spotIHit].player)[0];
+              if (gameObj.continents[spotIHit].hp > 0 && spotHitPlayer !== player) {
+                gameOver = false;
+                rubbleLoss = false;
+              }
+            }); // end of forEach going through each spot the player's subs can hit.
+          } // end of conditional checking if player has subs in ocean.
         }); // End of checking player's oceans for a possible rubble loss.
 
       } else { // If target is too far for bomber to reach or if continent has no bombers available.
@@ -188,19 +228,30 @@ router.put('/shot', async (ctx) => {
           });
         } // end of conditional removing the continent's forces if it was destroyed.
 
-
         // Changing the HP for this continent and the number of total ICBMs in the launching continent in the local copy of the gameObj.
         gameObj.continents[targetID].hp = gameObj.continents[targetID].hp - (50 + Math.floor(gameObj.players[player].rnd.damage / 500) * 5);
         gameObj.continents[launchID].forces.icbms.total -= 1;
 
-        // Running the check to see if this is game over...
+        // Running the check to see if this is game over due to all HP being lost or because of rubble loss...
         enemyPlayerArr.forEach((enemy) => {
           // Check the enemy's continents to see if any have any HP left.
           let enemyContinents = Object.keys(gameObj.players[enemy].continents);
           enemyContinents.forEach((enemyContinent) => {
             if (gameObj.continents[enemyContinent].hp > 0) {
               gameOver = false;
-              if (gameObj.continents[enemyContinent].forces.bombers.total > 0 || gameObj.continents[enemyContinent].forces.icbms.total > 0) {
+              if (gameObj.continents[enemyContinent].forces.bombers.total > 0) {
+                let distanceKeys = Object.keys(gameObj.continents[enemyContinent].distances);
+                let whereIHit = distanceKeys.filter((distance) => {
+                  return gameObj.continents[enemyContinent].distances[distance] <= 1;
+                });
+                whereIHit.forEach((spotIHit) => {
+                  let spotHitPlayer = Object.keys(gameObj.continents[spotIHit].player)[0];
+                  if (gameObj.continents[spotIHit].hp > 0 && spotHitPlayer !== enemy) {
+                    rubbleLoss = false;
+                  }
+                });
+              }
+              if (gameObj.continents[enemyContinent].forces.icbms.total > 0) {
                 rubbleLoss = false;
               }
             }
@@ -209,23 +260,52 @@ router.put('/shot', async (ctx) => {
           let enemyOceans = Object.keys(gameObj.players[enemy].oceans);
           enemyOceans.forEach((enemyOcean) => {
             if (gameObj.oceans[enemyOcean].subs[enemy].total > 0) {
-              gameOver = false;
-              rubbleLoss = false;
-            }
-          });
+              let whereIHit = Object.keys(gameObj.oceans[enemyOcean].canHit);
+              whereIHit.forEach((spotIHit) => {
+                let spotHitPlayer = Object.keys(gameObj.continents[spotIHit].player)[0];
+                if (gameObj.continents[spotIHit].hp > 0 && spotHitPlayer !== enemy) {
+                  gameOver = false;
+                  rubbleLoss = false;
+                }
+              }); // end of forEach going through each spot the enemy's subs can hit.
+            } // end of conditional checking to see if the enemy has subs in this ocean
+          }); // end of forEach going through each ocean for this enemy
         }); // End of forEach through every enemy checking if the game is over.
 
-        playerContinents.forEach((continent) => {
-          if (gameObj.continents[continent].hp > 0 && (gameObj.continents[continent].forces.bombers.total > 0 || gameObj.continents[continent].forces.icbms.total > 0)) {
-            rubbleLoss = false;
+        // Now we check the player information for a possible rubble loss.
+        playerContinents.forEach((continent) => { // Going through all of player's continents.
+          if (gameObj.continents[continent].hp > 0) {
+            gameOver = false;
+            if (gameObj.continents[continent].forces.bombers.total > 0) {
+              let distanceKeys = Object.keys(gameObj.continents[continent].distances);
+              let whereIHit = distanceKeys.filter((distance) => {
+                return gameObj.continents[continent].distances[distance] <= 1;
+              });
+              whereIHit.forEach((spotIHit) => {
+                let spotHitPlayer = Object.keys(gameObj.continents[spotIHit].player)[0];
+                if (gameObj.continents[spotIHit].hp > 0 && spotHitPlayer !== player) {
+                  rubbleLoss = false;
+                }
+              });
+            }
+            if (gameObj.continents[continent].forces.icbms.total > 0) {
+              rubbleLoss = false;
+            }
           }
         }); // End of checking player's continents for possible rubble loss.
 
         let playerOceans = Object.keys(gameObj.players[player].oceans);
-        playerOceans.forEach((playerOcean) => {
-          if (gameObj.oceans[playerOcean].subs[player].total > 0) {
-            rubbleLoss = false;
-          }
+        playerOceans.forEach((playerOcean) => { // Going through all of player's oceans.
+          if (gameObj.oceans[playerOcean].subs[player].total > 0) { // If there are any subs left, it's not a rubble loss.
+            let whereIHit = Object.keys(gameObj.oceans[playerOcean].canHit);
+            whereIHit.forEach((spotIHit) => {
+              let spotHitPlayer = Object.keys(gameObj.continents[spotIHit].player)[0];
+              if (gameObj.continents[spotIHit].hp > 0 && spotHitPlayer !== player) {
+                gameOver = false;
+                rubbleLoss = false;
+              }
+            }); // end of forEach going through each spot the player's subs can hit.
+          } // end of conditional checking if player has subs in ocean.
         }); // End of checking player's oceans for a possible rubble loss.
 
       } else { // If no ICBMs available.
@@ -549,7 +629,6 @@ router.put('/shot', async (ctx) => {
     } // End of conditional checking if there are 2 or 3 players in the game.
   } // end of conditional checking if we are in a rubbleLoss
 
-
 }); // end of the "shot" route.
 
 
@@ -622,23 +701,32 @@ router.put('/subshot', async (ctx) => {
         });
       } // end of conditional removing the continent's forces if it was destroyed.
 
-
-
       ctx.status = 200;
 
       // Changing the HP for this continent and subtracting the total number of subs for the shootign player in the launching ocean in the local copy of the gameObj.
       gameObj.continents[targetID].hp = gameObj.continents[targetID].hp - (50 + Math.floor(gameObj.players[player].rnd.damage / 500) * 5);
       gameObj.oceans[launchID].subs[shooterID].total -= 1;
 
-      // Check to see if game is over/everything is destroyed.
-      // Running the check to see if this is game over...
+      // Running the check to see if this is game over due to all HP being lost or because of rubble loss...
       enemyPlayerArr.forEach((enemy) => {
         // Check the enemy's continents to see if any have any HP left.
         let enemyContinents = Object.keys(gameObj.players[enemy].continents);
         enemyContinents.forEach((enemyContinent) => {
           if (gameObj.continents[enemyContinent].hp > 0) {
             gameOver = false;
-            if (gameObj.continents[enemyContinent].forces.bombers.total > 0 || gameObj.continents[enemyContinent].forces.icbms.total > 0) {
+            if (gameObj.continents[enemyContinent].forces.bombers.total > 0) {
+              let distanceKeys = Object.keys(gameObj.continents[enemyContinent].distances);
+              let whereIHit = distanceKeys.filter((distance) => {
+                return gameObj.continents[enemyContinent].distances[distance] <= 1;
+              });
+              whereIHit.forEach((spotIHit) => {
+                let spotHitPlayer = Object.keys(gameObj.continents[spotIHit].player)[0];
+                if (gameObj.continents[spotIHit].hp > 0 && spotHitPlayer !== enemy) {
+                  rubbleLoss = false;
+                }
+              });
+            }
+            if (gameObj.continents[enemyContinent].forces.icbms.total > 0) {
               rubbleLoss = false;
             }
           }
@@ -647,25 +735,53 @@ router.put('/subshot', async (ctx) => {
         let enemyOceans = Object.keys(gameObj.players[enemy].oceans);
         enemyOceans.forEach((enemyOcean) => {
           if (gameObj.oceans[enemyOcean].subs[enemy].total > 0) {
-            gameOver = false;
-            rubbleLoss = false;
-          }
-        });
+            let whereIHit = Object.keys(gameObj.oceans[enemyOcean].canHit);
+            whereIHit.forEach((spotIHit) => {
+              let spotHitPlayer = Object.keys(gameObj.continents[spotIHit].player)[0];
+              if (gameObj.continents[spotIHit].hp > 0 && spotHitPlayer !== enemy) {
+                gameOver = false;
+                rubbleLoss = false;
+              }
+            }); // end of forEach going through each spot the enemy's subs can hit.
+          } // end of conditional checking to see if the enemy has subs in this ocean
+        }); // end of forEach going through each ocean for this enemy
       }); // End of forEach through every enemy checking if the game is over.
 
-      playerContinents.forEach((continent) => {
-        if (gameObj.continents[continent].hp > 0 && (gameObj.continents[continent].forces.bombers.total > 0 || gameObj.continents[continent].forces.icbms.total > 0)) {
-          rubbleLoss = false;
+      // Now we check the player information for a possible rubble loss.
+      playerContinents.forEach((continent) => { // Going through all of player's continents.
+        if (gameObj.continents[continent].hp > 0) {
+          gameOver = false;
+          if (gameObj.continents[continent].forces.bombers.total > 0) {
+            let distanceKeys = Object.keys(gameObj.continents[continent].distances);
+            let whereIHit = distanceKeys.filter((distance) => {
+              return gameObj.continents[continent].distances[distance] <= 1;
+            });
+            whereIHit.forEach((spotIHit) => {
+              let spotHitPlayer = Object.keys(gameObj.continents[spotIHit].player)[0];
+              if (gameObj.continents[spotIHit].hp > 0 && spotHitPlayer !== player) {
+                rubbleLoss = false;
+              }
+            });
+          }
+          if (gameObj.continents[continent].forces.icbms.total > 0) {
+            rubbleLoss = false;
+          }
         }
       }); // End of checking player's continents for possible rubble loss.
 
       let playerOceans = Object.keys(gameObj.players[player].oceans);
-      playerOceans.forEach((playerOcean) => {
-        if (gameObj.oceans[playerOcean].subs[player].total > 0) {
-          rubbleLoss = false;
-        }
+      playerOceans.forEach((playerOcean) => { // Going through all of player's oceans.
+        if (gameObj.oceans[playerOcean].subs[player].total > 0) { // If there are any subs left, it's not a rubble loss.
+          let whereIHit = Object.keys(gameObj.oceans[playerOcean].canHit);
+          whereIHit.forEach((spotIHit) => {
+            let spotHitPlayer = Object.keys(gameObj.continents[spotIHit].player)[0];
+            if (gameObj.continents[spotIHit].hp > 0 && spotHitPlayer !== player) {
+              gameOver = false;
+              rubbleLoss = false;
+            }
+          }); // end of forEach going through each spot the player's subs can hit.
+        } // end of conditional checking if player has subs in ocean.
       }); // End of checking player's oceans for a possible rubble loss.
-
 
     } else { // If target location is not valid and that there are enough subs.
       gameOver = false;
