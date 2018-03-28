@@ -25,14 +25,21 @@ class CapitalIcon {
 
     this.hitPoints.setText(game.continents[this.continent].hp);
     this.hitPoints.position.x = this.sprite.centerX - (this.hitPoints.width / 2);
+
     // if they are out of hit points
     if (game.continents[this.continent].hp <= 0) {
       this.sprite.alpha = 0.2;
       this.hitPoints.alpha = 0.2;
-    } else {
+    }
+    if (game.peacetime) {
       this.sprite.alpha = 1;
       this.hitPoints.alpha = 1;
     }
+    if (game.war) {
+      this.sprite.alpha = alphaAdjust;
+      this.hitPoints.alpha = alphaAdjust;
+    }
+
     this.hitPoints.setText(game.continents[this.continent].hp);
     this.hitPoints.position.x = this.sprite.centerX - (this.hitPoints.width / 2);
 
@@ -96,12 +103,12 @@ class SubIcon {
         this.inventory.setText(game.oceans[this.ocean].subs[this.playerID].total);
 
         // if they are out of ammo
-        if (game.oceans[this.ocean].subs[this.playerID].declared + game.oceans[this.ocean].subs[this.playerID].total <= 0) {
+        if (game.oceans[this.ocean].subs[this.playerID].total <= 0) {
           this.sprite.alpha = 0.2;
           this.inventory.alpha = 0.2;
         } else {
-          this.sprite.alpha = 1;
-          this.inventory.alpha = 1;
+          this.sprite.alpha = alphaAdjust;
+          this.inventory.alpha = alphaAdjust;
         }
       } else {
         this.inventory.setText(game.oceans[this.ocean].subs[this.playerID].declared);
@@ -173,8 +180,8 @@ class BomberIcon {
         this.sprite.alpha = 0.2;
         this.inventory.alpha = 0.2;
       } else {
-        this.sprite.alpha = 1;
-        this.inventory.alpha = 1;
+        this.sprite.alpha = alphaAdjust;
+        this.inventory.alpha = alphaAdjust;
       }
     } else {
       this.inventory.setText(game.continents[this.continent].forces.bombers.declared);
@@ -244,8 +251,8 @@ class MissileIcon {
         this.sprite.alpha = 0.2;
         this.inventory.alpha = 0.2;
       } else {
-        this.sprite.alpha = 1;
-        this.inventory.alpha = 1;
+        this.sprite.alpha = alphaAdjust;
+        this.inventory.alpha = alphaAdjust;
       }
     } else {
       this.inventory.setText(game.continents[this.continent].forces.icbms.declared);
@@ -460,6 +467,7 @@ class PlayerPointer {
     this.playerID = playerIDs[index];
     this.sprite = state.game.add.sprite(state.game.width / 2, state.game.height / 2, 'circle');
     this.sprite.tint = colors[index];
+    this.sprite.alpha = alphaAdjust;
     this.sprite.scale.set(0.2);
 
     this.sprite.inputEnabled = true;
