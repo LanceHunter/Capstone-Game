@@ -63,7 +63,7 @@ router.put('/shot', async (ctx) => {
 
         // Changing the HP for this continent and remaining bombers for launch continent in the local copy of the gameObj. (To make later checks easier/cleaner.)
         gameObj.continents[targetID].hp = gameObj.continents[targetID].hp - (50 + Math.floor(gameObj.players[player].rnd.damage / 500) * 5);
-        gameObj.continents[continent].forces.bombers.total = gameObj.continents[continent].forces.bombers.total - 1;
+        gameObj.continents[launchID].forces.bombers.total -= 1;
 
         // Running the check to see if this is game over due to all HP being lost or because of rubble loss...
         enemyPlayerArr.forEach((enemy) => {
