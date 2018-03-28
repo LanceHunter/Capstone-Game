@@ -351,7 +351,7 @@ router.post('/continentselect', async (ctx) => {
     gameObj = snap.val();
   }); // End of the snapshot.
 
-  let totalPlayers = Object.keys(gameObj.players);
+  let totalPlayers = Object.keys(gameObj.players).length;
 
   if (gameObj && gameObj.gameStarted) { // Verifying that gameID is valid.
     if (gameObj.players[playerID]) { // Verifying that player is part of this game.
@@ -381,7 +381,7 @@ router.post('/continentselect', async (ctx) => {
             message: 'Continent has already been assigned.',
           };
         } // End of continent-already-assigned conditional.
-      } else if (Object.keys(gameObj.players[playerID].continents).length * totalPlayers < 6) { // If the player has continents, making sure they don't have more than their share.
+      } else if (Object.keys(gameObj.players[playerID].continents).length * totalPlayers <= 6) { // If the player has continents, making sure they don't have more than their share.
       } else {
         ctx.status = 400;
         ctx.body = {
