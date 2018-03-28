@@ -33,6 +33,7 @@ router.put('/shot', async (ctx) => {
 
   // Below we get an array of all the players.
   let playerArr = Object.keys(gameObj.players);
+  console.log(launchID, gameObj.continents[launchID]);
   let player = Object.keys(gameObj.continents[launchID].player)[0];
 
   // Below we get an array of all the enemy players. (Everybody except the player firing this shot.)
