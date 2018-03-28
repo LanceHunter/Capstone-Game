@@ -339,8 +339,8 @@ router.put('/deploybomber', async (ctx) => {
     if (gameObj.players[playerID].currentBudget >= bomberCost * quantity && gameObj.players[playerID].continents[location]) {
       let bombers = gameObj.continents[location].forces.bombers.total + quantity;
       let currentBudget = gameObj.players[playerID].currentBudget - (bomberCost * quantity);
-      let totalForces = gameObj.players[playerID].totalForces + 1;
-      let totalBombers = gameObj.players[playerID].totalBombers + 1;
+      let totalForces = gameObj.players[playerID].totalForces + quantity;
+      let totalBombers = gameObj.players[playerID].totalBombers + quantity;
       gameRef.child(`players/${playerID}`).update({
         currentBudget : currentBudget,
         totalForces : totalForces,
@@ -379,8 +379,8 @@ router.put('/deployicbm', async (ctx) => {
     if (gameObj.players[playerID].currentBudget >= icbmCost * quantity && gameObj.players[playerID].continents[location]) {
       let icbms = gameObj.continents[location].forces.icbms.total + quantity;
       let currentBudget = gameObj.players[playerID].currentBudget - (icbmCost * quantity);
-      let totalForces = gameObj.players[playerID].totalForces + 1;
-      let totalICBMs = gameObj.players[playerID].totalICBMs + 1;
+      let totalForces = gameObj.players[playerID].totalForces + quantity;
+      let totalICBMs = gameObj.players[playerID].totalICBMs + quantity;
       gameRef.child(`players/${playerID}`).update({
         currentBudget : currentBudget,
         totalForces : totalForces,
@@ -420,8 +420,8 @@ router.put('/deploysub', async (ctx) => {
     if (gameObj.players[playerID].currentBudget >= subCost * quantity && gameObj.players[playerID].oceans[location]) {
       let subs = gameObj.oceans[location].subs[playerID].total + quantity;
       let currentBudget = gameObj.players[playerID].currentBudget - (subCost * quantity);
-      let totalForces = gameObj.players[playerID].totalForces + 1;
-      let totalSubs = gameObj.players[playerID].totalSubs + 1;
+      let totalForces = gameObj.players[playerID].totalForces + quantity;
+      let totalSubs = gameObj.players[playerID].totalSubs + quantity;
       gameRef.child(`players/${playerID}`).update({
         currentBudget : currentBudget,
         totalForces : totalForces,
