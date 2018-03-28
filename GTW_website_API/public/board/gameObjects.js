@@ -72,6 +72,7 @@ class CapitalIcon {
 
 class SubIcon {
   constructor(x, y, ocean, playerID) {
+    this.type = 'sub';
     this.sprite = phaser.add.sprite(x, y, 'submarine');
     this.sprite.anchor.set(0, 1);
     this.playerID = playerID;
@@ -142,6 +143,7 @@ class SubIcon {
 
 class BomberIcon {
   constructor(x, y, continent) {
+    this.type = 'bomber';
     this.sprite = phaser.add.sprite(x, y, 'bomber');
     this.sprite.anchor.set(0, 1);
     this.continent = continent;
@@ -149,15 +151,6 @@ class BomberIcon {
     this.continent = continent;
     this.launches = [];
     this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
-
-    // some listeners
-    this.sprite.events.onInputDown.add(() => {
-      this.launches.push(new Launch(this.playerID, {x: this.sprite.centerX, y: this.sprite.centerY}, this.ocean));
-    }, this);
-
-    this.sprite.events.onInputUp.add(() => {
-      this.launches[this.launches.length - 1].launch({x: 10, y: 10});
-    }, this);
 
     this.updateState();
   }
@@ -227,14 +220,7 @@ class MissileIcon {
     this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
     this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
     this.inventory.tint = colors[playerIDs.indexOf(this.playerID)];
-
-    // some listeners
-    this.sprite.events.onInputDown.add(() => {
-    }, this);
-
-    this.sprite.events.onInputUp.add(() => {
-      this.launches[this.launches.length - 1].launch({x: 10, y: 10});
-    }, this);
+    this.type="icbm";
 
     this.updateState();
   }
@@ -282,6 +268,7 @@ class MissileIcon {
     // is it your sub?
     if (self.playerID === pointer.playerID) {
       if (game.continents[self.continent].forces.icbms.total > 0) {
+        console.log(self.launch);
         if (!self.launch) {
           self.launch = new Launch(self);
         } else {
@@ -304,14 +291,12 @@ class Launch {
     this.originIndicator.anchor.set(0.5);
     this.originIndicator.scale.set(0.1);
 
-    // a gear for animations
-    this.frame = 0;
-
     // to keep track of the countdown timer
     this.delay = 3;
     this.count = 0;
 
     // first we start aiming
+    this.originFrame = 0;
     this.state = 'armed';
   }
 
@@ -323,7 +308,7 @@ class Launch {
 
   // a weapon has been selected, launch is pending
   armed() {
-    let theta = (this.frame / 15)
+    let theta = (this.originFrame / 15)
     this.originIndicator.scale.set((Math.sin(theta) + 2) / 5);
     this.originIndicator.alpha = (Math.sin(theta + Math.PI) + 2) / 3;
   }
@@ -346,21 +331,24 @@ class Launch {
     this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(10, 10);
 
     this.state = 'enroute';
+    this.targetFrame = 0;
   }
 
   // while the missile is traveling
   enroute() {
-    let theta = (this.frame / 15)
-    this.originIndicator.scale.set((Math.sin(theta) + 2) / 5);
-    this.originIndicator.alpha = (Math.sin(theta + Math.PI) + 2) / 3;
-    this.targetIndicator.scale.set((Math.sin(theta) + 2) / 5);
-    this.targetIndicator.alpha = (Math.sin(theta + Math.PI) + 2) / 3;
+    let targetTheta = (this.targetFrame / 15);
+    let originTheta = (this.originFrame / 10);
+    this.originIndicator.scale.set((Math.sin(originTheta) + 2) / 5);
+    this.originIndicator.alpha = (Math.sin(originTheta + Math.PI) + 2) / 3;
+    this.targetIndicator.scale.set((Math.sin(targetTheta) + 2) / 5);
+    this.targetIndicator.alpha = (Math.sin(targetTheta + Math.PI) + 2) / 3;
 
     this.projectile.position.add(this.projectile.velocity.x, this.projectile.velocity.y);
 
     // when it gets to the destination, this.state = 'exploding'
     if (this.projectile.overlap(this.target.sprite)) {
       this.state = 'exploding';
+      this.explodingFrame = 0;
       this.projectile.destroy();
       this.targetIndicator.destroy();
       this.originIndicator.destroy();
@@ -369,15 +357,13 @@ class Launch {
         gameID: gameID,
         launchID: this.origin.continent,
         targetID: this.target.continent,
-        type: 'bomber'
+        type: this.origin.type
       };
 
-      console.log(data);
-
       $.ajax({
-        url: "/api/war/shot",
-        method: "put",
-        data,
+        url: '/api/war/shot',
+        method: 'PUT',
+        data: data,
         dataType: 'json'
       }).then(r => console.log(r));
     }
@@ -385,24 +371,11 @@ class Launch {
 
   // while the explosion animation is happening
   exploding() {
-    console.log('exploding');
-    this.explodingCount++;
-    if (this.explodingCount > 20) {
-      this.state = 'exploded';
+    this.explodingFrame++;
+    if (this.explodingFrame > 20) {
+      this.origin.launch = false;
     }
-    // when the missile gets to the destination
-    // get rid of the
-    // ocean.subs[player.name].total--;
-    // if (ocean.subs[player.name].declared > 0) {
-    //   ocean.subs[player.name].declared--;
-    // }
-    // when done exploding, this.state = 'exploded'
   }
-
-  exploded() {
-    this.origin.launch = null;
-  }
-
 }
 
 class PlayerPointer {
@@ -411,7 +384,6 @@ class PlayerPointer {
     this.playerID = playerIDs[index];
     this.sprite = state.game.add.sprite(state.game.width / 2, state.game.height / 2, 'circle');
     this.sprite.tint = colors[index];
-    // this.sprite.alpha = 0;
     this.sprite.scale.set(0.2);
 
     this.sprite.inputEnabled = true;
