@@ -42,7 +42,7 @@ router.put('/shot', async (ctx) => {
   // An array of the player's continents.
   let playerContinents = Object.keys(gameObj.players[player].continents);
 
-  if (gameObj && gameObj.war) { // Checking if gameID is valid and that war was declared.
+  if (gameObj && gameObj.war && gameObj.continents[launchID].hp > 0) { // Checking if gameID is valid, that the launching continent has HP left, and that war was declared.
     if (shotType === 'bomber') { // CHecking the type of show, and if it is a bomber show we use this logic.
       if (gameObj.continents[launchID].distances[targetID] <= 1 && gameObj.continents[launchID].forces.bombers.total > 0) { // Making sure target is within correct distance and that the player has bombers available.
         let updateBomberObj = {
@@ -324,7 +324,7 @@ router.put('/shot', async (ctx) => {
         message: 'Invalid shot type.',
       };
     }
-  } else { // If gameID is not valid of if war was not declared.
+  } else { // If gameID is not valid, if launching continent doesn't have enough HP, or if war was not declared.
     gameOver = false;
     rubbleLoss = false;
     ctx.status = 400;
