@@ -27,6 +27,7 @@ router.get('/leaders(.*)', async ctx => {
 
   try {
     const leaders = await knex('users')
+    .where('wins', '>', 0).orWhere('losses', '>', 0)
     .select(
       'username',
       'wins',
