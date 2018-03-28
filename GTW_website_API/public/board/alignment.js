@@ -23,7 +23,7 @@ async function joinGame() {
   */
 
   // TEST GAME
-  gameID = 'testgame0';
+  gameID = 'testgame2';
 
   console.log('gameID:', gameID);
   joinGameModal.gameID = gameID;

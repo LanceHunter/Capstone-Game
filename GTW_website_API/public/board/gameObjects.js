@@ -517,3 +517,28 @@ class Intersection {
     }
   }
 }
+
+/*
+INDICATORS
+*/
+class SelectedIndicator {
+  constructor(position, color) {
+    this.sprites = [
+      phaser.add.sprite(position.x, position.y, 'target01'),
+      phaser.add.sprite(position.x, position.y, 'target02'),
+      phaser.add.sprite(position.x, position.y, 'target03'),
+      phaser.add.sprite(position.x, position.y, 'target04')
+    ];
+    this.frame = 0;
+  }
+
+  update() {
+    this.sprites.forEach((sprite, i) => {
+      sprite.angle = 10 * (.3 * i);
+    });
+  }
+
+  destroy() {
+    this.sprites.forEach(sprite => sprite.destroy());
+  }
+}
