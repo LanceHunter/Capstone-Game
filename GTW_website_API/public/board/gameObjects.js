@@ -14,6 +14,7 @@ class CapitalIcon {
     this.playerID = Object.keys(game.continents[this.continent].player)[0];
   }
 
+  // triggered when the firebase state changes
   updateState() {
     if (game.war) {
       this.sprite.inputEnabled = true;
@@ -35,14 +36,14 @@ class CapitalIcon {
     this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
   }
 
+  // triggered when a capital is painted
   select(data) {
     let self = data.self;
     let pointer = data.pointer;
-    console.log(pointer.playerID, self.playerID);
+    // check that you aren't painting your own capital
     if (pointer.playerID != self.playerID) {
-      console.log('not your capital');
+      // and that the capital has hp
       if (game.continents[self.continent].hp > 0) {
-        console.log('capital has ' + game.continents[self.continent].hp + ' hp');
         // check all the weapons for armed launch objects
         subIcons.forEach((sub) => {
           if (sub.playerID === pointer.playerID) {
