@@ -1,12 +1,13 @@
 let war = {
   preload: function() {
-    this.game.load.image('map', '/board/assets/map.png');
+    this.game.load.image('map', '/board/assets/warmap.png');
     this.game.load.image('capital', '/board/assets/capital.png');
     this.game.load.bitmapFont('closeness', '/board/assets/fonts/closeness.png', '/board/assets/fonts/closeness.fnt');
     this.game.load.image('missile', '/board/assets/missile.png');
     this.game.load.image('submarine', '/board/assets/submarine.png');
     this.game.load.image('bomber', '/board/assets/bomber.png');
     this.game.load.image('circle', '/board/assets/circle.png');
+    this.game.load.image('projectile', '/board/assets/projectile.png');
     this.game.load.image('target01', '/board/assets/target01.png');
     this.game.load.image('target02', '/board/assets/target02.png');
     this.game.load.image('target03', '/board/assets/target03.png');
