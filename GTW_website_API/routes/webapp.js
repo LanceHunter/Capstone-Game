@@ -1,6 +1,5 @@
 const router = require('koa-router')();
 const send = require('koa-send');
-const fs = require('fs');
 const webappDir = './public/webapp/dist';
 
 // send any static files requested

@@ -43,7 +43,6 @@ app.use(enforceHttps({
 */
 
 
-
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(session(app));

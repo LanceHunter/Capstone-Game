@@ -115,9 +115,7 @@ router.post('/register', async ctx => {
 router.post('/new_game', async ctx => {
   if (ctx.isAuthenticated()) {
   try {
-    console.log(ctx.request.body);
     const new_game = await knex('games').insert(ctx.request.body).returning('*');
-    console.log(new_game,"bjksfbjkb");
     if (new_game.length) {
       ctx.status = 201;
       ctx.body = {
@@ -145,43 +143,6 @@ router.post('/new_game', async ctx => {
   }
 });
 
-// router.post('/send_invite/:game_id/:user_id', async ctx => {
-//   if (ctx.isAuthenticated()) {
-//   try {
-//     const invite = await knex('user_games')
-//       .insert({
-//         user_id: ctx.params.user_id,
-//         game_id: ctx.params.game_id
-//       })
-//       .returning('*');
-//
-//     if (invite.length) {
-//       ctx.status = 201;
-//       ctx.body = {
-//         status: 'success',
-//         data: ctx.request.body
-//       };
-//     } else {
-//       ctx.status = 400;
-//       ctx.body = {
-//         status: 'error',
-//         message: ctx.request.body || 'Something went wrong.'
-//       };
-//     }
-//   } catch (err) {
-//     ctx.status = 400;
-//     ctx.body = {
-//       status: 'error',
-//       message: ctx.request.body || 'Sorry, an error has occurred.'
-//     };
-//   }} else {
-//     ctx.body = {
-//       success: false
-//     };
-//     ctx.throw(401);
-//   }
-// });
-
 router.post('/invite_response/:user_id/:game_id', async ctx => {
   if (ctx.isAuthenticated()) {
   try {
@@ -193,7 +154,6 @@ router.post('/invite_response/:user_id/:game_id', async ctx => {
     const create_player = await knex('players').insert({
       user_id: ctx.params.user_id,
     }).returning('id');
-    console.log(create_player);
     const player_games = await knex('games_players').insert({
       player_id: create_player[0],
       game_id: ctx.params.game_id
@@ -202,7 +162,6 @@ router.post('/invite_response/:user_id/:game_id', async ctx => {
       response: ctx.request.body.response
     }).returning('*');
     if (invite_response.length) {
-      console.log(invite_response);
       ctx.status = 201;
       ctx.body = {
         status: 'success',
@@ -238,7 +197,6 @@ if (ctx.isAuthenticated()) {
       const get_players = await knex('games_players').select('player_id').where('game_id', '=', ctx.params.game_id).returning('player_id');
       //then iterate through get_players and match scores and player ids posting corresponding scores to the player tables.
 
-      console.log(get_players[0].player_id);
       if (end_party) {
         ctx.status = 201;
         ctx.body = {
