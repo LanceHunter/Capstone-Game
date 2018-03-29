@@ -461,6 +461,30 @@ router.post('/beginpeace', async (ctx) => {
   });
 }); // end of the "beginpeace" route.
 
+router.post('/cleanup', async (ctx) => {
+  // Continent selection is done, "pleacetime" begins.
+  let gameID = ctx.request.body.gameID;
+  let gameRef = ref.child(gameID);
+  let gamObj;
+
+  await gameRef.once('value', (snap) => {
+    gamObj = snap.val();
+  }); // End of grab data.
+
+  if (gamObj) {
+    gameRef.remove();
+    ctx.status = 200;
+  } else {
+    ctx.status = 400;
+    ctx.body = {
+      message: 'Invalid game ID.',
+    }
+  }
+
+
+}); // end of the "beginpeace" route.
+
+
 /* We don't need these seed routes anymore (and we are no longer including FS so they wouldn't work anyway). Keeping the code here as reference for the future.
 
 /// Here is a "seed" route, that's gonna grab a game and save the object to a file for use. DELETE THIS BEFORE DEPLOYING.
