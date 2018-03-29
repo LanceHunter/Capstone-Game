@@ -333,14 +333,15 @@ class Launch {
           // sprite stuff
           this.targetIndicator = new TargetIndicator(capital.sprite, colors[playerIDs.indexOf(this.origin.playerID)]);
 
-          this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'circle');
+          this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'projectile');
           this.projectile.tint = colors[playerIDs.indexOf(playerID)];
           this.projectile.anchor.set(0.5);
           this.projectile.alpha = alphaAdjust;
-          this.projectile.scale.set(0.2);
+
           this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
           let velocity = 10 + (game.players[playerID].rnd.speed * 2 / 500);
           this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(velocity, velocity);
+          this.projectile.rotation = Phaser.Point.angle(this.origin.sprite.position, this.target.sprite.position) - (Math.PI / 2);
 
           this.state = 'enroute';
           this.targetFrame = 0;
@@ -354,14 +355,14 @@ class Launch {
           // sprite stuff
           this.targetIndicator = new TargetIndicator(capital.sprite, colors[playerIDs.indexOf(this.origin.playerID)]);
 
-          this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'circle');
+          this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'projectile');
           this.projectile.tint = colors[playerIDs.indexOf(playerID)];
           this.projectile.anchor.set(0.5);
           this.projectile.alpha = alphaAdjust;
-          this.projectile.scale.set(0.2);
           this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
           let velocity = 10 + (game.players[playerID].rnd.speed * 2 / 500);
           this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(velocity, velocity);
+          this.projectile.rotation = Phaser.Point.angle(this.origin.sprite.position, this.target.sprite.position) - (Math.PI / 2);
 
           this.state = 'enroute';
           this.targetFrame = 0;
@@ -372,14 +373,14 @@ class Launch {
         // sprite stuff
         this.targetIndicator = new TargetIndicator(capital.sprite, colors[playerIDs.indexOf(this.origin.playerID)]);
 
-        this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'circle');
+        this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'projectile');
         this.projectile.tint = colors[playerIDs.indexOf(playerID)];
         this.projectile.anchor.set(0.5);
         this.projectile.alpha = alphaAdjust;
-        this.projectile.scale.set(0.2);
         this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
         let velocity = 10 + (game.players[playerID].rnd.speed * 2 / 500);
         this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(velocity, velocity);
+        this.projectile.rotation = Phaser.Point.angle(this.origin.sprite.position, this.target.sprite.position) - (Math.PI / 2);
 
         this.state = 'enroute';
         this.targetFrame = 0;
