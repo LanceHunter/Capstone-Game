@@ -12,6 +12,10 @@ let war = {
     this.game.load.image('target02', '/board/assets/target02.png');
     this.game.load.image('target03', '/board/assets/target03.png');
     this.game.load.image('target04', '/board/assets/target04.png');
+    this.game.load.audio('armbomb', '/board/assets/arming.mp3');
+    this.game.load.audio('explosion', '/board/assets/explosion.mp3');
+    this.game.load.audio('launch', '/board/assets/launch.mp3');
+
   },
   create: function() {
     this.game.add.sprite(0, 0, 'map');
@@ -87,7 +91,7 @@ let war = {
 
     // look at every pointer
     pointers.forEach((pointer) => {
-      pointer.setPosition();
+      // pointer.setPosition();
 
       if (!pointer.intersecting()) {
         capitalIcons.some((capital) => {
