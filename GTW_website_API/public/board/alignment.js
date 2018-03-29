@@ -18,7 +18,6 @@ const joinGameModal = new Vue({
       const data = await $.post('/api/pregame/setup');
       joinGameModal.gameID = data.gameID;
       joinGameModal.gameRef = await database.ref('gameInstance').child(joinGameModal.gameID);
-      console.log('new ref:', joinGameModal.gameRef);
       if (joinGameModal.gameRef) {
         joinGameModal.joinGame();
       } else {
@@ -28,24 +27,32 @@ const joinGameModal = new Vue({
     existingGame: async function() {
       const database = firebase.database();
       joinGameModal.gameRef = await database.ref('gameInstance').child(joinGameModal.gameID);
-      console.log('existing ref:', joinGameModal.gameRef);
       if (joinGameModal.gameRef) {
-        joinGameModal.joinGame();
+        joinGameModal.gameRef.once('value', function(snapshot) {
+          game = snapshot.val();
+          if (game.peacetime ||
+              game.war ||
+              game.players && Object.keys(game.players).length > 2) {
+                joinGameModal.usernames = Object.keys(game.players);
+                joinGameModal.beginGame();
+          } else {
+            joinGameModal.joinGame();
+          }
+        });
       } else {
         joinGameModal.error = 'Game not found, try again.';
       }
     },
     beginGame: async function() {
-      console.log('clicked button');
-      if (usernames.length > 1) {
+      if (joinGameModal.usernames.length > 1) {
         joinGameModal.gameRef.off();
         document.getElementById("joinGameModal").remove();
         await $.post('/api/pregame/startgame', {gameID: joinGameModal.gameID});
+        gameID = joinGameModal.gameID;
         startGame(joinGameModal.gameRef);
       }
     },
     joinGame: async function() {
-      console.log('gameID:', joinGameModal.gameID);
       joinGameModal.state = 'join';
       joinGameModal.gameRef.on('value', function(snapshot) {
         game = snapshot.val();

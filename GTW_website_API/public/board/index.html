@@ -39,13 +39,19 @@
           <div v-if="error">
             {{ error }}
           </div>
+          <div>
+            Start a new game:
+          </div>
           <button id="newGameButton" v-on:click="newGame" class="modalButton" type="button">
             New game
           </button>
-          <input v-model="gameID" placeholder="Game ID">
-          <button id="existingGameButton" v-on:click="existingGame" class="modalButton" type="button">
-            Connect
-          </button>
+          <div>
+            Or load an existing game:
+          </div>
+          <div>
+            <input v-model="gameID" placeholder="Game ID"></input>
+            <button id="existingGameButton" v-on:click="existingGame" class="modalButton" type="button">Connect</button>
+          </div>
         </div>
         <div v-else-if="state === 'join'">
           <div class="instructions">

@@ -75,7 +75,8 @@ html {
 
 .modalButton {
   margin: 0 auto;
-  width: 50%;
+  width: 30%;
+  font-size: 1em;
   height: 5em;
   background: #827887;
 }
@@ -90,6 +91,14 @@ html {
   padding: 5%;
   border: 1px solid #827887;
 }
+
+.joinGameModal input {
+  color: black;
+  width: 40%;
+  font-size: 1em;
+  padding: 2em;
+}
+
 
 /* ======================
 heads up display
