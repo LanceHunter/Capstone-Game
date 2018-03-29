@@ -361,7 +361,7 @@ router.post('/continentselect', async (ctx) => {
           continentAssignObj[continent] = true;
           let playerAssignObj = {};
           playerAssignObj[playerID] = true;
-          player.child(`continents`).update(continentAssignObj);
+          await player.child(`continents`).update(continentAssignObj);
 
           let oceansArr = Object.keys(gameObj.continents[continent].oceans);
           oceansArr.forEach((ocean) => {
@@ -370,10 +370,10 @@ router.post('/continentselect', async (ctx) => {
               declared : 0,
               total : 0
             };
-            gameRef.child(`oceans/${ocean}/subs`).update(oceanSubsForPlayer);
+            await gameRef.child(`oceans/${ocean}/subs`).update(oceanSubsForPlayer);
           });
-          player.child(`oceans`).update(gameObj.continents[continent].oceans); // Adding the oceans player can access with this continent.
-          gameRef.child(`continents/${continent}/player`).update(playerAssignObj);
+          await player.child(`oceans`).update(gameObj.continents[continent].oceans); // Adding the oceans player can access with this continent.
+          await gameRef.child(`continents/${continent}/player`).update(playerAssignObj);
           ctx.status = 200;
         } else {
           ctx.status = 400;
@@ -388,7 +388,7 @@ router.post('/continentselect', async (ctx) => {
           continentAssignObj[continent] = true;
           let playerAssignObj = {};
           playerAssignObj[playerID] = true;
-          player.child(`continents`).update(continentAssignObj);
+          await player.child(`continents`).update(continentAssignObj);
 
           let oceansArr = Object.keys(gameObj.continents[continent].oceans);
           oceansArr.forEach((ocean) => {
@@ -397,10 +397,10 @@ router.post('/continentselect', async (ctx) => {
               declared : 0,
               total : 0
             };
-            gameRef.child(`oceans/${ocean}/subs`).update(oceanSubsForPlayer);
+            await gameRef.child(`oceans/${ocean}/subs`).update(oceanSubsForPlayer);
           });
-          player.child(`oceans`).update(gameObj.continents[continent].oceans); // Adding the oceans player can access with this continent.
-          gameRef.child(`continents/${continent}/player`).update(playerAssignObj);
+          await player.child(`oceans`).update(gameObj.continents[continent].oceans); // Adding the oceans player can access with this continent.
+          await gameRef.child(`continents/${continent}/player`).update(playerAssignObj);
           ctx.status = 200;
         } else {
           ctx.status = 400;
