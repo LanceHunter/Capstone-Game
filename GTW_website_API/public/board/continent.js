@@ -22,7 +22,7 @@ let continent = {
   },
   update: function() {
     pointers.forEach((pointer) => {
-      if (Object.keys(game.players[pointer.playerID].continents).length < 6 / pointers.length) {
+      if (Object.keys(game.players[pointer.playerID].continents).length <= 6 / pointers.length) {
         pointer.setPosition();
         if (!pointer.intersecting()) {
           capitalIcons.some((capital) => {
