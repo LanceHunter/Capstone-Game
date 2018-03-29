@@ -97,8 +97,16 @@ class SubIcon {
   }
 
   updateState() {
+    let playerContinents = Object.keys(game.players[this.playerID].continents);
+    let availableOceans = [];
+    playerContinents.forEach(continent => {
+      Object.keys(game.continents[continent].oceans).forEach(ocean => {
+        availableOceans.push(ocean);
+      });
+    });
+
     // if the sub's player can be in that ocean
-    if (game.oceans[this.ocean].subs[this.playerID]) {
+    if (availableOceans.includes(this.ocean)) {
       //check for game state and update inventory accordingly
       if (game.war) {
         this.inventory.setText(game.oceans[this.ocean].subs[this.playerID].total);
