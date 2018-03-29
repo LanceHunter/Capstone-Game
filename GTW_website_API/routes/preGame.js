@@ -370,7 +370,7 @@ router.post('/continentselect', async (ctx) => {
               declared : 0,
               total : 0
             };
-            await gameRef.child(`oceans/${ocean}/subs`).update(oceanSubsForPlayer);
+            gameRef.child(`oceans/${ocean}/subs`).update(oceanSubsForPlayer);
           });
           await player.child(`oceans`).update(gameObj.continents[continent].oceans); // Adding the oceans player can access with this continent.
           await gameRef.child(`continents/${continent}/player`).update(playerAssignObj);
@@ -397,7 +397,7 @@ router.post('/continentselect', async (ctx) => {
               declared : 0,
               total : 0
             };
-            await gameRef.child(`oceans/${ocean}/subs`).update(oceanSubsForPlayer);
+            gameRef.child(`oceans/${ocean}/subs`).update(oceanSubsForPlayer);
           });
           await player.child(`oceans`).update(gameObj.continents[continent].oceans); // Adding the oceans player can access with this continent.
           await gameRef.child(`continents/${continent}/player`).update(playerAssignObj);
