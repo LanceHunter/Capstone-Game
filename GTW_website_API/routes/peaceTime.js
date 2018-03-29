@@ -475,7 +475,7 @@ router.put('/declarebomber', async (ctx) => {
       if (totalDeclared >= 10 && gameObj.year >= 1953) {
         overwhelmingForce = true;
         enemyPlayerArr.forEach((enemy) => {
-          if (totalDeclared >= gameObj.players[enemy].totalDeclaredForces*2) {
+          if (totalDeclared <= gameObj.players[enemy].totalDeclaredForces*2) {
             overwhelmingForce = false;
           }
         });
@@ -530,7 +530,7 @@ router.put('/declareicbm', async (ctx) => {
       if (totalDeclared >= 10 && gameObj.year >= 1953) {
         overwhelmingForce = true;
         enemyPlayerArr.forEach((enemy) => {
-          if (totalDeclared >= gameObj.players[enemy].totalDeclaredForces*2) {
+          if (totalDeclared <= gameObj.players[enemy].totalDeclaredForces*2) {
             overwhelmingForce = false;
           }
         });
@@ -585,7 +585,7 @@ router.put('/declaresub', async (ctx) => {
       if (totalDeclared >= 10 && gameObj.year >= 1953) {
         overwhelmingForce = true;
         enemyPlayerArr.forEach((enemy) => {
-          if (totalDeclared >= gameObj.players[enemy].totalDeclaredForces*2) {
+          if (totalDeclared <= gameObj.players[enemy].totalDeclaredForces*2) {
             overwhelmingForce = false;
           }
         });
