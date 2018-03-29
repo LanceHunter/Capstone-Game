@@ -5,49 +5,65 @@
 const joinGameModal = new Vue({
   el: '#joinGameModal',
   data: {
-    colors: colors.map(c => 'rgb(' + [(c & 0x880000) >> 16,  (c & 0x008800) >> 8,  (c & 0x000088)] + ')'),
+    error: null,
+    state: 'off',
+    colors: colors.map(c => 'rgb(' + [(c & 0xff0000) >> 16,  (c & 0x00ff00) >> 8,  (c & 0x0000ff)] + ')'),
     gameID: null,
+    gameRef: null,
     usernames: [],
+  },
+  methods: {
+    newGame: async function() {
+      const database = firebase.database();
+      const data = await $.post('/api/pregame/setup');
+      joinGameModal.gameID = data.gameID;
+      joinGameModal.gameRef = await database.ref('gameInstance').child(joinGameModal.gameID);
+      if (joinGameModal.gameRef) {
+        joinGameModal.joinGame();
+      } else {
+        joinGameModal.error = 'Game creation failed, try again.';
+      }
+    },
+    existingGame: async function() {
+      const database = firebase.database();
+      joinGameModal.gameRef = await database.ref('gameInstance').child(joinGameModal.gameID);
+      if (joinGameModal.gameRef) {
+        joinGameModal.gameRef.once('value', function(snapshot) {
+          game = snapshot.val();
+          if (game.peacetime ||
+              game.war ||
+              game.players && Object.keys(game.players).length > 2) {
+                joinGameModal.usernames = Object.keys(game.players);
+                joinGameModal.beginGame();
+          } else {
+            joinGameModal.joinGame();
+          }
+        });
+      } else {
+        joinGameModal.error = 'Game not found, try again.';
+      }
+    },
+    beginGame: async function() {
+      if (joinGameModal.usernames.length > 1) {
+        joinGameModal.gameRef.off();
+        document.getElementById("joinGameModal").remove();
+        await $.post('/api/pregame/startgame', {gameID: joinGameModal.gameID});
+        gameID = joinGameModal.gameID;
+        startGame(joinGameModal.gameRef);
+      }
+    },
+    joinGame: async function() {
+      joinGameModal.state = 'join';
+      joinGameModal.gameRef.on('value', function(snapshot) {
+        game = snapshot.val();
+        if (game.players) {
+          usernames = Object.keys(game.players);
+          joinGameModal.usernames = usernames;
+        }
+      });
+    }
   }
 })
-
-async function joinGame() {
-  // create a game instance
-  const database = firebase.database();
-
-  const data = await $.post('/api/pregame/setup');
-  gameID = data.gameID;
-
-  /* SHORT CIRCUIT
-  gameID = 'testgame0'
-  */
-
-  joinGameModal.gameID = gameID;
-  const gameRef = database.ref('gameInstance').child(gameID);
-  let usernames = [];
-  gameRef.on('value', function(snapshot) {
-    game = snapshot.val();
-    if (game.players) {
-      usernames = Object.keys(game.players);
-      joinGameModal.usernames = usernames;
-    }
-  });
-
-  // display join game modal
-  const modal = document.getElementById("joinGameModal");
-  modal.style.visibility = "visible";
-
-  // start game on button press
-  const beginGameButton = document.getElementById("beginGameButton");
-  beginGameButton.addEventListener('click', async function() {
-    if (usernames.length > 1) {
-      gameRef.off();
-      document.getElementById("joinGameModal").remove();
-      await $.post('/api/pregame/startgame', {gameID: gameID});
-      startGame(gameRef);
-    }
-  });
-}
 
 /*
   Creates a translator object which maps coordinates from the camera to coortinates on the display. Initialize with two coordinates from the camera along with where they should be mapped to on the display.
@@ -254,7 +270,7 @@ function align(boardWidth, boardHeight) {
           ctx.clearRect(0, 0, c.width, c.height);
           state = 'finished';
           trackLasers(translator);
-          joinGame();
+          joinGameModal.state = 'connect';
         }
         boardTrackerTask.stop();
       }, 0);

@@ -47,22 +47,24 @@ html {
 
 .modal {
   background-color: #1a181b;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
   color: #f7ebec;
   border: 3px solid #827887;
-  list-style-type: none;
-  text-align: center;
   position: absolute;
-  visibility: hidden;
   width: 40%;
   height: 40%;
 }
 
-.joinGameModal {
-  visibility: hidden;
+.modal > div {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  list-style-type: none;
+  text-align: center;
+}
 
+.joinGameModal {
   z-index: 999;
 }
 
@@ -71,9 +73,10 @@ html {
   z-index: 998;
 }
 
-.joinGameModal button {
+.modalButton {
   margin: 0 auto;
-  width: 50%;
+  width: 30%;
+  font-size: 1em;
   height: 5em;
   background: #827887;
 }
@@ -88,6 +91,14 @@ html {
   padding: 5%;
   border: 1px solid #827887;
 }
+
+.joinGameModal input {
+  color: black;
+  width: 40%;
+  font-size: 1em;
+  padding: 2em;
+}
+
 
 /* ======================
 heads up display
@@ -115,22 +126,34 @@ h3 {
   width: 65%;
   margin: auto;
   z-index: 3;
-  border: 2px solid white;
+  border: 2px solid #827887;
   background-color: rgba(0, 0, 0, 0.3);
-  color: white;
+  color: #827887;
   height: 25%;
   margin-top: 30px;
+}
+
+.game-header h3 {
+  color: #827887;
 }
 
 .total-forces {
   padding: 20px;
   margin: auto;
   z-index: 3;
-  border: 2px solid white;
+  border: 2px solid #827887;
   background-color: rgba(0, 0, 0, 0.3);
-  color: white;
+  color: #827887;
   height: 25%;
   margin-top: 30px;
+}
+
+.total-forces h3 {
+  padding: .5em;
+}
+
+.total-forces span {
+  color: black;
 }
 
 .hudcontainer {
@@ -156,10 +179,10 @@ h3 {
 .playernews {
   margin: auto;
   z-index: 999;
-  border: 2px solid white;
+  border: 2px solid #827887;
   /* margin: 10px; */
   background-color: rgba(0, 0, 0, 0.3);
-  color: white;
+  color: #827887;
 }
 
 h5 {
