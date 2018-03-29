@@ -87,10 +87,6 @@ let war = {
 
     // look at every pointer
     pointers.forEach((pointer) => {
-<<<<<<< HEAD
-      // short circuit when no lasers
-=======
->>>>>>> dc8b62c3a280139ec5df3012a560615b8440ba32
       pointer.setPosition();
 
       if (!pointer.intersecting()) {
