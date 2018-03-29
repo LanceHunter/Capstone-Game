@@ -14,6 +14,7 @@ const gameOverModal = new Vue({
   el: '#gameOverModal',
   data: {
     messages: {
+      rubble: 'world in rubble',
       overwhelming: 'overwhelming force',
       worldPeace: 'world peace',
       wonWar: 'war',
