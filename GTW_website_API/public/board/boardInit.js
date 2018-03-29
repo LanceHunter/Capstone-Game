@@ -22,7 +22,7 @@ function onGameChange(data) {
   // state switcher
   if (game.war && phaser.state.current != 'War') {
     phaser.state.start('War');
-  } else if (game.peacetime && phaser.state.current != 'Peace'){
+  } else if (game.peacetime && phaser.state.current != 'Peace' && !game.war){
     phaser.state.start('Peace');
   }
 
