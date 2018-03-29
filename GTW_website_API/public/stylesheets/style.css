@@ -45,6 +45,11 @@ html {
   pointer-events: none;
 }
 
+.gameOverModal {
+  display: flex;
+  flex-direction: column;
+}
+
 .modal {
   background-color: #1a181b;
   color: #f7ebec;
