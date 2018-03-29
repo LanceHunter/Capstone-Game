@@ -219,7 +219,7 @@ export default {
   background-position: top;
   background-size: cover;
   font-family: $family-mono;
-  height: 900px;
+  height: 1900px;
   margin-bottom: -8px;
 }
 

@@ -26,18 +26,19 @@ class CapitalIcon {
     this.hitPoints.setText(game.continents[this.continent].hp);
     this.hitPoints.position.x = this.sprite.centerX - (this.hitPoints.width / 2);
 
-    // if they are out of hit points
-    if (game.continents[this.continent].hp <= 0) {
-      this.sprite.alpha = 0.2;
-      this.hitPoints.alpha = 0.2;
-    }
     if (game.peacetime) {
       this.sprite.alpha = 1;
       this.hitPoints.alpha = 1;
-    }
+    } else
     if (game.war) {
       this.sprite.alpha = alphaAdjust;
       this.hitPoints.alpha = alphaAdjust;
+      if (game.continents[this.continent].hp <= 0) {
+        this.sprite.alpha = 0.2;
+        this.hitPoints.alpha = 0.2;
+      }
+    } else {
+      this.sprite.alpha = alphaAdjust;
     }
 
     this.hitPoints.setText(game.continents[this.continent].hp);
@@ -349,7 +350,7 @@ class Launch {
       } else
       if (this.origin.type === 'bomber') {
         // check for valid bomber launch
-        if (game.continents[this.origin.continent].distances[this.target.continent] === 1) {
+        if (game.continents[this.origin.continent].distances[this.target.continent] <= 1) {
           // sprite stuff
           this.targetIndicator = new TargetIndicator(capital.sprite, colors[playerIDs.indexOf(this.origin.playerID)]);
 
@@ -466,7 +467,7 @@ class PlayerPointer {
   }
 
   setPosition() {
-    this.sprite.position = lasers[this.playerIndex] || {x: 0,y: 0};
+    this.sprite.position = lasers[this.playerIndex] || {x: -50,y: -50};
   }
 
   intersecting() {
@@ -539,7 +540,7 @@ class TargetIndicator {
     this.sprites.forEach((sprite, i) => {
       sprite.angle = this.frame * 10 * (.3 * i) * (i % 2 === 0 ? 1 : -1);
       sprite.scale.set(0.8 + (Math.sin((this.frame + 5 * i) / 5) * 0.35));
-      sprite.alpha = (0.5 + (Math.sin((this.frame + 5 * i) / 5) * 0.2));
+      sprite.alpha = (0.5 + (Math.sin((this.frame + 5 * i) / 5) * 0.3));
     });
   }
 
