@@ -619,34 +619,41 @@ router.put('/disarmbomber', async (ctx) => {
   let playerID = ctx.request.body.playerID;
   let quantity = parseInt(ctx.request.body.quantity);
   let location = ctx.request.body.location;
+  let gameObj;
 
   await gameRef.once('value', (snap) => {
-    if (snap.val() && snap.val().continents[location].forces.bombers.total >= quantity) {
-      let forcesObj = {
-        declared : snap.val().continents[location].forces.bombers.declared,
-        total : snap.val().continents[location].forces.bombers.total
-      };
-      if (snap.val().continents[location].forces.bombers.declared > 0) {
-        let declaredTotal = snap.val().continents[location].forces.bombers.declared - quantity;
-        let declaredGrandTotal = snap.val().players[playerID].totalDeclaredForces - quantity;
-        if (declaredTotal < 0) { // If removing the disarmed quantity makes the total number of declared forces to be less than 0...
-          declaredTotal = 0;
-          declaredGrandTotal = snap.val().players[playerID].totalDeclaredForces - snap.val().continents[location].forces.bombers.declared;
-        } // End of conditional for disarming more than total declared.
-        forcesObj.declared = declaredTotal;
-
-        gameRef.child(`players/${playerID}`).update({totalDeclaredForces : declaredGrandTotal});
-        ctx.status = 200;
-      } // End of conditional checking of there are any declared forces.
-      forcesObj.total -= quantity;
-      gameRef.child(`continents/${location}/forces/bombers`).update(forcesObj);
-    } else { // If gameID is invalid or quantity to disarm is greater than total forces.
-      ctx.status = 400;
-      ctx.body = {
-        message: 'Invalid game ID entered or attempting to disarm more bombers the total amount in that location.',
-      };
-    } // End of conditional for gameID/disarm total.
+    gameObj = snap.val();
   }); // End of grabbing information from Firebase.
+
+  if (gameObj && gameObj.continents[location].forces.bombers.total >= quantity) {
+    let forcesObj = {
+      declared : gameObj.continents[location].forces.bombers.declared,
+      total : gameObj.continents[location].forces.bombers.total
+    };
+    let playerUpdateObj = {
+      totalBombers : gameObj.players[playerID].totalBombers - quantity,
+      totalForces : gameObj.players[playerID].totalForces - quantity
+    };
+    if (gameObj.continents[location].forces.bombers.declared > 0) {
+      let declaredTotal = gameObj.continents[location].forces.bombers.declared - quantity;
+      let declaredGrandTotal = gameObj.players[playerID].totalDeclaredForces - quantity;
+      if (declaredTotal < 0) { // If removing the disarmed quantity makes the total number of declared forces to be less than 0...
+        declaredTotal = 0;
+        declaredGrandTotal = gameObj.players[playerID].totalDeclaredForces - gameObj.continents[location].forces.bombers.declared;
+      } // End of conditional for disarming more than total declared.
+      forcesObj.declared = declaredTotal;
+      playerUpdateObj.totalDeclaredForces = declaredGrandTotal;
+    } // End of conditional checking of there are any declared forces.
+    forcesObj.total -= quantity;
+    await gameRef.child(`players/${playerID}`).update(playerUpdateObj);
+    await gameRef.child(`continents/${location}/forces/bombers`).update(forcesObj);
+    ctx.status = 200;
+  } else { // If gameID is invalid or quantity to disarm is greater than total forces.
+    ctx.status = 400;
+    ctx.body = {
+      message: 'Invalid game ID entered or attempting to disarm more bombers the total amount in that location.',
+    };
+  } // End of conditional for gameID/disarm total.
 }); // end of "disarmbomber" route.
 
 
@@ -656,33 +663,41 @@ router.put('/disarmicbm', async (ctx) => {
   let playerID = ctx.request.body.playerID;
   let quantity = parseInt(ctx.request.body.quantity);
   let location = ctx.request.body.location;
+  let gameObj;
 
   await gameRef.once('value', (snap) => {
-    if (snap.val() && snap.val().continents[location].forces.icbms.total >= quantity) {
-      let forcesObj = {
-        declared : snap.val().continents[location].forces.icbms.declared,
-        total : snap.val().continents[location].forces.icbms.total
-      };
-      if (snap.val().continents[location].forces.icbms.declared > 0) {
-        let declaredTotal = snap.val().continents[location].forces.icbms.declared - quantity;
-        let declaredGrandTotal = snap.val().players[playerID].totalDeclaredForces - quantity;
-        if (declaredTotal < 0) { // If removing the disarmed quantity makes the total number of declared forces to be less than 0...
-          declaredTotal = 0;
-          declaredGrandTotal = snap.val().players[playerID].totalDeclaredForces - snap.val().continents[location].forces.icbms.declared;
-        } // End of conditional for disarming more than total declared.
-        forcesObj.declared = declaredTotal;
-        gameRef.child(`players/${playerID}`).update({totalDeclaredForces : declaredGrandTotal});
-        ctx.status = 200;
-      } // End of conditional checking of there are any declared forces.
-      forcesObj.total -= quantity;
-      gameRef.child(`continents/${location}/forces/icbms`).update(forcesObj);
-    } else { // If gameID is invalid or quantity to disarm is greater than total forces.
-      ctx.status = 400;
-      ctx.body = {
-        message: 'Invalid game ID entered or attempting to disarm more ICBMs the total amount in that location.',
-      };
-    } // End of conditional for gameID/disarm total.
+    gameObj = snap.val();
   }); // End of grabbing information from Firebase.
+
+  if (gameObj && gameObj.continents[location].forces.icbms.total >= quantity) {
+    let forcesObj = {
+      declared : gameObj.continents[location].forces.icbms.declared,
+      total : gameObj.continents[location].forces.icbms.total
+    };
+    let playerUpdateObj = {
+      totalICBMs : gameObj.players[playerID].totalICBMS - quantity,
+      totalForces : gameObj.players[playerID].totalForces - quantity
+    };
+    if (gameObj.continents[location].forces.icbms.declared > 0) {
+      let declaredTotal = gameObj.continents[location].forces.icbms.declared - quantity;
+      let declaredGrandTotal = gameObj.players[playerID].totalDeclaredForces - quantity;
+      if (declaredTotal < 0) { // If removing the disarmed quantity makes the total number of declared forces to be less than 0...
+        declaredTotal = 0;
+        declaredGrandTotal = gameObj.players[playerID].totalDeclaredForces - gameObj.continents[location].forces.icbms.declared;
+      } // End of conditional for disarming more than total declared.
+      forcesObj.declared = declaredTotal;
+      playerUpdateObj.totalDeclaredForces = declaredGrandTotal;
+    } // End of conditional checking of there are any declared forces.
+    forcesObj.total -= quantity;
+    await gameRef.child(`players/${playerID}`).update(playerUpdateObj);
+    await gameRef.child(`continents/${location}/forces/icbms`).update(forcesObj);
+    ctx.status = 200;
+  } else { // If gameID is invalid or quantity to disarm is greater than total forces.
+    ctx.status = 400;
+    ctx.body = {
+      message: 'Invalid game ID entered or attempting to disarm more ICBMs the total amount in that location.',
+    };
+  } // End of conditional for gameID/disarm total.
 }); // end of "disarmicbm" route.
 
 
@@ -692,33 +707,41 @@ router.put('/disarmsub', async (ctx) => {
   let playerID = ctx.request.body.playerID;
   let quantity = parseInt(ctx.request.body.quantity);
   let location = ctx.request.body.location;
+  let gameObj;
 
   await gameRef.once('value', (snap) => {
-    if (snap.val() && snap.val().oceans[location].subs[playerID].total >= quantity) {
-      let forcesObj = {
-        declared : snap.val().oceans[location].subs[playerID].declared,
-        total : snap.val().oceans[location].subs[playerID].total
-      };
-      if (snap.val().oceans[location].subs[playerID].declared > 0) {
-        let declaredTotal = snap.val().oceans[location].subs[playerID].declared - quantity;
-        let declaredGrandTotal = snap.val().players[playerID].totalDeclaredForces - quantity;
-        if (declaredTotal < 0) { // If removing the disarmed quantity makes the total number of declared forces to be less than 0...
-          declaredTotal = 0;
-          declaredGrandTotal = snap.val().players[playerID].totalDeclaredForces - snap.val().oceans[location].subs[playerID].declared;
-        } // End of conditional for disarming more than total declared.
-        forcesObj.declared = declaredTotal;
-        gameRef.child(`players/${playerID}`).update({totalDeclaredForces : declaredGrandTotal});
-        ctx.status = 200;
-      } // End of conditional checking of there are any declared forces.
-      forcesObj.total -= quantity;
-      gameRef.child(`oceans/${location}/subs/${playerID}`).update(forcesObj);
-    } else { // If gameID is invalid or quantity to disarm is greater than total forces.
-      ctx.status = 400;
-      ctx.body = {
-        message: 'Invalid game ID entered or attempting to disarm more submarines than the total amount in that location.',
-      };
-    } // End of conditional for gameID/disarm total.
+    gameObj = snap.val();
   }); // End of grabbing information from Firebase.
+
+  if (gameObj && gameObj.oceans[location].subs[playerID].total >= quantity) {
+    let forcesObj = {
+      declared : gameObj.oceans[location].subs[playerID].declared,
+      total : gameObj.oceans[location].subs[playerID].total
+    };
+    let playerUpdateObj = {
+      totalSubs : gameObj.players[playerID].totalSubs - quantity,
+      totalForces : gameObj.players[playerID].totalForces - quantity
+    };
+    if (gameObj.oceans[location].subs[playerID].declared > 0) {
+      let declaredTotal = gameObj.oceans[location].subs[playerID].declared - quantity;
+      let declaredGrandTotal = gameObj.players[playerID].totalDeclaredForces - quantity;
+      if (declaredTotal < 0) { // If removing the disarmed quantity makes the total number of declared forces to be less than 0...
+        declaredTotal = 0;
+        declaredGrandTotal = gameObj.players[playerID].totalDeclaredForces - gameObj.oceans[location].subs[playerID].declared;
+      } // End of conditional for disarming more than total declared.
+      forcesObj.declared = declaredTotal;
+      playerUpdateObj.totalDeclaredForces = declaredGrandTotal;
+    } // End of conditional checking of there are any declared forces.
+    forcesObj.total -= quantity;
+    await gameRef.child(`players/${playerID}`).update(playerUpdateObj);
+    await gameRef.child(`oceans/${location}/subs/${playerID}`).update(forcesObj);
+    ctx.status = 200;
+  } else { // If gameID is invalid or quantity to disarm is greater than total forces.
+    ctx.status = 400;
+    ctx.body = {
+      message: 'Invalid game ID entered or attempting to disarm more submarines than the total amount in that location.',
+    };
+  } // End of conditional for gameID/disarm total.
 }); // end of "disarmsub" route.
 
 router.put('/spendrnd', async (ctx) => {
