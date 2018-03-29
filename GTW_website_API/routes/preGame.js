@@ -352,6 +352,7 @@ router.post('/continentselect', async (ctx) => {
   }); // End of the snapshot.
 
   let totalPlayers = Object.keys(gameObj.players).length;
+  console.log('The totalPlayers - ', totalPlayers);
 
   if (gameObj && gameObj.gameStarted) { // Verifying that gameID is valid.
     if (gameObj.players[playerID]) { // Verifying that player is part of this game.
@@ -381,8 +382,36 @@ router.post('/continentselect', async (ctx) => {
             message: 'Continent has already been assigned.',
           };
         } // End of continent-already-assigned conditional.
-      } else if (Object.keys(gameObj.players[playerID].continents).length * totalPlayers <= 6) { // If the player has continents, making sure they don't have more than their share.
+      } else if (Object.keys(gameObj.players[playerID].continents).length * totalPlayers < 6) { // If the player has continents, making sure they don't have more than their share.
+        console.log('We are here - Object.keys(gameObj.players[playerID].continents).length * totalPlayers <= 6 - ', Object.keys(gameObj.players[playerID].continents).length * totalPlayers);
+        if (!gameObj.continents[continent].player) { // Checking to see if continent is already assigned.
+          let continentAssignObj = {};
+          continentAssignObj[continent] = true;
+          let playerAssignObj = {};
+          playerAssignObj[playerID] = true;
+          player.child(`continents`).update(continentAssignObj);
+
+          let oceansArr = Object.keys(gameObj.continents[continent].oceans);
+          oceansArr.forEach((ocean) => {
+            let oceanSubsForPlayer = {};
+            oceanSubsForPlayer[playerID] = {
+              declared : 0,
+              total : 0
+            };
+            gameRef.child(`oceans/${ocean}/subs`).update(oceanSubsForPlayer);
+          });
+          player.child(`oceans`).update(gameObj.continents[continent].oceans); // Adding the oceans player can access with this continent.
+          gameRef.child(`continents/${continent}/player`).update(playerAssignObj);
+          ctx.status = 200;
+        } else {
+          ctx.status = 400;
+          ctx.body = {
+            message: 'Continent has already been assigned.',
+          };
+        } // End of continent-already-assigned conditional.
+
       } else {
+        console.log('We are NOT here - Object.keys(gameObj.players[playerID].continents).length * totalPlayers <= 6 - ', Object.keys(gameObj.players[playerID].continents).length * totalPlayers);
         ctx.status = 400;
         ctx.body = {
           message: 'Player has max nuber of continents.',

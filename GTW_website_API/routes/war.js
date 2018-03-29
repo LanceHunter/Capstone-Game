@@ -51,6 +51,9 @@ router.put('/shot', async (ctx) => {
         let updateHpObj = {
           hp: gameObj.continents[targetID].hp - (50 + Math.floor(gameObj.players[player].rnd.damage / 500) * 5)
         }; // Get ready to write an update to the game object decrementing the HP from the target continent.
+        if (updateHpObj.hp < 0) { // If the  HP is less than 0, make it 0 in the Firebase update.
+          updateHpObj.hp = 0;
+        }
         let shotsFired = gameObj.players[player].shotsFired + 1; // Get ready to write an update to the game object increasing number of shots fired.
         let totalBombers = gameObj.players[player].totalBombers - 1;
         // These next three lines are writing those Firebase updates.
@@ -186,6 +189,9 @@ router.put('/shot', async (ctx) => {
         let updateHpObj = {
           hp: gameObj.continents[targetID].hp - (50 + Math.floor(gameObj.players[player].rnd.damage / 500) * 5)
         };
+        if (updateHpObj.hp < 0) { // If the  HP is less than 0, make it 0 in the Firebase update.
+          updateHpObj.hp = 0;
+        }
         let shotsFired = gameObj.players[player].shotsFired + 1;
         let totalICBMs = gameObj.players[player].totalICBMs - 1;
         let totalForces = gameObj.players[player].totalForces - 1;
@@ -663,7 +669,9 @@ router.put('/subshot', async (ctx) => {
       let updateHpObj = {
         hp: gameObj.continents[targetID].hp - (50 + Math.floor(gameObj.players[shooterID].rnd.damage / 500) * 5)
       };
-
+      if (updateHpObj.hp < 0) { // If the  HP is less than 0, make it 0 in the Firebase update.
+        updateHpObj.hp = 0;
+      }
       let shotsFired = gameObj.players[shooterID].shotsFired + 1;
       let totalSubs = gameObj.players[shooterID].totalSubs - 1;
       await gameRef.child(`players/${shooterID}`).update({
@@ -703,7 +711,7 @@ router.put('/subshot', async (ctx) => {
 
       ctx.status = 200;
 
-      // Changing the HP for this continent and subtracting the total number of subs for the shootign player in the launching ocean in the local copy of the gameObj.
+      // Changing the HP for this continent and subtracting the total number of subs for the shootinh player in the launching ocean in the local copy of the gameObj.
       gameObj.continents[targetID].hp = gameObj.continents[targetID].hp - (50 + Math.floor(gameObj.players[player].rnd.damage / 500) * 5);
       gameObj.oceans[launchID].subs[shooterID].total -= 1;
 
@@ -868,9 +876,6 @@ router.put('/subshot', async (ctx) => {
 
 
       if (enemyPlayerArr.length + 1 === 2) { // If we have two players in the game, updating info for two players.
-        // let firstPlayerInfo = userTableInfo.filter((entry) => {
-        //   return entry.username === playersArr[0];
-        // });
         let updatePlayerOne = {
           average_score: (((playerTableInfo[0].wins + playerTableInfo[0].losses) * playerTableInfo[0].average_score) + winnerHitPoints) / (playerTableInfo[0].wins + playerTableInfo[0].losses + 1)
         };
@@ -1001,7 +1006,7 @@ router.put('/subshot', async (ctx) => {
   } // end of conditional checking if we are in a gameOver state.
 
 
-  // If the game is over, we end game and start writing to database.
+  // If the game is over due to rubbleLoss, we end game and start writing to database.
   if (rubbleLoss && gameObj.war) {
     gameRef.update({
       gameOver: {

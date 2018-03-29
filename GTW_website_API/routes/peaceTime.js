@@ -475,7 +475,7 @@ router.put('/declarebomber', async (ctx) => {
       if (totalDeclared >= 10 && gameObj.year >= 1953) {
         overwhelmingForce = true;
         enemyPlayerArr.forEach((enemy) => {
-          if (totalDeclared >= enemy.totalDeclaredForces*2) {
+          if (totalDeclared >= gameObj.players[enemy].totalDeclaredForces*2) {
             overwhelmingForce = false;
           }
         });
@@ -530,7 +530,7 @@ router.put('/declareicbm', async (ctx) => {
       if (totalDeclared >= 10 && gameObj.year >= 1953) {
         overwhelmingForce = true;
         enemyPlayerArr.forEach((enemy) => {
-          if (totalDeclared >= enemy.totalDeclaredForces*2) {
+          if (totalDeclared >= gameObj.players[enemy].totalDeclaredForces*2) {
             overwhelmingForce = false;
           }
         });
@@ -575,7 +575,7 @@ router.put('/declaresub', async (ctx) => {
   let enemyPlayerArr = playerArr.slice(0);
   enemyPlayerArr.splice(enemyPlayerArr.indexOf(playerID), 1);
 
-  if (gameObj && !gameObj.war) {
+  if (gameObj && !gameObj.war && gameObj.players[playerID].oceans[location]) {
     if (gameObj.players[playerID].oceans[location] && gameObj.oceans[location].subs[playerID].declared + quantity <= gameObj.oceans[location].subs[playerID].total) {
       let declaredNum = gameObj.oceans[location].subs[playerID].declared + quantity;
       gameRef.child(`oceans/${location}/subs/${playerID}`).update({declared : declaredNum});
@@ -585,7 +585,7 @@ router.put('/declaresub', async (ctx) => {
       if (totalDeclared >= 10 && gameObj.year >= 1953) {
         overwhelmingForce = true;
         enemyPlayerArr.forEach((enemy) => {
-          if (totalDeclared >= enemy.totalDeclaredForces*2) {
+          if (totalDeclared >= gameObj.players[enemy].totalDeclaredForces*2) {
             overwhelmingForce = false;
           }
         });
