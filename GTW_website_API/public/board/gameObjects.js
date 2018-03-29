@@ -397,7 +397,7 @@ class Launch {
     // when it gets to the destination, this.state = 'exploding'
     if (this.projectile.overlap(this.target.sprite)) {
       this.state = 'exploding';
-      this.explodingFrame = 0;
+      this.explosion = new Explosion(this.origin, this.target);
       this.projectile.destroy();
       this.targetIndicator.destroy();
       this.originIndicator.destroy();
@@ -441,10 +441,69 @@ class Launch {
 
   // while the explosion animation is happening
   exploding() {
-    this.explodingFrame++;
-    if (this.explodingFrame > 20) {
+    this.explosion.update();
+    if (this.explosion.frame > 30) {
+      this.explosion.destroy();
       this.origin.launch = false;
+      this.explosion = false;
     }
+  }
+}
+
+/*
+EXPLOSION
+*/
+class Explosion {
+  constructor(origin, target) {
+    this.sprite = phaser.add.sprite(target.sprite.centerX, target.sprite.centerY, 'circle');
+    this.sprite.anchor.set(0.5);
+    this.sprite.tint = colors[playerIDs.indexOf(origin.playerID)];
+    this.sprite.alpha = 1;
+    this.sprite.scale.set(0);
+    this.frame = 0;
+  }
+
+  update() {
+    this.frame++;
+    this.sprite.scale.set(this.frame / 20);
+    this.sprite.alpha -= 0.03;
+  }
+
+  destroy() {
+    this.sprite.destroy();
+  }
+}
+
+/*
+INDICATORS
+*/
+class TargetIndicator {
+  constructor(target, color) {
+    this.sprites = [
+      phaser.add.sprite(target.centerX, target.centerY, 'target01'),
+      phaser.add.sprite(target.centerX, target.centerY, 'target02'),
+      phaser.add.sprite(target.centerX, target.centerY, 'target03'),
+      phaser.add.sprite(target.centerX, target.centerY, 'target04')
+    ];
+    this.sprites.forEach(sprite => {
+      sprite.anchor.set(0.5);
+      sprite.tint = color;
+      sprite.alpha = alphaAdjust;
+    })
+    this.frame = 0;
+  }
+
+  update() {
+    this.frame++;
+    this.sprites.forEach((sprite, i) => {
+      sprite.angle = this.frame * 10 * (.3 * i) * (i % 2 === 0 ? 1 : -1);
+      sprite.scale.set(0.8 + (Math.sin((this.frame + 5 * i) / 5) * 0.35));
+      sprite.alpha = (0.7 + (Math.sin((this.frame + 5 * i) / 5) * 0.3));
+    });
+  }
+
+  destroy() {
+    this.sprites.forEach(sprite => sprite.destroy());
   }
 }
 
@@ -513,38 +572,5 @@ class Intersection {
     } else {
       return false;
     }
-  }
-}
-
-/*
-INDICATORS
-*/
-class TargetIndicator {
-  constructor(target, color) {
-    this.sprites = [
-      phaser.add.sprite(target.centerX, target.centerY, 'target01'),
-      phaser.add.sprite(target.centerX, target.centerY, 'target02'),
-      phaser.add.sprite(target.centerX, target.centerY, 'target03'),
-      phaser.add.sprite(target.centerX, target.centerY, 'target04')
-    ];
-    this.sprites.forEach(sprite => {
-      sprite.anchor.set(0.5);
-      sprite.tint = color;
-      sprite.alpha = alphaAdjust;
-    })
-    this.frame = 0;
-  }
-
-  update() {
-    this.frame++;
-    this.sprites.forEach((sprite, i) => {
-      sprite.angle = this.frame * 10 * (.3 * i) * (i % 2 === 0 ? 1 : -1);
-      sprite.scale.set(0.8 + (Math.sin((this.frame + 5 * i) / 5) * 0.35));
-      sprite.alpha = (0.5 + (Math.sin((this.frame + 5 * i) / 5) * 0.3));
-    });
-  }
-
-  destroy() {
-    this.sprites.forEach(sprite => sprite.destroy());
   }
 }
