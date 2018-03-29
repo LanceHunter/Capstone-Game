@@ -7,7 +7,6 @@ function startGame(gameRef) {
   phaser.state.add('Peace', peace);
   phaser.state.add('War', war);
 
-  // and we launch our ContinentSelect state
   phaser.state.start('ContinentSelect');
 
   document.getElementById('hud').style.visibility = 'visible';
@@ -20,6 +19,11 @@ callback for game changes
 function onGameChange(data) {
   game = data.val();
 
+  // state switcher
+  if (game.war && phaser.state.current != 'War') {
+    phaser.state.start('War');
+  }
+
   // check for game over
   if (game.gameOver) {
     gameOverModal.outcome = game.gameOver.outcome;
@@ -28,10 +32,10 @@ function onGameChange(data) {
   }
 
   // board score stuff
-  subIcons.forEach(subIcon => subIcon.update());
-  bomberIcons.forEach(bomberIcon => bomberIcon.update());
-  missileIcons.forEach(missileIcon => missileIcon.update());
-  capitalIcons.forEach(capitalIcon => capitalIcon.update());
+  subIcons.forEach(subIcon => subIcon.updateState());
+  bomberIcons.forEach(bomberIcon => bomberIcon.updateState());
+  missileIcons.forEach(missileIcon => missileIcon.updateState());
+  capitalIcons.forEach(capitalIcon => capitalIcon.updateState());
 
   // vue hud data updates
   hud.players = game.players;
@@ -40,4 +44,5 @@ function onGameChange(data) {
   }
   hud.war = game.war;
   hud.year = game.year;
+  hud.gameID = gameID;
 }

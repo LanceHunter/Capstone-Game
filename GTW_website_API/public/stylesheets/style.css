@@ -117,22 +117,34 @@ h3 {
   width: 65%;
   margin: auto;
   z-index: 3;
-  border: 2px solid white;
+  border: 2px solid #827887;
   background-color: rgba(0, 0, 0, 0.3);
-  color: white;
+  color: #827887;
   height: 25%;
   margin-top: 30px;
+}
+
+.game-header h3 {
+  color: #827887;
 }
 
 .total-forces {
   padding: 20px;
   margin: auto;
   z-index: 3;
-  border: 2px solid white;
+  border: 2px solid #827887;
   background-color: rgba(0, 0, 0, 0.3);
-  color: white;
+  color: #827887;
   height: 25%;
   margin-top: 30px;
+}
+
+.total-forces h3 {
+  padding: .5em;
+}
+
+.total-forces span {
+  color: black;
 }
 
 .hudcontainer {
@@ -141,7 +153,10 @@ h3 {
   height: 1080px;
   position: absolute;
   z-index: 997;
-  /* display: none; */
+}
+
+.hudcontainer, .hudcontainer div {
+  pointer-events: none;
 }
 
 .newsholder {
@@ -155,10 +170,10 @@ h3 {
 .playernews {
   margin: auto;
   z-index: 999;
-  border: 2px solid white;
+  border: 2px solid #827887;
   /* margin: 10px; */
   background-color: rgba(0, 0, 0, 0.3);
-  color: white;
+  color: #827887;
 }
 
 h5 {

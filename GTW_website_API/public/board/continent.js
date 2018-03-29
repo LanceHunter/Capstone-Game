@@ -21,19 +21,20 @@ let continent = {
     }
   },
   update: function() {
-
     pointers.forEach((pointer) => {
-      pointer.setPosition();
-      if (!pointer.intersecting()) {
-        capitalIcons.some((capital) => {
-          let data = {
-            gameID: gameID,
-            playerID: playerIDs[pointer.playerIndex],
-            continent: capital.continent,
-          };
-          return !game.continents[capital.continent].player &&
-                  pointer.checkIntersection(capital.sprite, this.assignContinent, data);
-        })
+      if (Object.keys(game.players[pointer.playerID].continents).length < 6 / pointers.length) {
+        pointer.setPosition();
+        if (!pointer.intersecting()) {
+          capitalIcons.some((capital) => {
+            let data = {
+              gameID: gameID,
+              playerID: playerIDs[pointer.playerIndex],
+              continent: capital.continent,
+            };
+            return !game.continents[capital.continent].player &&
+                    pointer.checkIntersection(capital.sprite, this.assignContinent, data);
+          })
+        }
       }
     });
 

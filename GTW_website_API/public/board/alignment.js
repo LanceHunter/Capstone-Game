@@ -1,7 +1,3 @@
-
-
-
-
 /*
   Creates a new game instance and shows the join game modal.
 */

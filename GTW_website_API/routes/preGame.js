@@ -3,7 +3,6 @@
 // Firebase setup.
 const admin = require("firebase-admin");
 const serviceAccount = require('../../../private/gtwthegame-firebase-adminsdk-xemv3-858ad1023b.json');
-const fs = require('fs');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -240,35 +239,16 @@ router.put('/joingame', async (ctx) => {
   let playerID = ctx.request.body.playerID;
   let gameRef = ref.child(ctx.request.body.gameID);
   let playersRef = gameRef.child(`/players`);
+  let gameObj;
 
   await gameRef.once('value', (snap) => {
-    if (snap.val()) {
-      if (snap.val().players) { // checking to see if there's a 'players' node yet.
-        if (Object.keys(snap.val().players).length < 3) {
-          let playerObj = {};
-          playerObj[playerID] = {
-            totalDeclaredForces : 0,
-            continents : true,
-            oceans : true,
-            rnd : {
-              speed : 0,
-              damage : 0
-            },
-            currentBudget : 0,
-            yearComplete : false,
-            shotsFired : 0,
-            spyMessage : '',
-          };
-          playersRef.update(playerObj); // End of the playersRef update.
-          console.log('Setting ctx-status');
-          ctx.status = 200;
-        } else { // If the game is already has 3 players.
-          ctx.status = 400;
-          ctx.body = {
-            message: 'Game is already full!',
-          };
-        } // End of conditional checking the number of players.
-      } else { // if there is no player node
+    gameObj = snap.val();
+  }); // end of the firebase once check.
+
+
+  if (gameObj && !gameObj.gameStarted) {
+    if (gameObj.players) { // checking to see if there's a 'players' node yet.
+      if (Object.keys(gameObj.players).length < 3) {
         let playerObj = {};
         playerObj[playerID] = {
           totalDeclaredForces : 0,
@@ -286,14 +266,38 @@ router.put('/joingame', async (ctx) => {
         playersRef.update(playerObj); // End of the playersRef update.
         console.log('Setting ctx-status');
         ctx.status = 200;
-      } // end of conditional checking if there is a player node.
-    } else { // If game ID is not valid.
-      ctx.status = 400;
-      ctx.body = {
-        message: 'Invalid game ID, or game has not yet started.',
+      } else { // If the game is already has 3 players.
+        ctx.status = 400;
+        ctx.body = {
+          message: 'Game is already full!',
+        };
+      } // End of conditional checking the number of players.
+    } else { // if there is no player node
+      let playerObj = {};
+      playerObj[playerID] = {
+        totalDeclaredForces : 0,
+        continents : true,
+        oceans : true,
+        rnd : {
+          speed : 0,
+          damage : 0
+        },
+        currentBudget : 0,
+        yearComplete : false,
+        shotsFired : 0,
+        spyMessage : '',
       };
-    }// End of conditional checking that game ID is valid.
-  }); // end of the firebase once check.
+      await playersRef.update(playerObj); // End of the playersRef update.
+      console.log('Setting ctx-status');
+      ctx.status = 200;
+    } // end of conditional checking if there is a player node.
+  } else { // If game ID is not valid.
+    ctx.status = 400;
+    ctx.body = {
+      message: 'Invalid game ID, or game has not yet started.',
+    };
+  }// End of conditional checking that game ID is valid.
+
 }); // end of the '/joingame' route.
 
 router.post('/startgame', async (ctx) => {
@@ -406,6 +410,7 @@ router.post('/beginpeace', async (ctx) => {
   });
 }); // end of the "beginpeace" route.
 
+/* We don't need these seed routes anymore (and we are no longer including FS so they wouldn't work anyway). Keeping the code here as reference for the future.
 
 /// Here is a "seed" route, that's gonna grab a game and save the object to a file for use. DELETE THIS BEFORE DEPLOYING.
 router.post('/makeseed', async (ctx) => {
@@ -435,11 +440,9 @@ router.post('/runseed', async (ctx) => {
     gameObj = JSON.parse(data);
     ref.child(seedGameName).update(gameObj);
   });
-
   // Tell ctx that it worked. (Not gonna do a lot of error-checking here because this is mostly for me.)
   ctx.status = 200;
 });
-
-
+End of those routes we're commenting out... */
 
 module.exports = router;
