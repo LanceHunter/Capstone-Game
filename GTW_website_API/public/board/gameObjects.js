@@ -90,6 +90,7 @@ class CapitalIcon {
 /*
 WEAPONS
 */
+// these could be refactored with inheritance
 class SubIcon {
   constructor(x, y, ocean, playerID) {
     this.type = 'sub';
@@ -181,6 +182,7 @@ class BomberIcon {
     this.sprite.anchor.set(0, 1);
     this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
     this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
+    this.inventory.tint = colors[playerIDs.indexOf(this.playerID)];
 
     // the initial grab from firebase
     this.updateState();
@@ -212,9 +214,6 @@ class BomberIcon {
         this.inventory.alpha = 1;
       }
     }
-
-    this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
-    this.inventory.tint = colors[playerIDs.indexOf(this.playerID)];
   }
 
   update() {
@@ -253,6 +252,7 @@ class MissileIcon {
     this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
     this.inventory.tint = colors[playerIDs.indexOf(this.playerID)];
 
+    // initial grab from firebase
     this.updateState();
   }
 
@@ -296,7 +296,7 @@ class MissileIcon {
     let self = data.self;
     let pointer = data.pointer;
 
-    // is it your sub?
+    // is it your missile?
     if (self.playerID === pointer.playerID) {
       if (game.continents[self.continent].forces.icbms.total > 0) {
         // console.log(self.launch);
@@ -318,24 +318,47 @@ LAUNCH
 class Launch {
   // these will be created whenever a players's sub-deploy thing is activated
   constructor(origin) {
+    // the origin icon object
     this.origin = origin;
 
+    // setup the origin indicator
     this.originIndicator = new TargetIndicator(this.origin.sprite, colors[playerIDs.indexOf(this.origin.playerID)]);
+
+    // play the arming sound
     phaser.add.audio('armbomb').play();
 
-    // first we arm the weapon
+    // set the state to armed
     this.state = 'armed';
   }
 
-  // the method to call on every game loop iteration, calls a method depending on state
+  // on every game loop
   update() {
-    this.frame++;
+    // invoke the state method
     this[this.state]();
   }
 
   // a weapon has been selected, launch is pending
   armed() {
+    // animate the originIndicator
     this.originIndicator.update();
+  }
+
+  initLaunch() {
+    // sprite stuff
+    this.targetIndicator = new TargetIndicator(this.target.sprite, colors[playerIDs.indexOf(this.origin.playerID)]);
+    this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'projectile');
+    this.projectile.tint = colors[playerIDs.indexOf(this.origin.playerID)];
+    this.projectile.anchor.set(0.5);
+    this.projectile.alpha = alphaAdjust;
+    phaser.add.audio('launch').play();
+
+    this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
+    let velocity = 10 + (game.players[this.origin.playerID].rnd.speed * 2 / 500);
+    this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(velocity, velocity);
+    this.projectile.rotation = Phaser.Point.angle(this.origin.sprite.position, this.target.sprite.position) - (Math.PI / 2);
+
+    this.state = 'enroute';
+    this.targetFrame = 0;
   }
 
   // when user paints a destination
@@ -348,22 +371,7 @@ class Launch {
         if (this.origin.type === 'sub') {
           // check for valid sub launch
           if (Object.keys(game.oceans[this.origin.ocean].canHit).includes(this.target.continent)) {
-            // sprite stuff
-            this.targetIndicator = new TargetIndicator(capital.sprite, colors[playerIDs.indexOf(this.origin.playerID)]);
-
-            this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'projectile');
-            this.projectile.tint = colors[playerIDs.indexOf(playerID)];
-            this.projectile.anchor.set(0.5);
-            this.projectile.alpha = alphaAdjust;
-            phaser.add.audio('launch').play();
-
-            this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
-            let velocity = 10 + (game.players[playerID].rnd.speed * 2 / 500);
-            this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(velocity, velocity);
-            this.projectile.rotation = Phaser.Point.angle(this.origin.sprite.position, this.target.sprite.position) - (Math.PI / 2);
-
-            this.state = 'enroute';
-            this.targetFrame = 0;
+            this.initLaunch();
           } else {
             //console.log('invalid sub');
           }
@@ -371,41 +379,12 @@ class Launch {
         if (this.origin.type === 'bomber') {
           // check for valid bomber launch
           if (game.continents[this.origin.continent].distances[this.target.continent] <= 1) {
-            // sprite stuff
-            this.targetIndicator = new TargetIndicator(capital.sprite, colors[playerIDs.indexOf(this.origin.playerID)]);
-
-            this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'projectile');
-            this.projectile.tint = colors[playerIDs.indexOf(playerID)];
-            this.projectile.anchor.set(0.5);
-            this.projectile.alpha = alphaAdjust;
-            phaser.add.audio('launch').play();
-
-            this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
-            let velocity = 10 + (game.players[playerID].rnd.speed * 2 / 500);
-            this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(velocity, velocity);
-            this.projectile.rotation = Phaser.Point.angle(this.origin.sprite.position, this.target.sprite.position) - (Math.PI / 2);
-
-            this.state = 'enroute';
-            this.targetFrame = 0;
+            this.initLaunch();
           } else {
             // console.log('invalid bomb');
           }
         } else {
-          // sprite stuff
-          this.targetIndicator = new TargetIndicator(capital.sprite, colors[playerIDs.indexOf(this.origin.playerID)]);
-
-          this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'projectile');
-          this.projectile.tint = colors[playerIDs.indexOf(playerID)];
-          this.projectile.anchor.set(0.5);
-          this.projectile.alpha = alphaAdjust;
-          phaser.add.audio('launch').play();
-          this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
-          let velocity = 10 + (game.players[playerID].rnd.speed * 2 / 500);
-          this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(velocity, velocity);
-          this.projectile.rotation = Phaser.Point.angle(this.origin.sprite.position, this.target.sprite.position) - (Math.PI / 2);
-
-          this.state = 'enroute';
-          this.targetFrame = 0;
+          this.initLaunch();
         }
       }
     }
@@ -420,9 +399,11 @@ class Launch {
 
     // when it gets to the destination, this.state = 'exploding'
     if (this.projectile.overlap(this.target.sprite)) {
-      phaser.add.audio('explosion').play();
+      // play the explosion sound and intialize the explosion object
       this.state = 'exploding';
       this.explosion = new Explosion(this.origin, this.target);
+
+      // destroy the indicator and projetile sprites
       this.projectile.destroy();
       this.targetIndicator.destroy();
       this.originIndicator.destroy();
@@ -486,6 +467,9 @@ class Explosion {
     this.sprite.alpha = 1;
     this.sprite.scale.set(0);
     this.frame = 0;
+
+    // this shoud be on the state, not phaser at large
+    phaser.add.audio('explosion').play();
   }
 
   update() {
