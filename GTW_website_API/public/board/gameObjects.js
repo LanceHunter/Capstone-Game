@@ -3,33 +3,42 @@ TARGETS
 */
 class CapitalIcon {
   constructor(x, y, continent) {
+    // a string key for the continent of this capital
+    this.continent = continent;
+    this.playerID = Object.keys(game.continents[this.continent].player)[0];
+
+    // sprite setup
     this.sprite = phaser.add.sprite(x, y, 'capital');
+    this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
     this.sprite.anchor.set(0, 1);
     this.sprite.inputEnabled = true;
-    this.continent = continent;
 
+    // game mechanics
     this.hitPoints = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
     this.hitPoints.position.x = this.sprite.centerX - (this.hitPoints.width / 2);
-    this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
     this.hitPoints.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
-    this.updateState();
 
-    this.playerID = Object.keys(game.continents[this.continent].player)[0];
+    // sync up with firebase
+    this.updateState();
   }
 
   // triggered when the firebase state changes
   updateState() {
+    // make the capital active if war
     if (game.war) {
       this.sprite.inputEnabled = true;
     }
 
+    // HP display
     this.hitPoints.setText(game.continents[this.continent].hp);
     this.hitPoints.position.x = this.sprite.centerX - (this.hitPoints.width / 2);
 
+    // full alpha if peacetime
     if (game.peacetime) {
       this.sprite.alpha = 1;
       this.hitPoints.alpha = 1;
     } else
+    // low alpha if no HP in wartime
     if (game.war) {
       this.sprite.alpha = alphaAdjust;
       this.hitPoints.alpha = alphaAdjust;
@@ -40,20 +49,16 @@ class CapitalIcon {
     } else {
       this.sprite.alpha = alphaAdjust;
     }
-
-    this.hitPoints.setText(game.continents[this.continent].hp);
-    this.hitPoints.position.x = this.sprite.centerX - (this.hitPoints.width / 2);
-
-    this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
   }
 
   // triggered when a capital is painted
   select(data) {
     let self = data.self;
     let pointer = data.pointer;
+
     // check that you aren't painting your own capital
     if (pointer.playerID != self.playerID) {
-      // and that the capital has hp
+      // and that the capital has HP
       if (game.continents[self.continent].hp > 0) {
         // check all the weapons for armed launch objects
         subIcons.forEach((sub) => {
@@ -167,10 +172,11 @@ class SubIcon {
 class BomberIcon {
   constructor(x, y, continent) {
     this.type = 'bomber';
-    this.sprite = phaser.add.sprite(x, y, 'bomber');
-    this.sprite.anchor.set(0, 1);
     this.continent = continent;
     this.playerID = Object.keys(game.continents[this.continent].player)[0];
+    this.sprite = phaser.add.sprite(x, y, 'bomber');
+    this.sprite.anchor.set(0, 1);
+    this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
     this.continent = continent;
     this.launches = [];
     this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
@@ -219,7 +225,7 @@ class BomberIcon {
     let self = data.self;
     let pointer = data.pointer;
 
-    // is it your sub?
+    // is it your bomber?
     if (self.playerID === pointer.playerID) {
       if (game.continents[self.continent].forces.bombers.total > 0) {
         if (!self.launch) {
@@ -236,6 +242,7 @@ class BomberIcon {
 
 class MissileIcon {
   constructor(x, y, continent) {
+    this.type="icbm";
     this.continent = continent
     this.playerID = Object.keys(game.continents[this.continent].player)[0];
     this.sprite = phaser.add.sprite(x, y, 'missile');
@@ -243,7 +250,6 @@ class MissileIcon {
     this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
     this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
     this.inventory.tint = colors[playerIDs.indexOf(this.playerID)];
-    this.type="icbm";
 
     this.updateState();
   }
