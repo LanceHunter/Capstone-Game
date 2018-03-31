@@ -93,15 +93,19 @@ WEAPONS
 class SubIcon {
   constructor(x, y, ocean, playerID) {
     this.type = 'sub';
+    this.ocean = ocean;
+    this.playerID = playerID;
     this.sprite = phaser.add.sprite(x, y, 'submarine');
     this.sprite.anchor.set(0, 1);
-    this.playerID = playerID;
-    this.ocean = ocean;
+    this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
     this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
+
+    // the initial grab from firebase
     this.updateState();
   }
 
   updateState() {
+    // this can be one line
     let playerContinents = Object.keys(game.players[this.playerID].continents);
     let availableOceans = [];
     playerContinents.forEach(continent => {
@@ -135,7 +139,6 @@ class SubIcon {
           this.inventory.alpha = 1;
         }
       }
-      this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
       this.inventory.tint = colors[playerIDs.indexOf(this.playerID)];
       this.sprite.inputEnabled = true;
     } else {
@@ -177,10 +180,9 @@ class BomberIcon {
     this.sprite = phaser.add.sprite(x, y, 'bomber');
     this.sprite.anchor.set(0, 1);
     this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
-    this.continent = continent;
-    this.launches = [];
     this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
 
+    // the initial grab from firebase
     this.updateState();
   }
 
