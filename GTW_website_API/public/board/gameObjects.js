@@ -487,7 +487,7 @@ class Launch {
     if (this.projectile.overlap(this.target.sprite)) {
       // play the explosion sound and intialize the explosion object
       this.state = 'exploding';
-      this.explosion = new Explosion(this.origin, this.target);
+      this.explosion = new Explosion(this.origin, this.target, this.phaserState);
 
       // destroy the indicator and projectile sprites
       this.projectile.destroy();
@@ -580,7 +580,7 @@ INDICATORS
 */
 class Indicator {
   constructor(target, color, phaserState) {
-    this.phaserState = phasrState;
+    this.phaserState = phaserState;
 
     // setup the sprites that comprise the indicator
     this  .sprites = [
