@@ -397,7 +397,7 @@ class Launch {
     this.origin = origin;
 
     // setup the origin indicator
-    this.originIndicator = new TargetIndicator(this.origin.sprite, colors[playerIDs.indexOf(this.origin.playerID)], this.phaserState);
+    this.originIndicator = new Indicator(this.origin.sprite, colors[playerIDs.indexOf(this.origin.playerID)], this.phaserState);
 
     // play the arming sound
     this.phaserState.add.audio('armbomb').play();
@@ -420,7 +420,7 @@ class Launch {
 
   initLaunch() {
     // create the target indicator
-    this.targetIndicator = new TargetIndicator(this.target.sprite, colors[playerIDs.indexOf(this.origin.playerID)], this.phaserState);
+    this.targetIndicator = new Indicator(this.target.sprite, colors[playerIDs.indexOf(this.origin.playerID)], this.phaserState);
 
     // create and setup the projectile sprite, might want to be it's own object in the future
     this.projectile = this.phaserState.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'projectile');
@@ -549,7 +549,10 @@ EXPLOSION
 */
 class Explosion {
   constructor(origin, target, phaserState) {
+    // our phaser state object
     this.phaserState = phaserState
+
+    // setup the sprite
     this.sprite = this.phaserState.add.sprite(target.sprite.centerX, target.sprite.centerY, 'circle');
     this.sprite.anchor.set(0.5);
     this.sprite.tint = colors[playerIDs.indexOf(origin.playerID)];
@@ -557,6 +560,7 @@ class Explosion {
     this.sprite.scale.set(0);
     this.frame = 0;
 
+    // and play the sound
     this.phaserState.add.audio('explosion').play();
   }
 
@@ -574,10 +578,11 @@ class Explosion {
 /*
 INDICATORS
 */
-class TargetIndicator {
+class Indicator {
   constructor(target, color, phaserState) {
-    this.phaserState = phaserState;
-    console.log(this.phaserState);
+    this.phaserState = phasrState;
+
+    // setup the sprites that comprise the indicator
     this  .sprites = [
       this.phaserState.add.sprite(target.centerX, target.centerY, 'target01'),
       this.phaserState.add.sprite(target.centerX, target.centerY, 'target02'),
@@ -589,11 +594,15 @@ class TargetIndicator {
       sprite.tint = color;
       sprite.alpha = liveAlpha;
     })
+
+    // and give us an animation reference frame
     this.frame = 0;
   }
 
   update() {
+    // increment the frame
     this.frame++;
+    // and transform all the sprites accordingly
     this.sprites.forEach((sprite, i) => {
       sprite.angle = this.frame * 10 * (.3 * i) * (i % 2 === 0 ? 1 : -1);
       sprite.scale.set(0.8 + (Math.sin((this.frame + 5 * i) / 5) * 0.35));
