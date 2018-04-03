@@ -3,7 +3,9 @@ TARGETS
 */
 class CapitalIcon {
   constructor(x, y, continent, phaserState) {
+    // our phaserState, which we add sprites and sounds to
     this.phaserState = phaserState;
+
     // a string key for the continent of this capital
     this.continent = continent;
     this.playerID = Object.keys(game.continents[this.continent].player)[0];
@@ -34,27 +36,31 @@ class CapitalIcon {
     this.hitPoints.setText(game.continents[this.continent].hp);
     this.hitPoints.position.x = this.sprite.centerX - (this.hitPoints.width / 2);
 
-    // full alpha if peacetime
+    // peacetime visuals
     if (game.peacetime) {
-      this.sprite.alpha = 1;
-      this.hitPoints.alpha = 1;
+      this.sprite.alpha = peaceAlpha;
+      this.hitPoints.alpha = peaceAlpha;
     } else
-    // low alpha if no HP in wartime
+    //wartime visuals
     if (game.war) {
-      this.sprite.alpha = alphaAdjust;
-      this.hitPoints.alpha = alphaAdjust;
+      this.sprite.alpha = liveAlpha;
+      this.hitPoints.alpha = liveAlpha;
       if (game.continents[this.continent].hp <= 0) {
-        this.sprite.alpha = 0.2;
-        this.hitPoints.alpha = 0.2;
+        this.sprite.alpha = deadAlpha;
+        this.hitPoints.alpha = deadAlpha;
       }
     } else {
-      this.sprite.alpha = alphaAdjust;
+      // continent select visuals
+      this.sprite.alpha = liveAlpha;
     }
   }
 
   // triggered when a capital is painted
   select(data) {
+    // self replaces 'this', because the execution context changes when this is called
     let self = data.self;
+
+    // our PlayerPointer object
     let pointer = data.pointer;
 
     // check that you aren't painting your own capital
@@ -125,21 +131,21 @@ class SubIcon {
 
         // if they are out of ammo
         if (game.oceans[this.ocean].subs[this.playerID].total <= 0) {
-          this.sprite.alpha = 0.2;
-          this.inventory.alpha = 0.2;
+          this.sprite.alpha = deadAlpha;
+          this.inventory.alpha = deadAlpha;
         } else {
-          this.sprite.alpha = alphaAdjust;
-          this.inventory.alpha = alphaAdjust;
+          this.sprite.alpha = liveAlpha;
+          this.inventory.alpha = liveAlpha;
         }
       } else {
         this.inventory.setText(game.oceans[this.ocean].subs[this.playerID].declared);
         // if they are out of ammo
         if (game.oceans[this.ocean].subs[this.playerID].declared <= 0) {
-          this.sprite.alpha = 0.2;
-          this.inventory.alpha = 0.2;
+          this.sprite.alpha = deadAlpha;
+          this.inventory.alpha = deadAlpha;
         } else {
-          this.sprite.alpha = 1;
-          this.inventory.alpha = 1;
+          this.sprite.alpha = liveAlpha;
+          this.inventory.alpha = liveAlpha;
         }
       }
       this.inventory.tint = colors[playerIDs.indexOf(this.playerID)];
@@ -199,22 +205,22 @@ class BomberIcon {
       this.sprite.inputEnabled = true;
       // if they are out of ammo
       if (game.continents[this.continent].forces.bombers.total <= 0) {
-        this.sprite.alpha = 0.2;
-        this.inventory.alpha = 0.2;
+        this.sprite.alpha = deadAlpha;
+        this.inventory.alpha = deadAlpha;
       } else {
-        this.sprite.alpha = alphaAdjust;
-        this.inventory.alpha = alphaAdjust;
+        this.sprite.alpha = liveAlpha;
+        this.inventory.alpha = liveAlpha;
       }
     } else {
       this.inventory.setText(game.continents[this.continent].forces.bombers.declared);
       this.inventory.position.x = this.sprite.centerX - (this.inventory.width / 2);
       // if they are haven't declared anything
       if (game.continents[this.continent].forces.bombers.declared <= 0) {
-        this.sprite.alpha = 0.2;
-        this.inventory.alpha = 0.2;
+        this.sprite.alpha = deadAlpha;
+        this.inventory.alpha = deadAlpha;
       } else {
-        this.sprite.alpha = 1;
-        this.inventory.alpha = 1;
+        this.sprite.alpha = peaceAlpha;
+        this.inventory.alpha = peaceAlpha;
       }
     }
   }
@@ -269,11 +275,11 @@ class MissileIcon {
 
       // if they are out of ammo
       if (game.continents[this.continent].forces.icbms.total <= 0) {
-        this.sprite.alpha = 0.2;
-        this.inventory.alpha = 0.2;
+        this.sprite.alpha = deadAlpha;
+        this.inventory.alpha = deadAlpha;
       } else {
-        this.sprite.alpha = alphaAdjust;
-        this.inventory.alpha = alphaAdjust;
+        this.sprite.alpha = liveAlpha;
+        this.inventory.alpha = liveAlpha;
       }
     } else {
       this.inventory.setText(game.continents[this.continent].forces.icbms.declared);
@@ -281,11 +287,11 @@ class MissileIcon {
 
       // if they are out of ammo
       if (game.continents[this.continent].forces.icbms.declared <= 0) {
-        this.sprite.alpha = 0.2;
-        this.inventory.alpha = 0.2;
+        this.sprite.alpha = deadAlpha;
+        this.inventory.alpha = deadAlpha;
       } else {
-        this.sprite.alpha = 1;
-        this.inventory.alpha = 1;
+        this.sprite.alpha = liveAlpha;
+        this.inventory.alpha = liveAlpha;
       }
     }
   }
@@ -355,7 +361,7 @@ class Launch {
     this.projectile = this.phaserState.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'projectile');
     this.projectile.tint = colors[playerIDs.indexOf(this.origin.playerID)];
     this.projectile.anchor.set(0.5);
-    this.projectile.alpha = alphaAdjust;
+    this.projectile.alpha = liveAlpha;
     this.phaserState.add.audio('launch').play();
 
     this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
@@ -471,7 +477,7 @@ class Explosion {
     this.sprite = this.phaserState.add.sprite(target.sprite.centerX, target.sprite.centerY, 'circle');
     this.sprite.anchor.set(0.5);
     this.sprite.tint = colors[playerIDs.indexOf(origin.playerID)];
-    this.sprite.alpha = 1;
+    this.sprite.alpha = liveAlpha;
     this.sprite.scale.set(0);
     this.frame = 0;
 
@@ -505,7 +511,7 @@ class TargetIndicator {
     this.sprites.forEach(sprite => {
       sprite.anchor.set(0.5);
       sprite.tint = color;
-      sprite.alpha = alphaAdjust;
+      sprite.alpha = liveAlpha;
     })
     this.frame = 0;
   }
@@ -533,7 +539,7 @@ class PlayerPointer {
     this.playerID = playerIDs[index];
     this.sprite = state.game.add.sprite(state.game.width / 2, state.game.height / 2, 'circle');
     this.sprite.tint = colors[index];
-    this.sprite.alpha = alphaAdjust;
+    this.sprite.alpha = liveAlpha;
     this.sprite.scale.set(0.2);
 
     this.sprite.inputEnabled = true;
