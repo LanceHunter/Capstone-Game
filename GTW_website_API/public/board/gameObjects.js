@@ -2,19 +2,20 @@
 TARGETS
 */
 class CapitalIcon {
-  constructor(x, y, continent) {
+  constructor(x, y, continent, phaserState) {
+    this.phaserState = phaserState;
     // a string key for the continent of this capital
     this.continent = continent;
     this.playerID = Object.keys(game.continents[this.continent].player)[0];
 
     // sprite setup
-    this.sprite = phaser.add.sprite(x, y, 'capital');
+    this.sprite = this.phaserState.add.sprite(x, y, 'capital');
     this.sprite.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
     this.sprite.anchor.set(0, 1);
     this.sprite.inputEnabled = true;
 
     // game mechanics
-    this.hitPoints = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
+    this.hitPoints = this.phaserState.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
     this.hitPoints.position.x = this.sprite.centerX - (this.hitPoints.width / 2);
     this.hitPoints.tint = colors[playerIDs.indexOf(Object.keys(game.continents[this.continent].player)[0])];
 
@@ -92,14 +93,15 @@ WEAPONS
 */
 // these could be refactored with inheritance
 class SubIcon {
-  constructor(x, y, ocean, playerID) {
+  constructor(x, y, ocean, playerID, phaserState) {
+    this.phaserState = phaserState;
     this.type = 'sub';
     this.ocean = ocean;
     this.playerID = playerID;
-    this.sprite = phaser.add.sprite(x, y, 'submarine');
+    this.sprite = this.phaserState.add.sprite(x, y, 'submarine');
     this.sprite.anchor.set(0, 1);
     this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
-    this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
+    this.inventory = this.phaserState.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
 
     // the initial grab from firebase
     this.updateState();
@@ -162,7 +164,7 @@ class SubIcon {
     if (self.playerID === pointer.playerID) {
       if (game.oceans[self.ocean].subs[self.playerID] && game.oceans[self.ocean].subs[self.playerID].total > 0) {
         if (!self.launch) {
-          self.launch = new Launch(self);
+          self.launch = new Launch(self, self.phaserState);
         } else {
           // console.log('there is already a launch in progress');
         }
@@ -174,14 +176,15 @@ class SubIcon {
 }
 
 class BomberIcon {
-  constructor(x, y, continent) {
+  constructor(x, y, continent, phaserState) {
+    this.phaserState = phaserState;
     this.type = 'bomber';
     this.continent = continent;
     this.playerID = Object.keys(game.continents[this.continent].player)[0];
-    this.sprite = phaser.add.sprite(x, y, 'bomber');
+    this.sprite = this.phaserState.add.sprite(x, y, 'bomber');
     this.sprite.anchor.set(0, 1);
     this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
-    this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
+    this.inventory = this.phaserState.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
     this.inventory.tint = colors[playerIDs.indexOf(this.playerID)];
 
     // the initial grab from firebase
@@ -230,7 +233,7 @@ class BomberIcon {
     if (self.playerID === pointer.playerID) {
       if (game.continents[self.continent].forces.bombers.total > 0) {
         if (!self.launch) {
-          self.launch = new Launch(self);
+          self.launch = new Launch(self, self.phaserState);
         } else {
           // console.log('there is already a launch in progress');
         }
@@ -242,14 +245,15 @@ class BomberIcon {
 }
 
 class MissileIcon {
-  constructor(x, y, continent) {
+  constructor(x, y, continent, phaserState) {
+    this.phaserState = phaserState;
     this.type="icbm";
     this.continent = continent
     this.playerID = Object.keys(game.continents[this.continent].player)[0];
-    this.sprite = phaser.add.sprite(x, y, 'missile');
+    this.sprite = this.phaserState.add.sprite(x, y, 'missile');
     this.sprite.anchor.set(0, 1);
     this.sprite.tint = colors[playerIDs.indexOf(this.playerID)];
-    this.inventory = phaser.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
+    this.inventory = this.phaserState.add.bitmapText(this.sprite.centerX, this.sprite.position.y, 'closeness', '0', 32);
     this.inventory.tint = colors[playerIDs.indexOf(this.playerID)];
 
     // initial grab from firebase
@@ -301,7 +305,7 @@ class MissileIcon {
       if (game.continents[self.continent].forces.icbms.total > 0) {
         // console.log(self.launch);
         if (!self.launch) {
-          self.launch = new Launch(self);
+          self.launch = new Launch(self, self.phaserState);
         } else {
           // console.log('there is already a launch in progress');
         }
@@ -317,15 +321,16 @@ LAUNCH
 */
 class Launch {
   // these will be created whenever a players's sub-deploy thing is activated
-  constructor(origin) {
+  constructor(origin, phaserState) {
+    this.phaserState = phaserState;
     // the origin icon object
     this.origin = origin;
 
     // setup the origin indicator
-    this.originIndicator = new TargetIndicator(this.origin.sprite, colors[playerIDs.indexOf(this.origin.playerID)]);
+    this.originIndicator = new TargetIndicator(this.origin.sprite, colors[playerIDs.indexOf(this.origin.playerID)], this.phaserState);
 
     // play the arming sound
-    phaser.add.audio('armbomb').play();
+    this.phaserState.add.audio('armbomb').play();
 
     // set the state to armed
     this.state = 'armed';
@@ -344,13 +349,14 @@ class Launch {
   }
 
   initLaunch() {
+    console.log(this.phaserState);
     // sprite stuff
-    this.targetIndicator = new TargetIndicator(this.target.sprite, colors[playerIDs.indexOf(this.origin.playerID)]);
-    this.projectile = phaser.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'projectile');
+    this.targetIndicator = new TargetIndicator(this.target.sprite, colors[playerIDs.indexOf(this.origin.playerID)], this.phaserState);
+    this.projectile = this.phaserState.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'projectile');
     this.projectile.tint = colors[playerIDs.indexOf(this.origin.playerID)];
     this.projectile.anchor.set(0.5);
     this.projectile.alpha = alphaAdjust;
-    phaser.add.audio('launch').play();
+    this.phaserState.add.audio('launch').play();
 
     this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
     let velocity = 10 + (game.players[this.origin.playerID].rnd.speed * 2 / 500);
@@ -460,16 +466,16 @@ class Launch {
 EXPLOSION
 */
 class Explosion {
-  constructor(origin, target) {
-    this.sprite = phaser.add.sprite(target.sprite.centerX, target.sprite.centerY, 'circle');
+  constructor(origin, target, phaserState) {
+    this.phaserState = phaserState
+    this.sprite = this.phaserState.add.sprite(target.sprite.centerX, target.sprite.centerY, 'circle');
     this.sprite.anchor.set(0.5);
     this.sprite.tint = colors[playerIDs.indexOf(origin.playerID)];
     this.sprite.alpha = 1;
     this.sprite.scale.set(0);
     this.frame = 0;
 
-    // this shoud be on the state, not phaser at large
-    phaser.add.audio('explosion').play();
+    this.phaserState.add.audio('explosion').play();
   }
 
   update() {
@@ -487,12 +493,14 @@ class Explosion {
 INDICATORS
 */
 class TargetIndicator {
-  constructor(target, color) {
-    this.sprites = [
-      phaser.add.sprite(target.centerX, target.centerY, 'target01'),
-      phaser.add.sprite(target.centerX, target.centerY, 'target02'),
-      phaser.add.sprite(target.centerX, target.centerY, 'target03'),
-      phaser.add.sprite(target.centerX, target.centerY, 'target04')
+  constructor(target, color, phaserState) {
+    this.phaserState = phaserState;
+    console.log(this.phaserState);
+    this  .sprites = [
+      this.phaserState.add.sprite(target.centerX, target.centerY, 'target01'),
+      this.phaserState.add.sprite(target.centerX, target.centerY, 'target02'),
+      this.phaserState.add.sprite(target.centerX, target.centerY, 'target03'),
+      this.phaserState.add.sprite(target.centerX, target.centerY, 'target04')
     ];
     this.sprites.forEach(sprite => {
       sprite.anchor.set(0.5);

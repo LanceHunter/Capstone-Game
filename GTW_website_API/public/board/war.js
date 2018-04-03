@@ -24,15 +24,15 @@ let war = {
     sub icons
     */
     subIcons = [
-      new SubIcon(130, (1080 - 310), 'pacific', playerIDs[0]),
-      new SubIcon(175, (1080 - 215), 'pacific', playerIDs[1]),
-      new SubIcon(220, (1080 - 120), 'pacific', playerIDs[2]),
-      new SubIcon(625, (1080 - 435), 'atlantic', playerIDs[0]),
-      new SubIcon(690, (1080 - 330), 'atlantic', playerIDs[1]),
-      new SubIcon(755, (1080 - 225), 'atlantic', playerIDs[2]),
-      new SubIcon(1250, (1080 - 265), 'indian', playerIDs[0]),
-      new SubIcon(1250, (1080 - 180), 'indian', playerIDs[1]),
-      new SubIcon(1250, (1080 - 95), 'indian', playerIDs[2]),
+      new SubIcon(130, (1080 - 310), 'pacific', playerIDs[0], this.game),
+      new SubIcon(175, (1080 - 215), 'pacific', playerIDs[1], this.game),
+      new SubIcon(220, (1080 - 120), 'pacific', playerIDs[2], this.game),
+      new SubIcon(625, (1080 - 435), 'atlantic', playerIDs[0], this.game),
+      new SubIcon(690, (1080 - 330), 'atlantic', playerIDs[1], this.game),
+      new SubIcon(755, (1080 - 225), 'atlantic', playerIDs[2], this.game),
+      new SubIcon(1250, (1080 - 265), 'indian', playerIDs[0], this.game),
+      new SubIcon(1250, (1080 - 180), 'indian', playerIDs[1], this.game),
+      new SubIcon(1250, (1080 - 95), 'indian', playerIDs[2], this.game),
     ];
 
     bomberIcons = [];
@@ -40,34 +40,34 @@ let war = {
     missileIcons = [];
 
     // North America
-    bomberIcons.push(new BomberIcon(260, (1080 - 500), 'northAmerica'));
-    capitalIcons.push(new CapitalIcon(365, (1080 - 500), 'northAmerica'));
-    missileIcons.push(new MissileIcon(470, (1080 - 500), 'northAmerica'));
+    bomberIcons.push(new BomberIcon(260, (1080 - 500), 'northAmerica', this.game));
+    capitalIcons.push(new CapitalIcon(365, (1080 - 500), 'northAmerica', this.game));
+    missileIcons.push(new MissileIcon(470, (1080 - 500), 'northAmerica', this.game));
 
     // South America
-    bomberIcons.push(new BomberIcon(495, (1080 - 285), 'southAmerica'));
-    capitalIcons.push(new CapitalIcon(560, (1080 - 200), 'southAmerica'));
-    missileIcons.push(new MissileIcon(540, (1080 - 90), 'southAmerica'));
+    bomberIcons.push(new BomberIcon(495, (1080 - 285), 'southAmerica', this.game));
+    capitalIcons.push(new CapitalIcon(560, (1080 - 200), 'southAmerica', this.game));
+    missileIcons.push(new MissileIcon(540, (1080 - 90), 'southAmerica', this.game));
 
     // Asia
-    bomberIcons.push(new BomberIcon(1320, (1080 - 470), 'asia'));
-    capitalIcons.push(new CapitalIcon(1425, (1080 - 470), 'asia'));
-    missileIcons.push(new MissileIcon(1530, (1080 - 470), 'asia'));
+    bomberIcons.push(new BomberIcon(1320, (1080 - 470), 'asia', this.game));
+    capitalIcons.push(new CapitalIcon(1425, (1080 - 470), 'asia', this.game));
+    missileIcons.push(new MissileIcon(1530, (1080 - 470), 'asia', this.game));
 
     // Europe
-    bomberIcons.push(new BomberIcon(990, (1080 - 565), 'europe'));
-    capitalIcons.push(new CapitalIcon(1095, (1080 - 565), 'europe'));
-    missileIcons.push(new MissileIcon(1200, (1080 - 565), 'europe'));
+    bomberIcons.push(new BomberIcon(990, (1080 - 565), 'europe', this.game));
+    capitalIcons.push(new CapitalIcon(1095, (1080 - 565), 'europe', this.game));
+    missileIcons.push(new MissileIcon(1200, (1080 - 565), 'europe', this.game));
 
     // Australia
-    bomberIcons.push(new BomberIcon(1530, (1080 - 180), 'australia'));
-    capitalIcons.push(new CapitalIcon(1635, (1080 - 180), 'australia'));
-    missileIcons.push(new MissileIcon(1740, (1080 - 180), 'australia'));
+    bomberIcons.push(new BomberIcon(1530, (1080 - 180), 'australia', this.game));
+    capitalIcons.push(new CapitalIcon(1635, (1080 - 180), 'australia', this.game));
+    missileIcons.push(new MissileIcon(1740, (1080 - 180), 'australia', this.game));
 
     // Africa
-    bomberIcons.push(new BomberIcon(850, (1080 - 365), 'africa'));
-    capitalIcons.push(new CapitalIcon(955, (1080 - 365), 'africa'));
-    missileIcons.push(new MissileIcon(1060, (1080 - 365), 'africa'));
+    bomberIcons.push(new BomberIcon(850, (1080 - 365), 'africa', this.game));
+    capitalIcons.push(new CapitalIcon(955, (1080 - 365), 'africa', this.game));
+    missileIcons.push(new MissileIcon(1060, (1080 - 365), 'africa', this.game));
 
     /*
     our pointer objects
