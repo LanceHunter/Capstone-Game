@@ -389,9 +389,10 @@ class MissileIcon {
 LAUNCH
 */
 class Launch {
-  // these will be created whenever a players's sub-deploy thing is activated
   constructor(origin, phaserState) {
+    // the phaser object
     this.phaserState = phaserState;
+
     // the origin icon object
     this.origin = origin;
 
@@ -413,36 +414,42 @@ class Launch {
 
   // a weapon has been selected, launch is pending
   armed() {
-    // animate the originIndicator
+    // animate the originIndicator only
     this.originIndicator.update();
   }
 
   initLaunch() {
-    console.log(this.phaserState);
-    // sprite stuff
+    // create the target indicator
     this.targetIndicator = new TargetIndicator(this.target.sprite, colors[playerIDs.indexOf(this.origin.playerID)], this.phaserState);
+
+    // create and setup the projectile sprite, might want to be it's own object in the future
     this.projectile = this.phaserState.add.sprite(this.origin.sprite.centerX, this.origin.sprite.centerY, 'projectile');
     this.projectile.tint = colors[playerIDs.indexOf(this.origin.playerID)];
     this.projectile.anchor.set(0.5);
     this.projectile.alpha = liveAlpha;
-    this.phaserState.add.audio('launch').play();
 
+    // and figure out it's path, velocity and orientation
     this.targetCenter = new Phaser.Point(this.target.sprite.centerX, this.target.sprite.centerY);
     let velocity = 10 + (game.players[this.origin.playerID].rnd.speed * 2 / 500);
     this.projectile.velocity = Phaser.Point.subtract(this.targetCenter, this.projectile.position).normalize().multiply(velocity, velocity);
     this.projectile.rotation = Phaser.Point.angle(this.origin.sprite.position, this.target.sprite.position) - (Math.PI / 2);
 
+    // play the launch sound
+    this.phaserState.add.audio('launch').play();
+
+    // change state
     this.state = 'enroute';
-    this.targetFrame = 0;
   }
 
   // when user paints a destination
   launch(capital, playerID) {
+    // if it's armed, initLaunch
     if (this.state === 'armed') {
       this.target = capital;
 
       // check that the capital doesn't belong to the origin and isn't already dead
       if (this.target.playerID != this.origin.playerID && game.continents[this.target.continent].hp > 0) {
+        // subs have specific logic:
         if (this.origin.type === 'sub') {
           // check for valid sub launch
           if (Object.keys(game.oceans[this.origin.ocean].canHit).includes(this.target.continent)) {
@@ -451,6 +458,7 @@ class Launch {
             //console.log('invalid sub');
           }
         } else
+        // bombers have a range:
         if (this.origin.type === 'bomber') {
           // check for valid bomber launch
           if (game.continents[this.origin.continent].distances[this.target.continent] <= 1) {
@@ -459,6 +467,7 @@ class Launch {
             // console.log('invalid bomb');
           }
         } else {
+          // ICBMs can go anywhere, shoot that shit!
           this.initLaunch();
         }
       }
@@ -467,9 +476,11 @@ class Launch {
 
   // while the missile is traveling
   enroute() {
+    // we need to keep animating our indicators
     this.originIndicator.update();
     this.targetIndicator.update();
 
+    // and update the position of our projectile
     this.projectile.position.add(this.projectile.velocity.x, this.projectile.velocity.y);
 
     // when it gets to the destination, this.state = 'exploding'
@@ -478,11 +489,12 @@ class Launch {
       this.state = 'exploding';
       this.explosion = new Explosion(this.origin, this.target);
 
-      // destroy the indicator and projetile sprites
+      // destroy the indicator and projectile sprites
       this.projectile.destroy();
       this.targetIndicator.destroy();
       this.originIndicator.destroy();
 
+      // we figure out what kind of weapon it was, and make the right API call
       if (this.origin.type === 'sub') {
         // console.log('sub hit');
         let data = {
@@ -500,7 +512,6 @@ class Launch {
           // r => console.log(r)
         );
       } else {
-        // console.log('air hit');
         let data = {
           gameID: gameID,
           launchID: this.origin.continent,
@@ -523,6 +534,8 @@ class Launch {
   // while the explosion animation is happening
   exploding() {
     this.explosion.update();
+
+    // when the explosion is done, we destroy it and reset everything
     if (this.explosion.frame > 30) {
       this.explosion.destroy();
       this.origin.launch = false;
