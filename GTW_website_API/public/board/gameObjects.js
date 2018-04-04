@@ -1,3 +1,0 @@
-/*
-LASER TRACKING STUFF
-*/
