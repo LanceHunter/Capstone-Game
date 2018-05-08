@@ -29,8 +29,8 @@ Wiki for Instructions, Game design and Dev docs: https://github.com/LanceHunter/
 Game & Language Architecture:
 <img src="GTNW-Architecture.png" width="75%" height="75%">
 
-Web Application:
-[![Alt text](GTNW-Homepage.png)](GTNW-WebApp.mov)
+Web Application:    
+<img src="GTNW-Homepage.png" width="75%" height="75%">
 
 
 ## Build Tools / Stack
