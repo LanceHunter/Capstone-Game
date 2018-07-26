@@ -27,7 +27,10 @@ Deployed site: https://gtnwthegame.com/
 Wiki for Instructions, Game design and Dev docs: https://github.com/LanceHunter/Capstone-Game/wiki
 
 Live Gameplay:
-[![Alt text](GTNW-live.png)](GTNW.mov)
+<!-- [![Alt text](GTNW-live.png)](GTNW.mov) -->
+
+<a href="GTNW.mov"><img src="GTNW-live.png" width="75%" height="75%"></a>
+
 
 Game & Language Architecture:
 <img src="GTNW-Architecture.png" width="75%" height="75%">
